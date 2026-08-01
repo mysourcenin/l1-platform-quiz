@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 1: L1 Fundamentals & Incident Triage | L1 Platform Assessment</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B0F17',
+                            card: '#111827',
+                            border: '#1F2937',
+                            cyan: '#06B6D4',
+                            emerald: '#10B981',
+                            amber: '#F59E0B',
+                            rose: '#F43F5E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080C14;
+            color: #E2E8F0;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0B0F17; }
+        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .terminal-glow { box-shadow: 0 0 20px rgba(6, 182, 212, 0.15); }
+        .emerald-glow { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .pulse-subtle { animation: pulse-slow 3s infinite ease-in-out; }
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#070A11] text-slate-200 antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2 text-xs font-mono">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Hub Utama</span>
+                </a>
+                <div class="h-6 w-px bg-slate-800"></div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-base font-bold bg-gradient-to-r from-slate-100 via-cyan-200 to-emerald-400 bg-clip-text text-transparent">
+                            LAB 1: L1 Fundamentals & Incident Triage
+                        </span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 rounded font-semibold">
+                            10 SCENARIOS
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-300">
+                    <i class="fa-solid fa-clock text-amber-400"></i>
+                    <span>Session: <span id="session-timer" class="text-cyan-400 font-semibold">00:00</span></span>
+                </div>
+                <button onclick="resetAssessment()" class="px-3 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg border border-slate-700/60 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Reset Progress</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Executive KPI Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-cyan-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Overall Completion</span>
+                    <i class="fa-solid fa-list-check text-cyan-400"></i>
+                </div>
+                <div class="flex items-baseline space-x-2 my-1">
+                    <span id="kpi-completion-percent" class="text-2xl font-bold font-mono text-white">0%</span>
+                    <span id="kpi-completion-count" class="text-xs text-slate-400 font-mono">(0/10 Complete)</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-2">
+                    <div id="kpi-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Correct Answers</span>
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                </div>
+                <div class="flex items-baseline space-x-3 my-1">
+                    <span id="kpi-correct" class="text-2xl font-bold font-mono text-emerald-400">0</span>
+                    <span class="text-xs text-slate-400">Score: <span id="kpi-score-pts" class="text-emerald-300 font-mono font-bold">0 pts</span></span>
+                </div>
+                <div class="text-[11px] text-slate-400">Target accuracy &gt; 80% for L1 readiness</div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-rose-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Incorrect / Retried</span>
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+                </div>
+                <div class="flex items-baseline space-x-3 my-1">
+                    <span id="kpi-incorrect" class="text-2xl font-bold font-mono text-rose-400">0</span>
+                    <span class="text-xs text-slate-400">Retry allowed anytime</span>
+                </div>
+                <div class="text-[11px] text-slate-400">Mental analogies build mastery</div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-amber-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Mastery Level</span>
+                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                </div>
+                <div class="flex items-center space-x-2 my-1">
+                    <span id="kpi-mastery-badge" class="px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                        L1 NOVICE (RECRUIT)
+                    </span>
+                </div>
+                <div class="text-[11px] text-slate-400" id="kpi-mastery-sub">Complete modules to promote to L1 Practitioner</div>
+            </div>
+        </div>
+
+        <!-- Main Workspace (Grid 2 Column Layout) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6" id="workspace-container">
+            <div class="lg:col-span-7 space-y-6">
+
+                <div class="glass-panel rounded-xl p-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="prevQuestion()" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed" id="btn-prev-q">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <span class="text-xs font-mono text-slate-300">
+                            Scenario <span id="current-q-index" class="text-cyan-400 font-bold">1</span> of <span id="total-q-count" class="text-slate-400">10</span>
+                        </span>
+                        <button onclick="nextQuestion()" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed" id="btn-next-q">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex items-center space-x-1.5" id="q-dots-container"></div>
+                </div>
+
+                <div class="glass-panel rounded-xl p-6 border border-slate-800/90 shadow-2xl relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span id="q-module-badge" class="px-2.5 py-1 rounded-md text-[11px] font-bold font-mono bg-cyan-950 text-cyan-400 border border-cyan-800/60">
+                                MODUL 1: LINUX FUNDAMENTAL
+                            </span>
+                            <span id="q-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-800 text-slate-400">
+                                UNANSWERED
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-1 text-xs text-slate-400 font-mono">
+                            <i class="fa-solid fa-tag text-slate-500"></i>
+                            <span id="q-topic-tag">Service Status</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/90 rounded-xl p-4 border-l-4 border-amber-500 border-y border-r border-slate-800 mb-5">
+                        <div class="flex items-center space-x-2 text-amber-400 font-mono text-xs font-bold mb-1.5">
+                            <i class="fa-solid fa-triangle-exclamation pulse-subtle"></i>
+                            <span id="q-incident-id">INCIDENT #INC-8821</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white mb-2" id="q-title">Aplikasi Mobile Banking melempar error 502 Bad Gateway</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed" id="q-description">Pelanggan melaporkan error HTTP 502 saat membuka aplikasi Banking.</p>
+                    </div>
+
+                    <div class="bg-cyan-950/20 rounded-lg p-3 border border-cyan-900/40 mb-6 flex items-start space-x-3">
+                        <div class="mt-0.5 text-cyan-400 shrink-0"><i class="fa-solid fa-network-wired text-sm"></i></div>
+                        <div class="text-xs">
+                            <span class="font-bold text-cyan-300">Network / Firewall Analogy:</span>
+                            <span id="q-netsec-analogy" class="text-slate-300 ml-1">...</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-slate-950 rounded-xl border border-slate-800 p-3 shadow-inner font-mono text-xs">
+                            <div class="flex items-center space-x-2 text-slate-400 border-b border-slate-800/80 pb-2 mb-2">
+                                <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+                                <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                                <span class="ml-2 text-[10px] text-slate-400">root@prod-node01: ~</span>
+                            </div>
+                            <form onsubmit="handleCLIFormSubmit(event)" class="flex items-center space-x-2">
+                                <span class="text-emerald-400 font-bold select-none">[root@prod-node01 ~]#</span>
+                                <input type="text" id="cli-input-box" autocomplete="off" placeholder="Ketik perintah CLI..." class="flex-1 bg-transparent border-none outline-none text-cyan-300 focus:ring-0 text-xs font-mono">
+                                <button type="submit" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold rounded text-xs">Run CLI</button>
+                            </form>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-3 pt-2 border-t border-slate-900" id="q-command-hints"></div>
+                        </div>
+
+                        <div class="space-y-2 mt-4" id="q-options-container"></div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                        <button onclick="showHintModal()" class="text-xs text-amber-400 hover:text-amber-300 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Hint Logika</span>
+                        </button>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="clearCurrentAnswer()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200">Clear</button>
+                            <button onclick="submitCurrentAnswer()" class="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold text-xs shadow-lg">Submit Answer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="feedback-panel" class="hidden glass-panel rounded-xl p-6 border-l-4 border-cyan-500 space-y-5">
+                    <div id="feedback-status-banner" class="p-3 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div id="feedback-icon" class="h-8 w-8 rounded-full flex items-center justify-center text-lg"></div>
+                            <div>
+                                <h4 id="feedback-title" class="text-sm font-bold">Jawaban Benar!</h4>
+                                <p id="feedback-subtitle" class="text-xs text-slate-300">...</p>
+                            </div>
+                        </div>
+                        <span id="feedback-points" class="px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-emerald-400">+100 PTS</span>
+                    </div>
+
+                    <div class="bg-slate-950/80 rounded-xl p-4 border border-cyan-900/50 space-y-3">
+                        <div class="flex items-center space-x-2 text-cyan-400 text-xs font-bold">
+                            <i class="fa-solid fa-brain"></i>
+                            <span class="uppercase tracking-wider">Visual Mental Model</span>
+                        </div>
+                        <div class="text-xs text-slate-300 leading-relaxed" id="feedback-analogy-content"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-300 border border-slate-800 overflow-x-auto" id="feedback-terminal-output"></div>
+                        <div class="space-y-2 mt-3" id="feedback-line-explanations"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Interactive Terminal Simulator -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-panel rounded-xl border border-slate-800 overflow-hidden shadow-2xl terminal-glow flex flex-col h-[520px]">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="h-3 w-3 rounded-full bg-rose-500 cursor-pointer" onclick="clearTerminalScreen()"></span>
+                            <span class="h-3 w-3 rounded-full bg-amber-500"></span>
+                            <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
+                            <span class="text-xs font-mono text-slate-300 font-semibold ml-2">
+                                <i class="fa-solid fa-terminal text-cyan-400 mr-1.5"></i>RHEL 8 Terminal Sandbox
+                            </span>
+                        </div>
+                        <button onclick="clearTerminalScreen()" class="text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-eraser"></i></button>
+                    </div>
+
+                    <div class="flex-1 bg-[#090D16] p-4 font-mono text-xs overflow-y-auto space-y-3" id="sandbox-term-screen">
+                        <div class="text-slate-400">
+                            Red Hat Enterprise Linux Server release 8.8 (Ootpa)<br>
+                            Type <span class="text-cyan-400 font-bold">help</span> to list commands.
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 border-t border-slate-800 flex items-center space-x-2">
+                        <span class="text-emerald-400 font-mono font-bold text-xs select-none">[root@prod-node01 ~]#</span>
+                        <input type="text" id="sandbox-term-input" onkeydown="handleSandboxTermKeyDown(event)" autocomplete="off" placeholder="Ketik perintah RHEL / Docker di sini..." class="flex-1 bg-transparent border-none outline-none text-cyan-300 font-mono text-xs">
+                        <button onclick="execSandboxCommand()" class="text-xs bg-slate-800 text-cyan-400 px-2.5 py-1 rounded border border-slate-700">Exec</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sop-escalation-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="glass-panel max-w-2xl w-full rounded-2xl p-6 border border-slate-700 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="text-base font-bold text-white">Format Escalation Ticket L1 &gt; L2</h3>
+                    <button onclick="closeSOPModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <input type="text" readonly value="[INC-9912] L1 Escalation: Banking Gateway Upstream Connection Refused" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-cyan-300 font-mono">
+                    <textarea readonly rows="4" class="w-full bg-slate-950 border border-slate-800 rounded p-2 font-mono text-[11px] text-slate-300">
+[L1 Triage Check]
+1. `systemctl status nginx` -> Active (running)
+2. `journalctl -u nginx` -> [error] 502 connect() failed
+3. `ss -tulpn | grep 8080` -> No output
+Action Requested L2: Check Java Application Server on port 8080.
+                    </textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button onclick="confirmSOPEscalation()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded text-xs">Dispatch SOP Ticket</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="hint-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="glass-panel max-w-md w-full rounded-xl p-5 border border-amber-500/40 shadow-2xl space-y-3">
+                <div class="flex items-center space-x-2 text-amber-400 font-bold text-sm">
+                    <i class="fa-solid fa-lightbulb text-lg"></i>
+                    <span>NetSec Logic Hint</span>
+                </div>
+                <p id="hint-modal-text" class="text-xs text-slate-300 leading-relaxed"></p>
+                <div class="flex justify-end pt-2">
+                    <button onclick="closeHintModal()" class="px-3 py-1.5 bg-slate-800 text-xs text-slate-200 rounded">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const questionBank = [
+            {
+                id: 1, module: 1, moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & TRIAGE", topic: "Service Status & Triage",
+                title: "Aplikasi Mobile Banking melempar error 502 Bad Gateway", incidentId: "INCIDENT #INC-8821 (P1 SEVERITY)",
+                description: "Pelanggan melaporkan error HTTP 502 saat membuka aplikasi Banking. Network Firewall dipastikan normal. Sebagai L1 Engineer, Anda harus memeriksa status web server Nginx di server RHEL `prod-app-node01`.",
+                netsecAnalogy: "Sama seperti mengecek daemon status di firewall (`get system status` atau `show service`), di Linux CLI Anda memeriksa status daemon supervisor (`systemd`).",
+                hintText: "Gunakan perintah `systemctl` diikuti sub-command `status` dan nama service `nginx`.",
+                validCommands: ["systemctl status nginx", "systemctl status nginx.service", "sudo systemctl status nginx"],
+                options: [
+                    { id: 'A', text: 'systemctl status nginx', correct: true },
+                    { id: 'B', text: 'service status nginx.log', correct: false },
+                    { id: 'C', text: 'ping 127.0.0.1:80', correct: false },
+                    { id: 'D', text: 'netstat -kill nginx', correct: false }
+                ],
+                terminalOutputLines: [
+                    "● nginx.service - The NGINX HTTP and reverse proxy server",
+                    "   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)",
+                    "   Active: inactive (dead) since Thu 2026-07-30 14:22:01 WIB; 1h 15min ago"
+                ],
+                lineExplanations: [
+                    { line: "Active: inactive (dead)", text: "🔴 MENANDAKAN SERVICE DOWN! Process Nginx telah mati." }
+                ],
+                analogyExplanation: "<p>Status Inactive menandakan daemon Nginx mati.</p>"
+            },
+            {
+                id: 2, module: 1, moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & TRIAGE", topic: "Live Log Tailing",
+                title: "Mendeteksi Penyebab Live Log Error HTTP 500 Internal Server Error", incidentId: "INCIDENT #INC-8825 (P2 SEVERITY)",
+                description: "User mengalami crash saat checkout pembayaran. Anda diminta memantau log error Nginx secara realtime (live stream) untuk menangkap error HTTP 500.",
+                netsecAnalogy: "Sama seperti menjalankan `debug log tail` pada firewall CLI.",
+                hintText: "Gunakan `journalctl -u nginx -f` dengan flag `-f` (follow/tail).",
+                validCommands: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"],
+                options: [
+                    { id: 'A', text: 'cat /var/log/nginx/error.log', correct: false },
+                    { id: 'B', text: 'journalctl -u nginx -f', correct: true },
+                    { id: 'C', text: 'nano /var/log/nginx/error.log', correct: false },
+                    { id: 'D', text: 'grep "500" /etc/nginx/nginx.conf', correct: false }
+                ],
+                terminalOutputLines: [
+                    "2026/07/31 17:15:02 [error] PHP message: PHP Fatal error: Uncaught Exception: Database connection timeout in db.php:42"
+                ],
+                lineExplanations: [
+                    { line: "journalctl -u nginx -f", text: "⚡ Flag `-f` (follow) menampilkan stream log real-time." }
+                ],
+                analogyExplanation: "<p>Flag -f penting untuk live monitoring.</p>"
+            },
+            {
+                id: 3, module: 2, moduleTitle: "MODUL 2: RUNTIME & WEB SERVER", topic: "Network Sockets",
+                title: "Pengecekan Listening Port & IP Socket (`ss -tulpn`)", incidentId: "INCIDENT #INC-8901 (P2 SEVERITY)",
+                description: "Nginx gagal di-start dengan error `Address already in use: 0.0.0.0:80`. Identifikasi PID dan nama aplikasi yang mencuri port 80.",
+                netsecAnalogy: "Sama seperti `show ip sockets` pada firewall.",
+                hintText: "Gunakan `ss -tulpn`.",
+                validCommands: ["ss -tulpn", "netstat -tulpn"],
+                options: [
+                    { id: 'A', text: 'ping 0.0.0.0:80', correct: false },
+                    { id: 'B', text: 'ss -tulpn', correct: true },
+                    { id: 'C', text: 'ifconfig eth0 port 80', correct: false },
+                    { id: 'D', text: 'traceroute 127.0.0.1 80', correct: false }
+                ],
+                terminalOutputLines: [
+                    "tcp LISTEN 0 128 0.0.0.0:80 0.0.0.0:* users:((\"httpd\",pid=8841,fd=4))"
+                ],
+                lineExplanations: [
+                    { line: "tcp LISTEN 0.0.0.0:80", text: "⚠️ Port 80 terikat ke Apache (httpd) PID 8841." }
+                ],
+                analogyExplanation: "<p>Matikan httpd dulu sebelum start Nginx.</p>"
+            },
+            {
+                id: 4, module: 3, moduleTitle: "MODUL 3: CONTAINERIZATION", topic: "Docker Container Lifecycle",
+                title: "Container Payment Microservice Mendadak Exit/Crash", incidentId: "INCIDENT #INC-9012 (P1 SEVERITY)",
+                description: "Microservice Container `payment-gateway` tidak merespon. Periksa daftar seluruh container (running maupun exited).",
+                netsecAnalogy: "Sama seperti mengecek status VDOM atau VRF interface.",
+                hintText: "Gunakan `docker ps -a`.",
+                validCommands: ["docker ps -a", "docker ps --all"],
+                options: [
+                    { id: 'A', text: 'docker ps', correct: false },
+                    { id: 'B', text: 'docker ps -a', correct: true },
+                    { id: 'C', text: 'systemctl status docker.log', correct: false },
+                    { id: 'D', text: 'docker run payment-gateway', correct: false }
+                ],
+                terminalOutputLines: [
+                    "a1b2c3d4e5f6 payment-api:v2.1 Exited (137) 10 min ago payment-gateway"
+                ],
+                lineExplanations: [
+                    { line: "Exited (137)", text: "🔴 Exit code 137 biasanya berarti Out Of Memory (OOM Killed)." }
+                ],
+                analogyExplanation: "<p>Flag -a menampilkan container yang mati.</p>"
+            },
+            {
+                id: 5, module: 4, moduleTitle: "MODUL 4: STORAGE & SOP", topic: "Disk Space Triage",
+                title: "Alert Grafana: Disk Partition /var/log Full 100%", incidentId: "INCIDENT #INC-9105 (P2 SEVERITY)",
+                description: "Server menolak menulis log `No space left on device`. Konfirmasi penggunaan disk per mount point.",
+                netsecAnalogy: "Sama seperti `show flash:` pada router/firewall.",
+                hintText: "Gunakan `df -h`.",
+                validCommands: ["df -h", "df -h /var/log"],
+                options: [
+                    { id: 'A', text: 'du -sh *', correct: false },
+                    { id: 'B', text: 'df -h', correct: true },
+                    { id: 'C', text: 'fdisk -l /dev/ram0', correct: false },
+                    { id: 'D', text: 'format C: /q', correct: false }
+                ],
+                terminalOutputLines: [
+                    "/dev/mapper/rhel-var_log 10G 10G 0B 100% /var/log"
+                ],
+                lineExplanations: [
+                    { line: "100% /var/log", text: "🚨 Mount point /var/log penuh 100%." }
+                ],
+                analogyExplanation: "<p>Kosongkan disk log dengan logrotate.</p>"
+            },
+            {
+                id: 6, module: 1, moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & TRIAGE", topic: "Package Management",
+                title: "Instalasi Web Server Package Nginx via RPM", incidentId: "INCIDENT #REQ-7712",
+                description: "Instal package `nginx` dari repo resmi Red Hat.",
+                netsecAnalogy: "Sama seperti mengunduh firmware image.",
+                hintText: "Gunakan `yum install -y nginx`.",
+                validCommands: ["yum install -y nginx", "dnf install -y nginx"],
+                options: [
+                    { id: 'A', text: 'apt-get install nginx', correct: false },
+                    { id: 'B', text: 'yum install -y nginx', correct: true },
+                    { id: 'C', text: 'pip install nginx-web', correct: false },
+                    { id: 'D', text: 'npm install nginx -g', correct: false }
+                ],
+                terminalOutputLines: [
+                    "Installing: nginx x86_64 1:1.18.0-2 Complete!"
+                ],
+                lineExplanations: [
+                    { line: "yum / dnf", text: "🟢 Standard package manager RHEL." }
+                ],
+                analogyExplanation: "<p>RHEL menggunakan yum / dnf.</p>"
+            },
+            {
+                id: 7, module: 4, moduleTitle: "MODUL 4: STORAGE & SOP", topic: "Escalation SOP",
+                title: "Format Log Insiden & Eskalasi L1 ke L2 Sesuai Banking SOP", incidentId: "INCIDENT #INC-9912",
+                description: "Nginx Running tapi Connection Refused pada backend port 8080. Buat tiket eskalasi L2.",
+                netsecAnalogy: "Mirip membuat escalation ticket ke TAC.",
+                hintText: "Klik opsi B.", validCommands: ["sop escalation"], isSOPScenario: true,
+                options: [
+                    { id: 'A', text: 'Kirim pesan WA tanpa bukti', correct: false },
+                    { id: 'B', text: 'Buka Interactive Ticket Escalation Modal', correct: true },
+                    { id: 'C', text: 'Reboot server fisik', correct: false },
+                    { id: 'D', text: 'Tutup ticket', correct: false }
+                ],
+                terminalOutputLines: [
+                    "[SOP L1-TO-L2 DISPATCH SUCCESS] Status: ESCALATED TO TIER 2"
+                ],
+                lineExplanations: [
+                    { line: "ESCALATED TO TIER 2", text: "✅ Escalation ticket dispatched." }
+                ],
+                analogyExplanation: "<p>Sertakan bukti CLI log dalam tiket.</p>"
+            },
+            {
+                id: 8, module: 2, moduleTitle: "MODUL 2: RUNTIME & WEB SERVER", topic: "SSL Expiration",
+                title: "Pengecekan SSL Certificate Expiration Date via CLI", incidentId: "INCIDENT #INC-9340",
+                description: "Browser melempar `NET::ERR_CERT_DATE_INVALID`. Cek tanggal expired SSL cert.",
+                netsecAnalogy: "Sama seperti mengecek SSL VPN Cert.",
+                hintText: "Gunakan `openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates`.",
+                validCommands: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates"],
+                options: [
+                    { id: 'A', text: 'cat /etc/nginx/ssl/server.crt', correct: false },
+                    { id: 'B', text: 'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates', correct: true },
+                    { id: 'C', text: 'ping ssl.banking.com', correct: false },
+                    { id: 'D', text: 'certutil -delete', correct: false }
+                ],
+                terminalOutputLines: [
+                    "notBefore=Jan 15 2025 GMT", "notAfter=Jul 30 2026 GMT [EXPIRED]"
+                ],
+                lineExplanations: [
+                    { line: "notAfter", text: "🔴 Tanggal kadaluarsa terlewati." }
+                ],
+                analogyExplanation: "<p>OpenSSL membedah metadata X.509 cert.</p>"
+            },
+            {
+                id: 9, module: 3, moduleTitle: "MODUL 3: CONTAINERIZATION", topic: "Container Logs",
+                title: "Membaca Logs Internal Docker Container Microservice", incidentId: "INCIDENT #INC-9420",
+                description: "Container payment-api merespon Error 500. Cek console log internal container.",
+                netsecAnalogy: "Sama seperti console log sub-module.",
+                hintText: "Gunakan `docker logs --tail 20 payment-api`.",
+                validCommands: ["docker logs payment-api", "docker logs --tail 20 payment-api"],
+                options: [
+                    { id: 'A', text: 'cat /var/log/docker.log', correct: false },
+                    { id: 'B', text: 'docker logs --tail 20 payment-api', correct: true },
+                    { id: 'C', text: 'docker inspect payment-api', correct: false },
+                    { id: 'D', text: 'systemctl logs docker', correct: false }
+                ],
+                terminalOutputLines: [
+                    "java.sql.SQLException: Connection to DB host 10.10.4.50:5432 refused"
+                ],
+                lineExplanations: [
+                    { line: "DB Connection refused", text: "🔍 Container ke DB refused." }
+                ],
+                analogyExplanation: "<p>docker logs mengambil stdout/stderr.</p>"
+            },
+            {
+                id: 10, module: 4, moduleTitle: "MODUL 4: STORAGE & SOP", topic: "Permissions",
+                title: "Nginx Error 403 Forbidden: Triage File Permission", incidentId: "INCIDENT #INC-9550",
+                description: "Web 403 Forbidden setelah deployment. Cek permission & ownership `/var/www/html/index.html`.",
+                netsecAnalogy: "Sama seperti ACL rule mismatch.",
+                hintText: "Gunakan `ls -la /var/www/html`.",
+                validCommands: ["ls -la /var/www/html"],
+                options: [
+                    { id: 'A', text: 'chmod 777 /etc/nginx/nginx.conf', correct: false },
+                    { id: 'B', text: 'ls -la /var/www/html', correct: true },
+                    { id: 'C', text: 'rm -rf /var/www/html', correct: false },
+                    { id: 'D', text: 'ping /var/www/html', correct: false }
+                ],
+                terminalOutputLines: [
+                    "-rw------- 1 root root 1024 Jul 31 10:00 index.html"
+                ],
+                lineExplanations: [
+                    { line: "-rw------- root root", text: "🔴 Mode 600 menghalangi Nginx (user `nginx`) membaca file." }
+                ],
+                analogyExplanation: "<p>Ubah permission ke 644.</p>"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let sessionSeconds = 0;
+        let timerInterval = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startSessionTimer();
+            renderQuestionDots();
+            loadQuestion(0);
+            updateKPICards();
+        });
+
+        function startSessionTimer() {
+            timerInterval = setInterval(() => {
+                sessionSeconds++;
+                const mins = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
+                const secs = (sessionSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('session-timer').textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function loadQuestion(index) {
+            if (index < 0 || index >= questionBank.length) return;
+            currentQuestionIndex = index;
+            const q = questionBank[index];
+
+            document.getElementById('current-q-index').textContent = index + 1;
+            document.getElementById('total-q-count').textContent = questionBank.length;
+            document.getElementById('q-module-badge').textContent = q.moduleTitle;
+            document.getElementById('q-topic-tag').textContent = q.topic;
+            document.getElementById('q-incident-id').textContent = q.incidentId;
+            document.getElementById('q-title').textContent = q.title;
+            document.getElementById('q-description').textContent = q.description;
+            document.getElementById('q-netsec-analogy').textContent = q.netsecAnalogy;
+
+            document.getElementById('btn-prev-q').disabled = (index === 0);
+            document.getElementById('btn-next-q').disabled = (index === questionBank.length - 1);
+
+            const cliInput = document.getElementById('cli-input-box');
+            cliInput.value = '';
+            
+            const hintsContainer = document.getElementById('q-command-hints');
+            hintsContainer.innerHTML = `<span class="text-[10px] text-slate-400 font-sans">Quick fill:</span>`;
+            q.validCommands.forEach(cmd => {
+                const hintBtn = document.createElement('button');
+                hintBtn.className = "px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-[11px] text-cyan-300 font-mono";
+                hintBtn.textContent = cmd;
+                hintBtn.onclick = (e) => { e.preventDefault(); cliInput.value = cmd; };
+                hintsContainer.appendChild(hintBtn);
+            });
+
+            const optionsContainer = document.getElementById('q-options-container');
+            optionsContainer.innerHTML = '';
+            q.options.forEach(opt => {
+                const optEl = document.createElement('div');
+                optEl.className = `q-opt-item p-3 rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-900 cursor-pointer flex items-center justify-between text-xs font-mono`;
+                optEl.id = `opt-card-${opt.id}`;
+                optEl.onclick = () => selectOption(opt.id);
+                optEl.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="h-6 w-6 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">${opt.id}</span>
+                        <span class="text-slate-200">${escapeHTML(opt.text)}</span>
+                    </div>
+                `;
+                optionsContainer.appendChild(optEl);
+            });
+
+            const savedAns = userAnswers[q.id];
+            const feedbackPanel = document.getElementById('feedback-panel');
+            const statusBadge = document.getElementById('q-status-badge');
+
+            if (savedAns) {
+                statusBadge.textContent = savedAns.isCorrect ? "SOLVED" : "INCORRECT";
+                statusBadge.className = savedAns.isCorrect 
+                    ? "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800"
+                    : "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-950 text-rose-400 border border-rose-800";
+                showFeedback(q, savedAns.isCorrect);
+            } else {
+                statusBadge.textContent = "UNANSWERED";
+                statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-800 text-slate-400";
+                feedbackPanel.classList.add('hidden');
+            }
+
+            updateQuestionDots();
+        }
+
+        let currentlySelectedOption = null;
+        function selectOption(optId) {
+            currentlySelectedOption = optId;
+            document.querySelectorAll('.q-opt-item').forEach(el => el.classList.remove('border-cyan-500', 'bg-cyan-950/30'));
+            const selEl = document.getElementById(`opt-card-${optId}`);
+            if (selEl) selEl.classList.add('border-cyan-500', 'bg-cyan-950/30');
+        }
+
+        function prevQuestion() { if (currentQuestionIndex > 0) loadQuestion(currentQuestionIndex - 1); }
+        function nextQuestion() { if (currentQuestionIndex < questionBank.length - 1) loadQuestion(currentQuestionIndex + 1); }
+
+        function renderQuestionDots() {
+            const container = document.getElementById('q-dots-container');
+            container.innerHTML = '';
+            questionBank.forEach((q, idx) => {
+                const dot = document.createElement('button');
+                dot.id = `q-dot-${idx}`;
+                dot.onclick = () => loadQuestion(idx);
+                dot.className = "h-2.5 w-2.5 rounded-full bg-slate-800 hover:bg-slate-700 transition";
+                container.appendChild(dot);
+            });
+        }
+
+        function updateQuestionDots() {
+            questionBank.forEach((q, idx) => {
+                const dot = document.getElementById(`q-dot-${idx}`);
+                if (!dot) return;
+                const ans = userAnswers[q.id];
+                if (idx === currentQuestionIndex) {
+                    dot.className = "h-3 w-3 rounded-full bg-cyan-400 ring-2 ring-cyan-500/50 transition";
+                } else if (ans && ans.isCorrect) {
+                    dot.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 transition";
+                } else if (ans && !ans.isCorrect) {
+                    dot.className = "h-2.5 w-2.5 rounded-full bg-rose-500 transition";
+                } else {
+                    dot.className = "h-2.5 w-2.5 rounded-full bg-slate-800 transition";
+                }
+            });
+        }
+
+        function handleCLIFormSubmit(e) {
+            e.preventDefault();
+            const typed = document.getElementById('cli-input-box').value.trim();
+            if (!typed) return;
+            submitAnswerInternal(null, typed);
+        }
+
+        function submitCurrentAnswer() {
+            const typed = document.getElementById('cli-input-box').value.trim();
+            if (currentlySelectedOption) {
+                submitAnswerInternal(currentlySelectedOption, typed);
+            } else if (typed) {
+                submitAnswerInternal(null, typed);
+            } else {
+                alert("Pilih opsi jawaban atau ketik perintah CLI!");
+            }
+        }
+
+        function submitAnswerInternal(optId, typedCmd) {
+            const q = questionBank[currentQuestionIndex];
+            let isCorrect = false;
+
+            if (q.isSOPScenario && optId === 'B') {
+                openSOPModal();
+                return;
+            }
+
+            if (optId) {
+                const selectedObj = q.options.find(o => o.id === optId);
+                if (selectedObj && selectedObj.correct) isCorrect = true;
+            } else if (typedCmd) {
+                const cleanTyped = typedCmd.toLowerCase().replace(/\s+/g, ' ');
+                isCorrect = q.validCommands.some(valid => cleanTyped === valid.toLowerCase().replace(/\s+/g, ' '));
+            }
+
+            userAnswers[q.id] = { selectedOption: optId, typedCommand: typedCmd, isCorrect: isCorrect };
+            appendSandboxOutput(`[root@prod-node01 ~]# ${typedCmd || optId}`);
+            appendSandboxOutput(q.terminalOutputLines.join('\n'), 'cyan');
+
+            showFeedback(q, isCorrect);
+            updateKPICards();
+            updateQuestionDots();
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function showFeedback(q, isCorrect) {
+            const panel = document.getElementById('feedback-panel');
+            panel.classList.remove('hidden');
+            document.getElementById('feedback-analogy-content').innerHTML = q.analogyExplanation;
+            document.getElementById('feedback-terminal-output').innerHTML = q.terminalOutputLines.map(line => `<div class="text-slate-300">${escapeHTML(line)}</div>`).join('');
+            
+            const lineExplanations = document.getElementById('feedback-line-explanations');
+            lineExplanations.innerHTML = '';
+            q.lineExplanations.forEach(item => {
+                const expCard = document.createElement('div');
+                expCard.className = "p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs flex items-start space-x-2";
+                expCard.innerHTML = `<i class="fa-solid fa-terminal text-cyan-400 mt-0.5 shrink-0"></i><div><span class="font-mono text-amber-300 font-semibold block mb-0.5">${escapeHTML(item.line)}</span><span class="text-slate-300 font-sans">${item.text}</span></div>`;
+                lineExplanations.appendChild(expCard);
+            });
+        }
+
+        function clearCurrentAnswer() {
+            delete userAnswers[questionBank[currentQuestionIndex].id];
+            currentlySelectedOption = null;
+            loadQuestion(currentQuestionIndex);
+            updateKPICards();
+        }
+
+        function updateKPICards() {
+            const answeredKeys = Object.keys(userAnswers);
+            const completedCount = answeredKeys.length;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            answeredKeys.forEach(k => { if (userAnswers[k].isCorrect) correctCount++; else incorrectCount++; });
+
+            const completionPct = Math.round((completedCount / questionBank.length) * 100);
+            document.getElementById('kpi-completion-percent').textContent = `${completionPct}%`;
+            document.getElementById('kpi-completion-count').textContent = `(${completedCount}/10 Complete)`;
+            document.getElementById('kpi-progress-bar').style.width = `${completionPct}%`;
+            document.getElementById('kpi-correct').textContent = correctCount;
+            document.getElementById('kpi-score-pts').textContent = `${correctCount * 100} pts`;
+            document.getElementById('kpi-incorrect').textContent = incorrectCount;
+        }
+
+        function resetAssessment() {
+            if (confirm("Reset seluruh progress Lab 1?")) {
+                userAnswers = {};
+                loadQuestion(0);
+                updateKPICards();
+            }
+        }
+
+        function handleSandboxTermKeyDown(e) { if (e.key === 'Enter') execSandboxCommand(); }
+        function execSandboxCommand() {
+            const inputEl = document.getElementById('sandbox-term-input');
+            const rawCmd = inputEl.value.trim();
+            if (!rawCmd) return;
+            inputEl.value = '';
+            appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}`);
+            appendSandboxOutput("Command executed in Lab 1 sandbox mode.", 'cyan');
+        }
+        function appendSandboxOutput(text, color = 'slate') {
+            const screen = document.getElementById('sandbox-term-screen');
+            const line = document.createElement('div');
+            line.className = "whitespace-pre-wrap text-cyan-300";
+            line.textContent = text;
+            screen.appendChild(line);
+            screen.scrollTop = screen.scrollHeight;
+        }
+        function clearTerminalScreen() { document.getElementById('sandbox-term-screen').innerHTML = ''; }
+        function showHintModal() { document.getElementById('hint-modal-text').textContent = questionBank[currentQuestionIndex].hintText; document.getElementById('hint-modal').classList.remove('hidden'); }
+        function closeHintModal() { document.getElementById('hint-modal').classList.add('hidden'); }
+        function openSOPModal() { document.getElementById('sop-escalation-modal').classList.remove('hidden'); }
+        function closeSOPModal() { document.getElementById('sop-escalation-modal').classList.add('hidden'); }
+        function confirmSOPEscalation() { closeSOPModal(); userAnswers[7] = { selectedOption: 'B', isCorrect: true }; loadQuestion(currentQuestionIndex); updateKPICards(); }
+        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+    </script>
+</body>
+</html>

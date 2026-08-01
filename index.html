@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L1 Platform & Container Assessment | Incident Triage & Terminal Simulator</title>
+    <title>L1 Platform & Container Assessment Portal | Enterprise Operations Lab</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -47,50 +47,24 @@
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0B0F17;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1E293B;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
-        }
-        
-        .terminal-glow {
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
-        }
-        .emerald-glow {
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
-        }
-        .amber-glow {
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-        }
         .glass-panel {
             background: rgba(17, 24, 39, 0.85);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.07);
         }
-        
-        .pulse-subtle {
-            animation: pulse-slow 3s infinite ease-in-out;
+        .card-glow-cyan:hover {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
+            border-color: rgba(6, 182, 212, 0.5);
         }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        .card-glow-emerald:hover {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.25);
+            border-color: rgba(16, 185, 129, 0.5);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#070A11] text-slate-200 antialiased selection:bg-cyan-500 selection:text-black">
 
-    <!-- Top Navigation Header -->
+    <!-- Header Navigation -->
     <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -102,494 +76,130 @@
                 <div>
                     <div class="flex items-center space-x-2">
                         <span class="text-lg font-bold bg-gradient-to-r from-slate-100 via-cyan-200 to-emerald-400 bg-clip-text text-transparent">
-                            L1 Platform & Container Assessment
+                            L1 Platform & Container Portal
                         </span>
                         <span class="px-2 py-0.5 text-[10px] font-mono tracking-wider bg-cyan-950/80 text-cyan-400 border border-cyan-800/50 rounded-full font-semibold">
-                            ENTERPRISE LAB (15 SCENARIOS)
+                            ENTERPRISE HUB
                         </span>
                     </div>
-                    <p class="text-xs text-slate-400">NetSec Specialist to Linux CLI, Monitoring & Container Assessor</p>
+                    <p class="text-xs text-slate-400">Pilih Modul Lab & Assessment Interaktif</p>
                 </div>
             </div>
 
-            <!-- Header Right Stats & Controls -->
-            <div class="flex items-center space-x-4">
-                <div class="hidden md:flex items-center space-x-2 bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-300">
-                    <i class="fa-solid fa-clock text-amber-400"></i>
-                    <span>Session: <span id="session-timer" class="text-cyan-400 font-semibold">00:00</span></span>
-                </div>
-                <button onclick="resetAssessment()" class="px-3 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg border border-slate-700/60 transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-rotate-right"></i>
-                    <span>Reset Progress</span>
-                </button>
+            <div class="flex items-center space-x-3 text-xs font-mono text-slate-400">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-semibold">
+                    <span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+                    2 LABS ACTIVE
+                </span>
             </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
 
-        <!-- Executive KPI Dashboard -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <!-- Overall Progress Card -->
-            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-cyan-500">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span class="font-medium tracking-wide uppercase">Overall Completion</span>
-                    <i class="fa-solid fa-list-check text-cyan-400"></i>
-                </div>
-                <div class="flex items-baseline space-x-2 my-1">
-                    <span id="kpi-completion-percent" class="text-2xl font-bold font-mono text-white">0%</span>
-                    <span id="kpi-completion-count" class="text-xs text-slate-400 font-mono">(0/15 Complete)</span>
-                </div>
-                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-2">
-                    <div id="kpi-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
-                </div>
-            </div>
-
-            <!-- Score KPI Card -->
-            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-emerald-500">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span class="font-medium tracking-wide uppercase">Correct Answers</span>
-                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                </div>
-                <div class="flex items-baseline space-x-3 my-1">
-                    <span id="kpi-correct" class="text-2xl font-bold font-mono text-emerald-400">0</span>
-                    <span class="text-xs text-slate-400">Score: <span id="kpi-score-pts" class="text-emerald-300 font-mono font-bold">0 pts</span></span>
-                </div>
-                <div class="text-[11px] text-slate-400">Target accuracy &gt; 80% for L1 readiness</div>
-            </div>
-
-            <!-- Incorrect Answers Card -->
-            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-rose-500">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span class="font-medium tracking-wide uppercase">Incorrect / Retried</span>
-                    <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
-                </div>
-                <div class="flex items-baseline space-x-3 my-1">
-                    <span id="kpi-incorrect" class="text-2xl font-bold font-mono text-rose-400">0</span>
-                    <span class="text-xs text-slate-400">Retry allowed anytime</span>
-                </div>
-                <div class="text-[11px] text-slate-400">Mental analogies build mastery</div>
-            </div>
-
-            <!-- Mastery Tier Badge Card -->
-            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-amber-500">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span class="font-medium tracking-wide uppercase">Mastery Level</span>
-                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
-                </div>
-                <div class="flex items-center space-x-2 my-1">
-                    <span id="kpi-mastery-badge" class="px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                        L1 NOVICE (RECRUIT)
-                    </span>
-                </div>
-                <div class="text-[11px] text-slate-400" id="kpi-mastery-sub">Complete modules to promote to L1 Practitioner</div>
-            </div>
+        <!-- Hero Section -->
+        <div class="text-center space-y-4 max-w-3xl mx-auto">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Portal Assessment Interaktif <span class="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">L1 Platform & Container</span>
+            </h1>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                Pilih modul penilaian interaktif di bawah. Masing-masing lab dirancang khusus tanpa adanya bentrok/konflik progress pengerjaan.
+            </p>
         </div>
 
-        <!-- Module Cluster Filters & Mode Switcher -->
-        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 glass-panel rounded-xl p-3">
-            <!-- Filter Tabs -->
-            <div class="flex flex-wrap items-center gap-1.5" id="module-tabs">
-                <button onclick="filterModule('all')" id="tab-all" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition">
-                    <i class="fa-solid fa-layer-group mr-1.5"></i>All Scenarios (15)
-                </button>
-                <button onclick="filterModule(1)" id="tab-mod1" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
-                    <i class="fa-brands fa-linux mr-1.5 text-amber-400"></i>Linux & NetSec (3)
-                </button>
-                <button onclick="filterModule(2)" id="tab-mod2" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
-                    <i class="fa-solid fa-chart-line mr-1.5 text-cyan-400"></i>Monitoring & Issue Sense (No. 3-8) (8)
-                </button>
-                <button onclick="filterModule(3)" id="tab-mod3" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
-                    <i class="fa-brands fa-docker mr-1.5 text-blue-400"></i>Container & DB (2)
-                </button>
-                <button onclick="filterModule(4)" id="tab-mod4" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
-                    <i class="fa-solid fa-file-signature mr-1.5 text-emerald-400"></i>SOP Escalation (2)
-                </button>
-            </div>
+        <!-- Labs Selection Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
 
-            <!-- View Mode Switcher -->
-            <div class="flex items-center space-x-2 bg-slate-950 p-1 rounded-lg border border-slate-800 shrink-0">
-                <button onclick="switchViewMode('guided')" id="mode-guided" class="px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-cyan-400 shadow-sm transition">
-                    <i class="fa-solid fa-list-check mr-1.5"></i>Guided Assessment
-                </button>
-                <button onclick="switchViewMode('sandbox')" id="mode-sandbox" class="px-3 py-1 rounded text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-terminal mr-1.5"></i>Full Terminal Sandbox
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Workspace (Grid 2 Column Layout) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6" id="workspace-container">
-
-            <!-- LEFT COLUMN: Assessment Question & Interactive Terminal Launcher (7 Cols) -->
-            <div class="lg:col-span-7 space-y-6" id="left-assessment-panel">
-
-                <!-- Question Navigation Bar -->
-                <div class="glass-panel rounded-xl p-3 flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <button onclick="prevQuestion()" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed" id="btn-prev-q">
-                            <i class="fa-solid fa-chevron-left text-xs"></i>
-                        </button>
-                        <span class="text-xs font-mono text-slate-300">
-                            Scenario <span id="current-q-index" class="text-cyan-400 font-bold">1</span> of <span id="total-q-count" class="text-slate-400">15</span>
+            <!-- LAB 1 CARD (Original 10 Questions) -->
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 transition-all duration-300 card-glow-cyan flex flex-col justify-between space-y-6 relative overflow-hidden group">
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-cyan-950 text-cyan-400 border border-cyan-800">
+                            MODUL LAB 1
                         </span>
-                        <button onclick="nextQuestion()" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed" id="btn-next-q">
-                            <i class="fa-solid fa-chevron-right text-xs"></i>
-                        </button>
+                        <span class="text-xs font-mono text-slate-400">10 Scenarios</span>
                     </div>
 
-                    <!-- Quick Indicator Dots -->
-                    <div class="hidden sm:flex items-center space-x-1.5" id="q-dots-container">
-                        <!-- Dots populated via JS -->
-                    </div>
-                </div>
-
-                <!-- Main Active Question Card -->
-                <div class="glass-panel rounded-xl p-6 border border-slate-800/90 shadow-2xl relative overflow-hidden" id="active-q-card">
-
-                    <!-- Question Badge Header -->
-                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                        <div class="flex items-center space-x-2">
-                            <span id="q-module-badge" class="px-2.5 py-1 rounded-md text-[11px] font-bold font-mono bg-cyan-950 text-cyan-400 border border-cyan-800/60">
-                                MODUL 1: LINUX FUNDAMENTAL
-                            </span>
-                            <span id="q-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-800 text-slate-400">
-                                UNANSWERED
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-1 text-xs text-slate-400 font-mono">
-                            <i class="fa-solid fa-tag text-slate-500"></i>
-                            <span id="q-topic-tag">Service Status & Triage</span>
-                        </div>
-                    </div>
-
-                    <!-- Incident Briefing Header Box (Real Enterprise Context) -->
-                    <div class="bg-slate-950/90 rounded-xl p-4 border-l-4 border-amber-500 border-y border-r border-slate-800 mb-5">
-                        <div class="flex items-center space-x-2 text-amber-400 font-mono text-xs font-bold mb-1.5">
-                            <i class="fa-solid fa-triangle-exclamation pulse-subtle"></i>
-                            <span id="q-incident-id">INCIDENT #INC-101 (HIGH SEVERITY)</span>
-                        </div>
-                        <h3 class="text-base font-bold text-white mb-2" id="q-title">
-                            Mobile Banking App returning 502 Bad Gateway
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                            🛡️ L1 Fundamentals & Basic Incident Triage
                         </h3>
-                        <p class="text-xs text-slate-300 leading-relaxed" id="q-description">
-                            Pelanggan melaporkan error HTTP 502 saat membuka aplikasi Banking. Tim Network telah memastikan Firewall tidak memblokir traffic port 80/443. Sebagai L1 Platform Engineer, Anda harus memeriksa status web server Nginx di server RHEL `prod-app-node01`.
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Assessment dasar 10 soal yang menguji pemahaman konsep Linux CLI dasar, Nginx service status, live log tailing, container lifecycle (`docker ps -a`), disk space, dan SOP eskalasi tiket.
                         </p>
                     </div>
 
-                    <!-- NetSec Specialist Analogy Primer -->
-                    <div class="bg-cyan-950/20 rounded-lg p-3 border border-cyan-900/40 mb-6 flex items-start space-x-3">
-                        <div class="mt-0.5 text-cyan-400 shrink-0">
-                            <i class="fa-solid fa-network-wired text-sm"></i>
-                        </div>
-                        <div class="text-xs">
-                            <span class="font-bold text-cyan-300">Network / Firewall Mental Analogy:</span>
-                            <span id="q-netsec-analogy" class="text-slate-300 ml-1">
-                                Sama seperti saat mengecek daemon service status pada Palo Alto/Fortigate via `get system status`, di Linux Anda perlu memeriksa process daemon supervisor (`systemd`).
-                            </span>
-                        </div>
+                    <div class="space-y-2 pt-2">
+                        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Cakupan Topik:</div>
+                        <ul class="text-xs text-slate-300 space-y-1 font-mono">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2 text-[10px]"></i>Nginx HTTP 502 Bad Gateway Triage</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2 text-[10px]"></i>Live Log Tailing (`journalctl -f`)</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2 text-[10px]"></i>Socket Port conflicto (`ss -tulpn`)</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2 text-[10px]"></i>Docker Exited Status (`docker ps -a`)</li>
+                        </ul>
                     </div>
-
-                    <!-- Mode Selectable: Interactive CLI Input vs Options -->
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
-                                <i class="fa-solid fa-code text-cyan-400"></i>
-                                <span>Eksekusi Perintah CLI atau Pilih Jawaban</span>
-                            </label>
-                            <span class="text-[11px] text-slate-400 font-mono">Ketik di terminal atau klik opsi</span>
-                        </div>
-
-                        <!-- Embedded Interactive Mini CLI Terminal Input -->
-                        <div class="bg-slate-950 rounded-xl border border-slate-800 p-3 shadow-inner font-mono text-xs">
-                            <div class="flex items-center space-x-2 text-slate-400 border-b border-slate-800/80 pb-2 mb-2">
-                                <span class="h-2.5 w-2.5 rounded-full bg-rose-500 inline-block"></span>
-                                <span class="h-2.5 w-2.5 rounded-full bg-amber-500 inline-block"></span>
-                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                                <span class="ml-2 text-[10px] text-slate-400">root@prod-app-node01: ~</span>
-                            </div>
-
-                            <form onsubmit="handleCLIFormSubmit(event)" class="flex items-center space-x-2">
-                                <span class="text-emerald-400 font-bold select-none">[root@prod-node01 ~]#</span>
-                                <input type="text" id="cli-input-box" autocomplete="off" placeholder="Ketik perintah CLI di sini (misal: systemctl status payment-api)..." 
-                                    class="flex-1 bg-transparent border-none outline-none text-cyan-300 placeholder-slate-600 focus:ring-0 text-xs font-mono">
-                                <button type="submit" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-sans rounded text-xs transition">
-                                    Run CLI
-                                </button>
-                            </form>
-
-                            <!-- Command Hints / Quick Fill Pills -->
-                            <div class="flex flex-wrap items-center gap-1.5 mt-3 pt-2 border-t border-slate-900" id="q-command-hints">
-                                <span class="text-[10px] text-slate-400 font-sans">Quick fill hint:</span>
-                                <!-- Hint buttons populated dynamically -->
-                            </div>
-                        </div>
-
-                        <!-- Multiple Choice Options List -->
-                        <div class="space-y-2 mt-4" id="q-options-container">
-                            <!-- Populated via JS -->
-                        </div>
-                    </div>
-
-                    <!-- Submit & Action Controls -->
-                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                        <button onclick="showHintModal()" class="text-xs text-amber-400 hover:text-amber-300 flex items-center space-x-1.5">
-                            <i class="fa-solid fa-lightbulb"></i>
-                            <span>Butuh Petunjuk Logika Network?</span>
-                        </button>
-                        
-                        <div class="flex items-center space-x-3">
-                            <button onclick="clearCurrentAnswer()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200">
-                                Clear
-                            </button>
-                            <button onclick="submitCurrentAnswer()" id="btn-submit-answer" class="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition flex items-center space-x-2">
-                                <i class="fa-solid fa-paper-plane"></i>
-                                <span>Submit Answer</span>
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- Comprehensive Feedback & Mental Model Panel (Triggers After Answer) -->
-                <div id="feedback-panel" class="hidden glass-panel rounded-xl p-6 border-l-4 border-cyan-500 space-y-5">
-                    
-                    <!-- Result Status Banner -->
-                    <div id="feedback-status-banner" class="p-3 rounded-lg flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div id="feedback-icon" class="h-8 w-8 rounded-full flex items-center justify-center text-lg"></div>
-                            <div>
-                                <h4 id="feedback-title" class="text-sm font-bold">Jawaban Benar!</h4>
-                                <p id="feedback-subtitle" class="text-xs text-slate-300">Perintah CLI yang Anda jalankan tepat untuk insiden ini.</p>
-                            </div>
-                        </div>
-                        <span id="feedback-points" class="px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-emerald-400">
-                            +100 PTS
-                        </span>
-                    </div>
-
-                    <!-- Visual Mental Model & Firewall Analogy Box -->
-                    <div class="bg-slate-950/80 rounded-xl p-4 border border-cyan-900/50 space-y-3">
-                        <div class="flex items-center space-x-2 text-cyan-400 text-xs font-bold">
-                            <i class="fa-solid fa-brain"></i>
-                            <span class="uppercase tracking-wider">Visual Mental Model & Network Specialist Analogy</span>
-                        </div>
-                        <div class="text-xs text-slate-300 leading-relaxed" id="feedback-analogy-content">
-                            <!-- Filled dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Line-by-Line Terminal Output Breakdown -->
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-200 flex items-center space-x-1.5">
-                                <i class="fa-solid fa-list-ol text-amber-400"></i>
-                                <span>Breakdown Arti Line Output Terminal Linux:</span>
-                            </span>
-                            <span class="text-[10px] text-slate-400 font-mono">RHEL 8 Systemctl/Log Parser</span>
-                        </div>
-
-                        <!-- Rendered Terminal Output Box -->
-                        <div class="bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-300 border border-slate-800 overflow-x-auto shadow-inner" id="feedback-terminal-output">
-                            <!-- Terminal raw output lines rendered here -->
-                        </div>
-
-                        <!-- Explanation Cards for Terminal Lines -->
-                        <div class="space-y-2 mt-3" id="feedback-line-explanations">
-                            <!-- Line by line cards populated via JS -->
-                        </div>
-                    </div>
-
+                <div class="pt-4 border-t border-slate-800/80">
+                    <a href="fundamental-lab.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-cyan-500/20 transition flex items-center justify-center space-x-2">
+                        <span>Buka Assessment Lab 1 (10 Soal)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
                 </div>
-
             </div>
 
-            <!-- RIGHT COLUMN: Interactive Terminal Simulator & Cheat Sheet (5 Cols) -->
-            <div class="lg:col-span-5 space-y-6">
+            <!-- LAB 2 CARD (15 New Real-World Scenarios) -->
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 transition-all duration-300 card-glow-emerald flex flex-col justify-between space-y-6 relative overflow-hidden group">
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
 
-                <!-- Interactive Terminal Simulator Widget (Full Sandbox CLI) -->
-                <div class="glass-panel rounded-xl border border-slate-800 overflow-hidden shadow-2xl terminal-glow flex flex-col h-[520px]">
-                    <!-- Terminal Header Bar -->
-                    <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <span class="h-3 w-3 rounded-full bg-rose-500 inline-block cursor-pointer" onclick="clearTerminalScreen()"></span>
-                            <span class="h-3 w-3 rounded-full bg-amber-500 inline-block"></span>
-                            <span class="h-3 w-3 rounded-full bg-emerald-500 inline-block"></span>
-                            <span class="text-xs font-mono text-slate-300 font-semibold ml-2">
-                                <i class="fa-solid fa-terminal text-cyan-400 mr-1.5"></i>RHEL 8 Interactive CLI Simulator
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2 py-0.5 text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 rounded">
-                                BASH ONLINE
-                            </span>
-                            <button onclick="clearTerminalScreen()" class="text-slate-400 hover:text-white text-xs px-1" title="Clear Screen">
-                                <i class="fa-solid fa-eraser"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Terminal Screen Buffer -->
-                    <div class="flex-1 bg-[#090D16] p-4 font-mono text-xs overflow-y-auto space-y-3" id="sandbox-term-screen">
-                        <div class="text-slate-400">
-                            Red Hat Enterprise Linux Server release 8.8 (Ootpa)<br>
-                            Kernel 4.18.0-425.3.1.el8.x86_64 on an x86_64<br>
-                            Type <span class="text-cyan-400 font-bold">help</span> or test commands like <span class="text-amber-400">systemctl status payment-api</span>, <span class="text-amber-400">top -b</span>, <span class="text-amber-400">df -h</span>, <span class="text-amber-400">dmesg -T | grep oom</span>, <span class="text-amber-400">journalctl -u auth-service -f</span>.
-                        </div>
-                    </div>
-
-                    <!-- Terminal Input Line -->
-                    <div class="bg-slate-950 p-3 border-t border-slate-800 flex items-center space-x-2">
-                        <span class="text-emerald-400 font-mono font-bold text-xs select-none">[root@prod-node01 ~]#</span>
-                        <input type="text" id="sandbox-term-input" onkeydown="handleSandboxTermKeyDown(event)" autocomplete="off" placeholder="Ketik perintah RHEL / Docker di sini..."
-                            class="flex-1 bg-transparent border-none outline-none text-cyan-300 focus:ring-0 font-mono text-xs placeholder-slate-600">
-                        <button onclick="execSandboxCommand()" class="text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 px-2.5 py-1 rounded border border-slate-700">
-                            Exec
-                        </button>
-                    </div>
-                </div>
-
-                <!-- L1 Cheat Sheet & Network Specialist Translation Card -->
-                <div class="glass-panel rounded-xl p-5 border border-slate-800 space-y-3">
+                <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
-                            <i class="fa-solid fa-book-bookmark text-cyan-400"></i>
-                            <span>Monitoring & Issue Sense Cheat Sheet (No. 3-8)</span>
-                        </h4>
-                        <span class="text-[10px] text-slate-400 font-mono">Quick Reference</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800">
+                            MODUL LAB 2 (BARU)
+                        </span>
+                        <span class="text-xs font-mono text-slate-400">15 Scenarios</span>
                     </div>
 
-                    <div class="space-y-2 text-xs font-mono">
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">top -b / ps aux</div>
-                                <div class="text-[11px] font-sans text-slate-400">Item 3: Grafana CPU/RAM Spike Triage</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show proc cpu</span>
-                        </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">
+                            ⚡ Enterprise Monitoring & Issue Sense (No. 3-8)
+                        </h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Lab khusus 15 studi kasus dunia kerja terkini. Menguji kemampuan membaca Prometheus/Grafana, service status (running/degraded/down), warning (80%) vs critical (90%) thresholds, OOM Killer, L7 healthchecks, SSL expired, dan DNS resolution.
+                        </p>
+                    </div>
 
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">systemctl status / is-active</div>
-                                <div class="text-[11px] font-sans text-slate-400">Item 4: Service Running, Degraded, Down</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">get sys status</span>
-                        </div>
-
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">df -h / du -sh</div>
-                                <div class="text-[11px] font-sans text-slate-400">Item 5: Warning (80%) vs Critical (90%) Alert</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show flash status</span>
-                        </div>
-
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">dmesg -T | grep -i oom</div>
-                                <div class="text-[11px] font-sans text-slate-400">Item 6: Anomaly Pattern (Kernel OOM Killer)</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show log kernel</span>
-                        </div>
-
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">journalctl -u &lt;svc&gt; -f</div>
-                                <div class="text-[11px] font-sans text-slate-400">Item 7: Live stream error log tailing</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">debug log tail</span>
-                        </div>
-
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">curl -i http://localhost:8080/healthz</div>
-                                <div class="text-[11px] font-sans text-slate-400">Item 8: Basic Healthcheck L7 Probe</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show monitor probe</span>
-                        </div>
+                    <div class="space-y-2 pt-2">
+                        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Cakupan Topik:</div>
+                        <ul class="text-xs text-slate-300 space-y-1 font-mono">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2 text-[10px]"></i>Prometheus High CPU Metric & `top`</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2 text-[10px]"></i>Service Degraded / Flapping Triage</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2 text-[10px]"></i>Linux Kernel Out-Of-Memory Killer (`dmesg`)</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2 text-[10px]"></i>L7 HTTP Probe & SSL Expiry Check</li>
+                        </ul>
                     </div>
                 </div>
 
-            </div>
-
-        </div>
-
-        <!-- SPECIAL MODAL / COMPONENT: Incident Escalation SOP Builder (Q15) -->
-        <div id="sop-escalation-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="glass-panel max-w-2xl w-full rounded-2xl p-6 border border-slate-700 shadow-2xl space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-file-signature text-amber-400 text-lg"></i>
-                        <h3 class="text-base font-bold text-white">Format Escalation Ticket L1 &gt; L2 (Banking SOP)</h3>
-                    </div>
-                    <button onclick="closeSOPModal()" class="text-slate-400 hover:text-white">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-
-                <div class="space-y-3 text-xs">
-                    <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Ticket Title & Severity:</label>
-                        <input type="text" readonly value="[INC-115] L1 Escalation: Banking Gateway Upstream Connection Refused on Port 8080" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-cyan-300 font-mono">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block font-semibold text-slate-300 mb-1">Impacted Component:</label>
-                            <input type="text" readonly value="Mobile Banking Core API / Nginx Proxy" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-slate-300">
-                        </div>
-                        <div>
-                            <label class="block font-semibold text-slate-300 mb-1">SOP Ticket Priority:</label>
-                            <span class="inline-block px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800 rounded font-bold">P1 - HIGH SEVERITY</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Hasil Triage L1 & Proof (CLI Command Output Attached):</label>
-                        <textarea readonly rows="4" class="w-full bg-slate-950 border border-slate-800 rounded p-2 font-mono text-[11px] text-slate-300">
-[L1 Triage Check - 2026-08-01 14:00]
-1. `systemctl status nginx` -> Active (running)
-2. `journalctl -u nginx` -> [error] 502 connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080
-3. `ss -tulpn | grep 8080` -> No output (Backend Service Port 8080 Down)
-Action Requested L2: Check Java Application Server on port 8080.
-                        </textarea>
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button onclick="confirmSOPEscalation()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded text-xs">
-                        Dispatch SOP Escalation Ticket to L2
-                    </button>
+                <div class="pt-4 border-t border-slate-800/80">
+                    <a href="monitoring-lab.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center justify-center space-x-2">
+                        <span>Buka Assessment Lab 2 (15 Soal Real-World)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
-        </div>
 
-        <!-- HINT MODAL -->
-        <div id="hint-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="glass-panel max-w-md w-full rounded-xl p-5 border border-amber-500/40 shadow-2xl space-y-3">
-                <div class="flex items-center space-x-2 text-amber-400 font-bold text-sm">
-                    <i class="fa-solid fa-lightbulb text-lg"></i>
-                    <span>NetSec Logic Hint</span>
-                </div>
-                <p id="hint-modal-text" class="text-xs text-slate-300 leading-relaxed">
-                    <!-- Hint text populated dynamically -->
-                </p>
-                <div class="flex justify-end pt-2">
-                    <button onclick="closeHintModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 rounded">
-                        Tutup Petunjuk
-                    </button>
-                </div>
-            </div>
         </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-8">
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
             <div>
-                <span class="font-bold text-cyan-400">L1 Platform & Container Triage Assessment</span> &copy; Enterprise Operations Lab
+                <span class="font-bold text-cyan-400">L1 Platform & Container Assessment Hub</span> &copy; Enterprise Operations Lab
             </div>
             <div class="flex items-center space-x-4">
                 <span class="text-slate-400">Targeting RHEL 8 / Container / NetSec Transition</span>
@@ -598,978 +208,5 @@ Action Requested L2: Check Java Application Server on port 8080.
         </div>
     </footer>
 
-    <!-- MAIN JAVASCRIPT ENGINE -->
-    <script>
-        /* ==========================================================================
-           QUESTION BANK (15 REAL-WORLD ENTERPRISE INCIDENT SCENARIOS)
-           ========================================================================== */
-        const questionBank = [
-            {
-                id: 1,
-                module: 1,
-                moduleTitle: "MODUL 1: SERVICE STATUS & TRIAGE",
-                topic: "Item 4: Service Status (Running/Down)",
-                title: "Mobile Banking App melempar error 502 Bad Gateway",
-                incidentId: "INCIDENT #INC-101 (HIGH SEVERITY)",
-                description: "Pelanggan melaporkan error HTTP 502 saat mengakses aplikasi Mobile Banking. Tim Network telah memastikan Firewall tidak memblokir traffic port 80/443. Sebagai L1 Engineer, periksa status service backend API `payment-api` pada server `prod-app-node01`.",
-                netsecAnalogy: "Sama seperti saat mengecek daemon service status pada Palo Alto/Fortigate via `get system status`, di Linux Anda perlu memeriksa process daemon supervisor (`systemd`).",
-                hintText: "Perintah `systemctl status <nama-service>` digunakan untuk melihat apakah daemon service aktif (running) atau mati (dead/failed).",
-                validCommands: ["systemctl status payment-api", "systemctl status payment-api.service", "sudo systemctl status payment-api"],
-                options: [
-                    { id: 'A', text: 'systemctl status payment-api', correct: true },
-                    { id: 'B', text: 'service status payment-api.log', correct: false },
-                    { id: 'C', text: 'ping 127.0.0.1:8080', correct: false },
-                    { id: 'D', text: 'netstat -kill payment-api', correct: false }
-                ],
-                terminalOutputLines: [
-                    "● payment-api.service - Banking Payment API Microservice",
-                    "   Loaded: loaded (/usr/lib/systemd/system/payment-api.service; enabled; vendor preset: disabled)",
-                    "   Active: inactive (dead) since Sat 2026-08-01 13:00:10 WIB; 15min ago",
-                    "  Process: 4210 ExecStart=/usr/bin/java -jar /opt/apps/payment-api.jar (code=exited, status=1/FAILURE)",
-                    " Main PID: 4210 (code=exited, status=1/FAILURE)"
-                ],
-                lineExplanations: [
-                    { line: "Active: inactive (dead)", text: "🔴 MENANDAKAN SERVICE DOWN! Process `payment-api` telah mati. Inilah penyebab utama 502 Bad Gateway (Port backend 8080 mati)." },
-                    { line: "code=exited, status=1/FAILURE", text: "⚠️ Process Java crash dengan exit code 1." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Mirip dengan status <code class="text-amber-300">Status: Down / Inactive</code> pada BGP Session atau IPSec Tunnel interface di Cisco/Fortigate.</p>
-                    <p><strong>Kenapa <code class="text-cyan-300">systemctl status payment-api</code> Benar?</strong> Command ini memberikan gambaran langsung status supervisor process Linux (<code class="text-cyan-300">systemd</code>).</p>
-                `
-            },
-            {
-                id: 2,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 3: Grafana & Prometheus Metrics",
-                title: "Prometheus Metric Alert: CPU Utilization > 95% on prod-node02",
-                incidentId: "INCIDENT #INC-102 (CRITICAL)",
-                description: "Alert Grafana/Prometheus menyala (*NodeCPUHighUtilization*). Node `prod-node02` mengalami kelebihan beban CPU hingga 98%. Periksa proses mana yang memakan resource CPU terbesar.",
-                netsecAnalogy: "Mirip seperti mengecek CPU Control Plane / Data Plane pada Router Cisco/Juniper saat terjadi routing loop (`show processes cpu`).",
-                hintText: "Perintah `top -b -n 1` atau `ps aux --sort=-%cpu` akan menampilkan urutan process penyerap CPU tertinggi.",
-                validCommands: ["top", "top -b -n 1", "ps aux --sort=-%cpu", "ps aux"],
-                options: [
-                    { id: 'A', text: 'top -b -n 1', correct: true },
-                    { id: 'B', text: 'df -h /proc/cpu', correct: false },
-                    { id: 'C', text: 'ping localhost -c 95', correct: false },
-                    { id: 'D', text: 'cat /etc/cpuinfo', correct: false }
-                ],
-                terminalOutputLines: [
-                    "%Cpu(s): 98.2 us,  1.2 sy,  0.0 ni,  0.4 id,  0.0 wa,  0.0 hi,  0.2 si",
-                    "  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND",
-                    " 8912 appuser   20   0 4892104 1.2g  45120 R  96.5  15.2   42:15.10 java (crypto-miner-leak)",
-                    " 1204 root      20   0  224104   8450   3200 S   0.7   0.1    1:02.11 systemd"
-                ],
-                lineExplanations: [
-                    { line: "%Cpu(s): 98.2 us", text: "🔴 98.2% CPU dihabiskan di User Space (aplikasi memakan CPU habis)." },
-                    { line: "PID 8912 %CPU 96.5", text: "⚡ Process PID 8912 (`java`) mengambil 96.5% seluruh kapasitas CPU server." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Network:</strong> <code class="text-cyan-300">top</code> adalah padanan dari <code class="text-amber-300">show processes cpu</code> di router Cisco.</p>
-                `
-            },
-            {
-                id: 3,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 4: Service Status (Degraded)",
-                title: "Authentication Service Status Flapping / Degraded",
-                incidentId: "INCIDENT #INC-103 (MEDIUM SEVERITY)",
-                description: "Monitoring tool melaporkan status `auth-service` dalam keadaan `degraded` (response time lambat & intermittent error). Sebagai L1, periksa status keaktifan service ini di systemd.",
-                netsecAnalogy: "Mirip dengan status IPsec Tunnel atau BGP Neighbor yang `Active (Degraded/Flapping)` ketika ada packet loss.",
-                hintText: "Gunakan `systemctl status auth-service` atau `systemctl is-active auth-service` untuk mengecek kondisi persis daemon.",
-                validCommands: ["systemctl status auth-service", "systemctl is-active auth-service"],
-                options: [
-                    { id: 'A', text: 'systemctl status auth-service', correct: true },
-                    { id: 'B', text: 'traceroute auth-service', correct: false },
-                    { id: 'C', text: 'ip addr show auth', correct: false },
-                    { id: 'D', text: 'netstat -r', correct: false }
-                ],
-                terminalOutputLines: [
-                    "● auth-service.service - User Authentication Service",
-                    "   Loaded: loaded (/etc/systemd/system/auth-service.service; enabled)",
-                    "   Active: active (running) (degraded) since Sat 2026-08-01 12:30:00 WIB",
-                    "   Status: \"Warning: Database Connection Pool 95% Exhausted - Retrying...\""
-                ],
-                lineExplanations: [
-                    { line: "Active: active (running) (degraded)", text: "⚠️ Daemon menyala tetapi kinerjanya terdegradasi karena Resource DB Connection Pool 95% habis." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Status <code class="text-amber-300">degraded</code> menandakan service tidak mati total (dead), tapi tidak berfungsi optimal.</p>
-                `
-            },
-            {
-                id: 4,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 5: Threshold Alert (Warning vs Critical)",
-                title: "Disk Space Usage 88% on Partition /var/log (Threshold Alert)",
-                incidentId: "INCIDENT #INC-104 (WARNING)",
-                description: "Alert Monitoring menyala: Partition `/var/log` mencapai 88% (Threshold Warning: 80%, Critical: 90%). Sebagai L1, periksa sisa disk space dan temukan direktori/file log terbesar sebelum mencapai 100% (Critical).",
-                netsecAnalogy: "Sama seperti mengecek log storage pada Palo Alto Firewall / FortiAnalyzer saat disk log terisi 90%.",
-                hintText: "Gunakan `df -h /var/log` untuk mengecek persentase mount point, diikuti `du -sh /var/log/*` untuk mengecek ukuran file log.",
-                validCommands: ["df -h /var/log", "df -h", "du -sh /var/log/*", "du -sh /var/log"],
-                options: [
-                    { id: 'A', text: 'df -h /var/log', correct: true },
-                    { id: 'B', text: 'free -m', correct: false },
-                    { id: 'C', text: 'fdisk -l /var/log', correct: false },
-                    { id: 'D', text: 'format /var/log', correct: false }
-                ],
-                terminalOutputLines: [
-                    "Filesystem      Size  Used Avail Use% Mounted on",
-                    "/dev/sda3        50G   44G  6.0G  88% /var/log",
-                    "--- Top Log Files ---",
-                    "38G    /var/log/nginx/access.log (Unrotated heavy log)"
-                ],
-                lineExplanations: [
-                    { line: "Use% 88%", text: "⚠️ Penggunaan disk di status WARNING (88%), sisa 6.0GB." },
-                    { line: "38G access.log", text: "🔍 File `access.log` membengkak karena log rotation belum berjalan." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Storage:</strong> <code class="text-cyan-300">df -h</code> memberikan analisis persentase terpakai per mount point.</p>
-                `
-            },
-            {
-                id: 5,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 6: Anomaly Pattern (OOM Killer)",
-                title: "Process Mysteriously Dies (Linux Kernel Out-Of-Memory Killer)",
-                incidentId: "INCIDENT #INC-105 (HIGH SEVERITY)",
-                description: "Aplikasi e-Commerce tiba-tiba mati tanpa ada log error di file aplikasi. Diduga terjadi Memory Leak yang memicu Linux Kernel OOM Killer. Periksa dmesg / kernel log.",
-                netsecAnalogy: "Mirip seperti fitur Kernel Memory Protection pada Appliance Network yang secara paksa membunuh daemon penampung buffer paket saat RAM habis.",
-                hintText: "Perintah `dmesg -T | grep -i oom` atau `journalctl -k | grep -i oom` digunakan untuk melihat event kernel OOM Killer.",
-                validCommands: ["dmesg -T | grep -i oom", "dmesg | grep oom", "journalctl -k | grep -i oom", "dmesg -T"],
-                options: [
-                    { id: 'A', text: 'dmesg -T | grep -i oom', correct: true },
-                    { id: 'B', text: 'cat /etc/hosts', correct: false },
-                    { id: 'C', text: 'ifconfig eth0 down', correct: false },
-                    { id: 'D', text: 'uptime', correct: false }
-                ],
-                terminalOutputLines: [
-                    "[Sat Aug  1 13:10:45 2026] Out of memory: Kill process 10921 (java) score 850 or sacrifice child",
-                    "[Sat Aug  1 13:10:45 2026] Killed process 10921 (java) total-vm:8210940kB, anon-rss:3940120kB",
-                    "[Sat Aug  1 13:10:45 2026] oom_reaper: reaped process 10921 (java), now anon-rss:0kB"
-                ],
-                lineExplanations: [
-                    { line: "Out of memory: Kill process 10921 (java)", text: "🔴 Linux Kernel secara otomatis membunuh proses Java karena penggunaan RAM mencapai 100%." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Linux Kernel:</strong> Saat RAM habis total, kernel tidak melempar error di log app, melainkan langsung membunuh proses via <code class="text-rose-400">OOM Killer</code>.</p>
-                `
-            },
-            {
-                id: 6,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 7: Live Log Tailing",
-                title: "Real-Time Intermittent Auth Failure Log Tailing",
-                incidentId: "INCIDENT #INC-106 (MEDIUM SEVERITY)",
-                description: "Pengguna melaporkan sesekali gagal login. L1 ditugaskan melakukan *live log tailing* pada service `auth-service` untuk menangkap error yang muncul saat ini.",
-                netsecAnalogy: "Sama seperti menjalankan `debug log tail` atau `tail -f /var/log/syslog` pada router/firewall CLI untuk memantau traffic real-time.",
-                hintText: "Gunakan `journalctl -u auth-service -f` atau `journalctl -u auth-service -f -n 50` untuk streaming log secara live.",
-                validCommands: ["journalctl -u auth-service -f", "journalctl -u auth-service -f -n 50", "tail -f /var/log/messages"],
-                options: [
-                    { id: 'A', text: 'journalctl -u auth-service -f', correct: true },
-                    { id: 'B', text: 'cat /etc/sysconfig/auth', correct: false },
-                    { id: 'C', text: 'ls /var/log/auth', correct: false },
-                    { id: 'D', text: 'reboot', correct: false }
-                ],
-                terminalOutputLines: [
-                    "-- Journal begins at Sat 2026-08-01 00:00:00 WIB. --",
-                    "Aug 01 13:20:01 prod-node01 auth-service[5120]: INFO  [UserLogin] User 9921 authenticated successfully",
-                    "Aug 01 13:20:04 prod-node01 auth-service[5120]: ERROR [RedisConnect] Timeout connecting to Redis cache 10.0.2.15:6379",
-                    "Aug 01 13:20:05 prod-node01 auth-service[5120]: WARN  [UserLogin] Falling back to DB Auth due to Redis timeout"
-                ],
-                lineExplanations: [
-                    { line: "journalctl -u auth-service -f", text: "⚡ Flag `-f` (follow) melakukan live tailing stream log yang baru masuk." },
-                    { line: "ERROR [RedisConnect] Timeout", text: "🔍 ROOT CAUSE: Terlihat error koneksi Redis cache menjadi akar masalah kelambatan auth." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Realtime Debugging:</strong> Flag <code class="text-cyan-300">-f</code> menempel pada stream output log real-time.</p>
-                `
-            },
-            {
-                id: 7,
-                module: 3,
-                moduleTitle: "MODUL 3: CONTAINER & VIRTUALIZATION",
-                topic: "Item 7 & 8: Container Health",
-                title: "Container Microservice CrashLoopBackOff",
-                incidentId: "INCIDENT #INC-107 (HIGH SEVERITY)",
-                description: "Container Docker `order-processor` di server produksi mengalami restart berulang (CrashLoopBackOff). Sebagai L1, jalankan perintah untuk mengecek log internal container tersebut.",
-                netsecAnalogy: "Mirip seperti VDOM / Virtual System di Firewall yang terus-menerus reboot akibat kesalahan konfigurasi bootstrap.",
-                hintText: "Perintah `docker logs --tail 50 order-processor` atau `docker logs -f order-processor` digunakan untuk melihat log di dalam container.",
-                validCommands: ["docker logs --tail 50 order-processor", "docker logs order-processor", "docker logs -f order-processor"],
-                options: [
-                    { id: 'A', text: 'docker logs --tail 50 order-processor', correct: true },
-                    { id: 'B', text: 'systemctl status docker-logs', correct: false },
-                    { id: 'C', text: 'docker stop --all', correct: false },
-                    { id: 'D', text: 'ping docker-host', correct: false }
-                ],
-                terminalOutputLines: [
-                    "2026-08-01T13:25:00.102Z [main] INFO  com.app.OrderApp - Starting Order Processor v2.1...",
-                    "2026-08-01T13:25:01.442Z [main] ERROR com.app.OrderApp - Caused by: java.net.UnknownHostException: db-cluster.prod.internal",
-                    "2026-08-01T13:25:01.445Z [main] FATAL com.app.OrderApp - Shutting down container due to missing DB host DNS entry!"
-                ],
-                lineExplanations: [
-                    { line: "UnknownHostException: db-cluster.prod.internal", text: "🔴 Container crash karena hostname database internal tidak dapat di-resolve (DNS resolution failure)." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Container:</strong> Perintah <code class="text-cyan-300">docker logs</code> mengambil stdout/stderr langsung dari dalam container.</p>
-                `
-            },
-            {
-                id: 8,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 8: Basic Health Checks",
-                title: "Load Balancer Marks App Node UNHEALTHY (L7 Healthcheck)",
-                incidentId: "INCIDENT #INC-108 (MEDIUM SEVERITY)",
-                description: "F5 BIG-IP / HAProxy Load Balancer memutus traffic ke server `prod-node01` karena HTTP Healthcheck ganti status dari 200 OK menjadi 500 Server Error. Uji endpoint `/healthz` menggunakan CLI `curl`.",
-                netsecAnalogy: "Sama seperti HTTP Monitor Probe pada F5 / FortiADC yang melakukan GET /healthz secara berkala.",
-                hintText: "Gunakan `curl -i http://localhost:8080/healthz` untuk melihat HTTP Response Header dan Status Code.",
-                validCommands: ["curl -i http://localhost:8080/healthz", "curl -I http://localhost:8080/healthz", "curl http://localhost:8080/healthz"],
-                options: [
-                    { id: 'A', text: 'curl -i http://localhost:8080/healthz', correct: true },
-                    { id: 'B', text: 'telnet localhost 8080 -close', correct: false },
-                    { id: 'C', text: 'systemctl healthcheck', correct: false },
-                    { id: 'D', text: 'reboot -f', correct: false }
-                ],
-                terminalOutputLines: [
-                    "HTTP/1.1 500 Internal Server Error",
-                    "Content-Type: application/json",
-                    "Date: Sat, 01 Aug 2026 13:30:00 GMT",
-                    "{\"status\":\"DOWN\",\"components\":{\"db\":{\"status\":\"UP\"},\"diskSpace\":{\"status\":\"UP\"},\"rabbitmq\":{\"status\":\"DOWN\",\"details\":\"Connection refused\"}}}"
-                ],
-                lineExplanations: [
-                    { line: "HTTP/1.1 500 Internal Server Error", text: "🔴 Healthcheck endpoint membalas 500 karena komponen RabbitMQ DOWN." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia L7 Probe:</strong> <code class="text-cyan-300">curl -i</code> menampilkan response header HTTP 500 beserta JSON payload error-nya.</p>
-                `
-            },
-            {
-                id: 9,
-                module: 1,
-                moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & NETWORKING",
-                topic: "Item 2: Basic Networking",
-                title: "Web Application Port 443 Not Listening",
-                incidentId: "INCIDENT #INC-109 (HIGH SEVERITY)",
-                description: "Client mengalami connection timeout saat membuka `https://app.enterprise.com`. Tim Network memastikan Firewall OK. Periksa apakah ada socket listener yang membuka port 443 di server Linux ini.",
-                netsecAnalogy: "Sama seperti mengecek `show ip sockets` atau `netstat -an` pada Router/Firewall CLI untuk memastikan port HTTPS 443 open listening.",
-                hintText: "Gunakan `ss -tulpn | grep 443` atau `netstat -tulpn | grep 443` untuk memeriksa port socket listener.",
-                validCommands: ["ss -tulpn | grep 443", "ss -tulpn", "netstat -tulpn | grep 443", "netstat -tulpn"],
-                options: [
-                    { id: 'A', text: 'ss -tulpn | grep 443', correct: true },
-                    { id: 'B', text: 'ping 443', correct: false },
-                    { id: 'C', text: 'traceroute -p 443', correct: false },
-                    { id: 'D', text: 'ifconfig 443', correct: false }
-                ],
-                terminalOutputLines: [
-                    "Netid  State   Recv-Q  Send-Q   Local Address:Port   Peer Address:Port  Process",
-                    "tcp    LISTEN  0       128            0.0.0.0:80          0.0.0.0:*      users:((\"nginx\",pid=1209,fd=6))",
-                    "(No output for port 443 socket listener!)"
-                ],
-                lineExplanations: [
-                    { line: "No output for port 443", text: "🔴 Process Nginx hanya mendengarkan di port 80 (HTTP). Port 443 (HTTPS) belum di-listen di Nginx config." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Socket:</strong> Perintah <code class="text-cyan-300">ss -tulpn</code> mengecek daftar TCP/UDP listener socket di Linux Kernel.</p>
-                `
-            },
-            {
-                id: 10,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 6: Anomaly Pattern (Spike Traffic)",
-                title: "Flash Sale Traffic Spike & Socket Exhaustion",
-                incidentId: "INCIDENT #INC-110 (HIGH SEVERITY)",
-                description: "Aplikasi e-Commerce diserbu pengguna saat Flash Sale. Server mulai menghasilkan error 504 Gateway Timeout. Cek statistik socket jaringan server.",
-                netsecAnalogy: "Mirip seperti mengecek Session Table Count / Max Concurrent Sessions pada Firewall Palo Alto / Fortigate saat diserbu spike traffic.",
-                hintText: "Perintah `ss -s` atau `netstat -an | grep ESTABLISHED | wc -l` digunakan untuk melihat ringkasan jumlah socket terhubung.",
-                validCommands: ["ss -s", "netstat -an | grep ESTABLISHED | wc -l", "ss -an"],
-                options: [
-                    { id: 'A', text: 'ss -s', correct: true },
-                    { id: 'B', text: 'rm /var/log/traffic.log', correct: false },
-                    { id: 'C', text: 'systemctl stop network', correct: false },
-                    { id: 'D', text: 'cat /proc/cpu', correct: false }
-                ],
-                terminalOutputLines: [
-                    "Total: 32410 (kernel 35100)",
-                    "TCP:   29800 (estab 28500, closed 500, orphaned 150, timewait 650)",
-                    "Transport Total     IP        IPv6",
-                    "RAW       1         1         0",
-                    "UDP       12        8         4",
-                    "TCP       29800     28500     1300"
-                ],
-                lineExplanations: [
-                    { line: "TCP estab 28500", text: "🔴 Terdapat 28.500 koneksi TCP aktif simultan, mendekati batas maksimal backlog kernel TCP." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Connection Table:</strong> <code class="text-cyan-300">ss -s</code> merangkum total socket TCP ESTABLISHED secara instan.</p>
-                `
-            },
-            {
-                id: 11,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 46: Security & SSL",
-                title: "HTTPS Web Portal SSL Certificate Expired",
-                incidentId: "INCIDENT #INC-111 (CRITICAL)",
-                description: "Semua pengguna mendapatkan peringatan merah `NET::ERR_CERT_DATE_INVALID` saat membuka web portal. L1 harus mengecek tanggal masa berlaku file sertifikat SSL `app.crt`.",
-                netsecAnalogy: "Sama seperti mengecek Certificate Validity Period pada SSL VPN Gateway atau GlobalProtect portal.",
-                hintText: "Perintah `openssl x509 -in /etc/ssl/certs/app.crt -noout -dates` memeriksa tanggal notBefore dan notAfter sertifikat.",
-                validCommands: ["openssl x509 -in /etc/ssl/certs/app.crt -noout -dates", "openssl x509 -in app.crt -noout -dates", "openssl x509 -noout -dates"],
-                options: [
-                    { id: 'A', text: 'openssl x509 -in /etc/ssl/certs/app.crt -noout -dates', correct: true },
-                    { id: 'B', text: 'cat /etc/ssl/certs/app.crt', correct: false },
-                    { id: 'C', text: 'ping ssl.cert.com', correct: false },
-                    { id: 'D', text: 'certutil -delete app.crt', correct: false }
-                ],
-                terminalOutputLines: [
-                    "notBefore=Jul 31 00:00:00 2025 GMT",
-                    "notAfter=Jul 31 23:59:59 2026 GMT",
-                    "[EXPIRED: Certificate expired 1 day ago!]"
-                ],
-                lineExplanations: [
-                    { line: "notAfter=Jul 31 23:59:59 2026 GMT", text: "🔴 Sertifikat SSL telah kedaluwarsa kemarin, menyebabkan browser memblokir akses pengguna." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia SSL Certificate:</strong> Perintah <code class="text-cyan-300">openssl x509 -noout -dates</code> membaca metadata tanggal rilis dan expire cert.</p>
-                `
-            },
-            {
-                id: 12,
-                module: 1,
-                moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & NETWORKING",
-                topic: "Item 2: Basic Networking",
-                title: "Internal Microservice DNS Resolution Timeout",
-                incidentId: "INCIDENT #INC-112 (MEDIUM SEVERITY)",
-                description: "App Server gagal terhubung ke Database Hostname `db.internal.net`. L1 perlu menguji resolver DNS internal menggunakan CLI `dig` atau `nslookup`.",
-                netsecAnalogy: "Mirip seperti menguji DNS Lookup (`exec ping` / `dns resolve`) pada CLI Switch/Firewall.",
-                hintText: "Gunakan `dig +short db.internal.net` atau `nslookup db.internal.net` untuk memeriksa respon DNS resolver.",
-                validCommands: ["dig +short db.internal.net", "dig db.internal.net", "nslookup db.internal.net"],
-                options: [
-                    { id: 'A', text: 'dig +short db.internal.net', correct: true },
-                    { id: 'B', text: 'cat /etc/resolv.conf.log', correct: false },
-                    { id: 'C', text: 'route add db.internal.net', correct: false },
-                    { id: 'D', text: 'ip link set db down', correct: false }
-                ],
-                terminalOutputLines: [
-                    ";; connection timed out; no servers could be reached",
-                    ";; SERVER: 10.0.0.2#53(10.0.0.2) (UDP timed out)"
-                ],
-                lineExplanations: [
-                    { line: "connection timed out", text: "🔴 DNS Server Internal `10.0.0.2:53` tidak memberikan respon UDP." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia DNS Triage:</strong> Perintah <code class="text-cyan-300">dig</code> menguji query DNS port 53 secara spesifik.</p>
-                `
-            },
-            {
-                id: 13,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 6: Anomaly Pattern",
-                title: "Nginx Error: socket() failed (24: Too many open files)",
-                incidentId: "INCIDENT #INC-113 (HIGH SEVERITY)",
-                description: "Nginx mengalami crash saat traffic tinggi dengan error log `Too many open files`. L1 ditugaskan mengecek batas maksimal File Descriptor sistem Linux.",
-                netsecAnalogy: "Sama seperti batas Maximum Socket Connections / Session Handles pada Network Operating System.",
-                hintText: "Perintah `ulimit -n` atau `cat /proc/sys/fs/file-nr` digunakan untuk mengecek soft/hard limit file open handles.",
-                validCommands: ["ulimit -n", "cat /proc/sys/fs/file-nr", "ulimit -a"],
-                options: [
-                    { id: 'A', text: 'ulimit -n', correct: true },
-                    { id: 'B', text: 'rm -rf /proc/sys', correct: false },
-                    { id: 'C', text: 'fdisk /dev/sda', correct: false },
-                    { id: 'D', text: 'ping -s 1024 localhost', correct: false }
-                ],
-                terminalOutputLines: [
-                    "1024",
-                    "(System soft limit is set to 1024 open files per process!)"
-                ],
-                lineExplanations: [
-                    { line: "1024", text: "🔴 Limit default 1024 file handles terlalu kecil untuk Nginx reverse proxy yang melayani ribuan koneksi simultan." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Linux Limits:</strong> <code class="text-cyan-300">ulimit -n</code> menampilkan jumlah maksimum file handle / socket yang boleh dibuka oleh 1 process.</p>
-                `
-            },
-            {
-                id: 14,
-                module: 2,
-                moduleTitle: "MODUL 2: MONITORING & ISSUE SENSE",
-                topic: "Item 41: MySQL Database",
-                title: "Database Connection Refused on Port 3306",
-                incidentId: "INCIDENT #INC-114 (HIGH SEVERITY)",
-                description: "Aplikasi web memuntahkan error `SQLSTATE[HY000] [2002] Connection refused`. L1 ditugaskan memverifikasi status daemon MySQL Database Server.",
-                netsecAnalogy: "Mirip seperti memverifikasi status listener daemon Database / Syslog Server pada server terpisah.",
-                hintText: "Gunakan `systemctl status mysqld` atau `mysqladmin -u root -p ping` untuk mengecek ketersediaan database server.",
-                validCommands: ["systemctl status mysqld", "systemctl status mysql", "mysqladmin ping"],
-                options: [
-                    { id: 'A', text: 'systemctl status mysqld', correct: true },
-                    { id: 'B', text: 'cat /var/lib/mysql', correct: false },
-                    { id: 'C', text: 'drop database mysql', correct: false },
-                    { id: 'D', text: 'ip route add 3306', correct: false }
-                ],
-                terminalOutputLines: [
-                    "● mysqld.service - MySQL Server",
-                    "   Loaded: loaded (/usr/lib/systemd/system/mysqld.service; enabled)",
-                    "   Active: inactive (dead) since Sat 2026-08-01 13:05:12 WIB",
-                    "  Process: 6120 ExecStart=/usr/sbin/mysqld (code=exited, status=1/FAILURE)"
-                ],
-                lineExplanations: [
-                    { line: "Active: inactive (dead)", text: "🔴 Server database MySQL mati (failed), sehingga koneksi port 3306 ditolak." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Database Triage:</strong> Cek dulu apakah daemon DB <code class="text-cyan-300">mysqld</code> hidup sebelum menyalahkan network firewall!</p>
-                `
-            },
-            {
-                id: 15,
-                module: 4,
-                moduleTitle: "MODUL 4: SOP ESCALATION",
-                topic: "Item 10-14: SOP & Escalation",
-                title: "P1 Major Incident SOP Escalation Dispatch to L2 SRE",
-                incidentId: "INCIDENT #INC-115 (P1 CRITICAL)",
-                description: "Setelah melakukan triage dasar L1 (Nginx OK, DB Connection Pool Full pada Java Backend), masalah ini membutuhkan penanganan mendalam tingkat L2. Susun tiket eskalasi SOP resmi dan dispatch ke L2 SRE.",
-                netsecAnalogy: "Mirip seperti menyusun Handoff Incident Ticket dari L1 NOC ke Tier-2/Tier-3 Network Engineering.",
-                hintText: "Klik opsi B untuk membuka Interactive SOP Escalation Ticket Modal.",
-                validCommands: ["sop ticket", "dispatch ticket", "escalate to l2"],
-                isSOPScenario: true,
-                options: [
-                    { id: 'A', text: 'Kirim pesan WA tanpa bukti output terminal', correct: false },
-                    { id: 'B', text: 'Buka Interactive Ticket Escalation (SOP Form dengan bukti CLI)', correct: true },
-                    { id: 'C', text: 'Reboot server fisik secara mendadak tanpa koordinasi', correct: false },
-                    { id: 'D', text: 'Tutup ticket dengan status Solved', correct: false }
-                ],
-                terminalOutputLines: [
-                    "[SOP TICKET DISPATCHED]",
-                    "Ticket ID: INC-115-L2-SRE",
-                    "Severity: P1 CRITICAL",
-                    "Assigned Group: L2 SRE & Backend Operations",
-                    "Diagnostic Evidence: Attached (Nginx Access Log & Systemctl Dump)"
-                ],
-                lineExplanations: [
-                    { line: "Ticket ID: INC-115-L2-SRE", text: "✅ Tiket eskalasi L1 resmi telah disebarkan ke tim L2 sesuai SOP Enterprise tanpa deviasi." }
-                ],
-                analogyExplanation: `
-                    <p class="mb-2"><strong>Dunia Banking SOP:</strong> Selalu lengkapi tiket eskalasi dengan <strong>Evidence, Command Log, & Screenshot</strong>.</p>
-                `
-            }
-        ];
-
-        /* ==========================================================================
-           APPLICATION STATE & VARIABLES
-           ========================================================================== */
-        let currentQuestionIndex = 0;
-        let activeFilteredQuestions = [...questionBank];
-        let userAnswers = {}; // { questionId: { selectedOption, typedCommand, isCorrect, score } }
-        let sessionSeconds = 0;
-        let timerInterval = null;
-        let currentViewMode = 'guided'; // 'guided' | 'sandbox'
-        let currentlySelectedOption = null;
-
-        /* ==========================================================================
-           INITIALIZATION & LIFECYCLE
-           ========================================================================== */
-        document.addEventListener('DOMContentLoaded', () => {
-            startSessionTimer();
-            renderQuestionDots();
-            loadQuestion(0);
-            updateKPICards();
-        });
-
-        function startSessionTimer() {
-            timerInterval = setInterval(() => {
-                sessionSeconds++;
-                const mins = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
-                const secs = (sessionSeconds % 60).toString().padStart(2, '0');
-                document.getElementById('session-timer').textContent = `${mins}:${secs}`;
-            }, 1000);
-        }
-
-        /* ==========================================================================
-           QUESTION NAVIGATION & RENDERING ENGINE
-           ========================================================================== */
-        function loadQuestion(index) {
-            if (index < 0 || index >= activeFilteredQuestions.length) return;
-            currentQuestionIndex = index;
-            currentlySelectedOption = null;
-
-            const q = activeFilteredQuestions[index];
-
-            // Update Header & Index text
-            document.getElementById('current-q-index').textContent = index + 1;
-            document.getElementById('total-q-count').textContent = activeFilteredQuestions.length;
-            document.getElementById('q-module-badge').textContent = q.moduleTitle;
-            document.getElementById('q-topic-tag').textContent = q.topic;
-            document.getElementById('q-incident-id').textContent = q.incidentId;
-            document.getElementById('q-title').textContent = q.title;
-            document.getElementById('q-description').textContent = q.description;
-            document.getElementById('q-netsec-analogy').textContent = q.netsecAnalogy;
-
-            // Nav buttons disabled status
-            document.getElementById('btn-prev-q').disabled = (index === 0);
-            document.getElementById('btn-next-q').disabled = (index === activeFilteredQuestions.length - 1);
-
-            // Command Box reset & hints populate
-            const cliInput = document.getElementById('cli-input-box');
-            cliInput.value = '';
-            
-            const hintsContainer = document.getElementById('q-command-hints');
-            hintsContainer.innerHTML = `<span class="text-[10px] text-slate-400 font-sans">Quick fill hint:</span>`;
-            q.validCommands.forEach(cmd => {
-                const hintBtn = document.createElement('button');
-                hintBtn.className = "px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded text-[11px] text-cyan-300 font-mono transition";
-                hintBtn.textContent = cmd;
-                hintBtn.onclick = (e) => {
-                    e.preventDefault();
-                    cliInput.value = cmd;
-                };
-                hintsContainer.appendChild(hintBtn);
-            });
-
-            // Render Options
-            const optionsContainer = document.getElementById('q-options-container');
-            optionsContainer.innerHTML = '';
-            q.options.forEach(opt => {
-                const optEl = document.createElement('div');
-                optEl.className = `q-opt-item p-3 rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-900 hover:border-slate-700 cursor-pointer transition flex items-center justify-between text-xs font-mono`;
-                optEl.id = `opt-card-${opt.id}`;
-                optEl.onclick = () => selectOption(opt.id);
-                optEl.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <span class="opt-badge h-6 w-6 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs shrink-0">${opt.id}</span>
-                        <span class="text-slate-200">${escapeHTML(opt.text)}</span>
-                    </div>
-                    <i class="fa-regular fa-circle text-slate-600 text-sm opt-radio"></i>
-                `;
-                optionsContainer.appendChild(optEl);
-            });
-
-            // Check if already answered
-            const savedAns = userAnswers[q.id];
-            const feedbackPanel = document.getElementById('feedback-panel');
-            const statusBadge = document.getElementById('q-status-badge');
-
-            if (savedAns) {
-                statusBadge.textContent = savedAns.isCorrect ? "SOLVED" : "INCORRECT";
-                statusBadge.className = savedAns.isCorrect 
-                    ? "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800"
-                    : "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-950 text-rose-400 border border-rose-800";
-                
-                if (savedAns.selectedOption) {
-                    highlightOptionSelection(savedAns.selectedOption);
-                }
-                if (savedAns.typedCommand) {
-                    cliInput.value = savedAns.typedCommand;
-                }
-                showFeedback(q, savedAns.isCorrect);
-            } else {
-                statusBadge.textContent = "UNANSWERED";
-                statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-800 text-slate-400";
-                feedbackPanel.classList.add('hidden');
-            }
-
-            updateQuestionDots();
-        }
-
-        function selectOption(optId) {
-            currentlySelectedOption = optId;
-            highlightOptionSelection(optId);
-        }
-
-        function highlightOptionSelection(optId) {
-            document.querySelectorAll('.q-opt-item').forEach(el => {
-                el.classList.remove('border-cyan-500', 'bg-cyan-950/30');
-                const radio = el.querySelector('.opt-radio');
-                if (radio) {
-                    radio.className = "fa-regular fa-circle text-slate-600 text-sm opt-radio";
-                }
-            });
-            const selEl = document.getElementById(`opt-card-${optId}`);
-            if (selEl) {
-                selEl.classList.add('border-cyan-500', 'bg-cyan-950/30');
-                const radio = selEl.querySelector('.opt-radio');
-                if (radio) {
-                    radio.className = "fa-solid fa-circle-check text-cyan-400 text-sm opt-radio";
-                }
-            }
-        }
-
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) loadQuestion(currentQuestionIndex - 1);
-        }
-
-        function nextQuestion() {
-            if (currentQuestionIndex < activeFilteredQuestions.length - 1) loadQuestion(currentQuestionIndex + 1);
-        }
-
-        function filterModule(modId) {
-            document.querySelectorAll('.mod-tab').forEach(b => {
-                b.className = "mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition";
-            });
-
-            if (modId === 'all') {
-                activeFilteredQuestions = [...questionBank];
-                document.getElementById('tab-all').className = "mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition";
-            } else {
-                activeFilteredQuestions = questionBank.filter(q => q.module === modId);
-                const tabEl = document.getElementById(`tab-mod${modId}`);
-                if (tabEl) tabEl.className = "mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition";
-            }
-
-            renderQuestionDots();
-            loadQuestion(0);
-        }
-
-        function renderQuestionDots() {
-            const container = document.getElementById('q-dots-container');
-            container.innerHTML = '';
-            activeFilteredQuestions.forEach((q, idx) => {
-                const dot = document.createElement('button');
-                dot.id = `q-dot-${idx}`;
-                dot.onclick = () => loadQuestion(idx);
-                dot.className = "h-2.5 w-2.5 rounded-full bg-slate-800 hover:bg-slate-700 transition";
-                container.appendChild(dot);
-            });
-            updateQuestionDots();
-        }
-
-        function updateQuestionDots() {
-            activeFilteredQuestions.forEach((q, idx) => {
-                const dot = document.getElementById(`q-dot-${idx}`);
-                if (!dot) return;
-                const ans = userAnswers[q.id];
-                if (idx === currentQuestionIndex) {
-                    dot.className = "h-3 w-3 rounded-full bg-cyan-400 ring-2 ring-cyan-500/50 transition";
-                } else if (ans && ans.isCorrect) {
-                    dot.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 transition";
-                } else if (ans && !ans.isCorrect) {
-                    dot.className = "h-2.5 w-2.5 rounded-full bg-rose-500 transition";
-                } else {
-                    dot.className = "h-2.5 w-2.5 rounded-full bg-slate-800 hover:bg-slate-700 transition";
-                }
-            });
-        }
-
-        /* ==========================================================================
-           ANSWER EVALUATION & FEEDBACK ENGINE
-           ========================================================================== */
-        function handleCLIFormSubmit(e) {
-            e.preventDefault();
-            const typed = document.getElementById('cli-input-box').value.trim();
-            if (!typed) return;
-            submitAnswerInternal(null, typed);
-        }
-
-        function submitCurrentAnswer() {
-            const typed = document.getElementById('cli-input-box').value.trim();
-            if (currentlySelectedOption) {
-                submitAnswerInternal(currentlySelectedOption, typed);
-            } else if (typed) {
-                submitAnswerInternal(null, typed);
-            } else {
-                alert("Pilih salah satu opsi jawaban atau ketik perintah CLI di kolom terminal!");
-            }
-        }
-
-        function submitAnswerInternal(optId, typedCmd) {
-            const q = activeFilteredQuestions[currentQuestionIndex];
-            let isCorrect = false;
-
-            if (q.isSOPScenario && optId === 'B') {
-                openSOPModal();
-                return;
-            }
-
-            if (optId) {
-                const selectedObj = q.options.find(o => o.id === optId);
-                if (selectedObj && selectedObj.correct) isCorrect = true;
-            } else if (typedCmd) {
-                const cleanTyped = typedCmd.toLowerCase().replace(/\s+/g, ' ');
-                isCorrect = q.validCommands.some(valid => cleanTyped === valid.toLowerCase().replace(/\s+/g, ' '));
-            }
-
-            userAnswers[q.id] = {
-                selectedOption: optId,
-                typedCommand: typedCmd,
-                isCorrect: isCorrect,
-                score: isCorrect ? 100 : 0
-            };
-
-            const cmdToExec = typedCmd || (q.options.find(o => o.id === optId)?.text || '');
-            appendSandboxOutput(`[root@prod-node01 ~]# ${cmdToExec}`);
-            appendSandboxOutput(q.terminalOutputLines.join('\n'), 'cyan');
-
-            showFeedback(q, isCorrect);
-            updateKPICards();
-            updateQuestionDots();
-            loadQuestion(currentQuestionIndex);
-        }
-
-        function showFeedback(q, isCorrect) {
-            const panel = document.getElementById('feedback-panel');
-            const banner = document.getElementById('feedback-status-banner');
-            const icon = document.getElementById('feedback-icon');
-            const title = document.getElementById('feedback-title');
-            const subtitle = document.getElementById('feedback-subtitle');
-            const pts = document.getElementById('feedback-points');
-            const analogyContent = document.getElementById('feedback-analogy-content');
-            const termOutput = document.getElementById('feedback-terminal-output');
-            const lineExplanations = document.getElementById('feedback-line-explanations');
-
-            panel.classList.remove('hidden');
-
-            if (isCorrect) {
-                panel.className = "glass-panel rounded-xl p-6 border-l-4 border-emerald-500 space-y-5 shadow-xl emerald-glow";
-                banner.className = "p-3 rounded-lg flex items-center justify-between bg-emerald-950/60 border border-emerald-800/60 text-emerald-300";
-                icon.className = "h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base";
-                icon.innerHTML = `<i class="fa-solid fa-check"></i>`;
-                title.textContent = "Jawaban / CLI Command BENAR!";
-                subtitle.textContent = "Triage yang Anda lakukan tepat sasaran sesuai SOP Banking Enterprise.";
-                pts.textContent = "+100 PTS";
-                pts.className = "px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-emerald-400 border border-emerald-800";
-            } else {
-                panel.className = "glass-panel rounded-xl p-6 border-l-4 border-rose-500 space-y-5 shadow-xl";
-                banner.className = "p-3 rounded-lg flex items-center justify-between bg-rose-950/60 border border-rose-800/60 text-rose-300";
-                icon.className = "h-8 w-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-base";
-                icon.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
-                title.textContent = "Jawaban Kurang Tepat";
-                subtitle.textContent = "Perhatikan analogi network & breakdown baris terminal di bawah untuk perbaikan.";
-                pts.textContent = "0 PTS (Retrying...)";
-                pts.className = "px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-rose-400 border border-rose-800";
-            }
-
-            analogyContent.innerHTML = q.analogyExplanation;
-
-            termOutput.innerHTML = q.terminalOutputLines.map(line => {
-                let colorClass = "text-slate-300";
-                if (line.includes("inactive (dead)") || line.includes("Exited") || line.includes("error") || line.includes("100%") || line.includes("EXPIRED") || line.includes("timed out") || line.includes("refused")) {
-                    colorClass = "text-rose-400 font-semibold";
-                } else if (line.includes("Active: active") || line.includes("Complete!") || line.includes("LISTEN") || line.includes("HTTP/1.1 200")) {
-                    colorClass = "text-emerald-400 font-semibold";
-                }
-                return `<div class="${colorClass}">${escapeHTML(line)}</div>`;
-            }).join('');
-
-            lineExplanations.innerHTML = '';
-            q.lineExplanations.forEach(item => {
-                const expCard = document.createElement('div');
-                expCard.className = "p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs flex items-start space-x-2";
-                expCard.innerHTML = `
-                    <i class="fa-solid fa-terminal text-cyan-400 mt-0.5 shrink-0"></i>
-                    <div>
-                        <span class="font-mono text-amber-300 font-semibold block mb-0.5">${escapeHTML(item.line)}</span>
-                        <span class="text-slate-300 font-sans">${item.text}</span>
-                    </div>
-                `;
-                lineExplanations.appendChild(expCard);
-            });
-        }
-
-        function clearCurrentAnswer() {
-            const q = activeFilteredQuestions[currentQuestionIndex];
-            delete userAnswers[q.id];
-            currentlySelectedOption = null;
-            loadQuestion(currentQuestionIndex);
-            updateKPICards();
-        }
-
-        /* ==========================================================================
-           KPI DASHBOARD & MASTERY LEVEL CALCULATOR
-           ========================================================================== */
-        function updateKPICards() {
-            const answeredKeys = Object.keys(userAnswers);
-            const totalCount = questionBank.length;
-            const completedCount = answeredKeys.length;
-            
-            let correctCount = 0;
-            let incorrectCount = 0;
-
-            answeredKeys.forEach(k => {
-                if (userAnswers[k].isCorrect) correctCount++;
-                else incorrectCount++;
-            });
-
-            const completionPct = Math.round((completedCount / totalCount) * 100);
-            const scorePts = correctCount * 100;
-
-            document.getElementById('kpi-completion-percent').textContent = `${completionPct}%`;
-            document.getElementById('kpi-completion-count').textContent = `(${completedCount}/${totalCount} Complete)`;
-            document.getElementById('kpi-progress-bar').style.width = `${completionPct}%`;
-            
-            document.getElementById('kpi-correct').textContent = correctCount;
-            document.getElementById('kpi-score-pts').textContent = `${scorePts} pts`;
-            document.getElementById('kpi-incorrect').textContent = incorrectCount;
-
-            const badgeEl = document.getElementById('kpi-mastery-badge');
-            const subEl = document.getElementById('kpi-mastery-sub');
-
-            if (correctCount >= 13) {
-                badgeEl.textContent = "L1 COMMAND MASTER 🏆";
-                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 emerald-glow";
-                subEl.textContent = "Ready for Enterprise Incident Triage On-Call!";
-            } else if (correctCount >= 9) {
-                badgeEl.textContent = "L1 PRACTITIONER ⚡";
-                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/50";
-                subEl.textContent = "Strong Linux CLI & Container fundamentals.";
-            } else if (correctCount >= 4) {
-                badgeEl.textContent = "L1 JUNIOR TRIAGER 🛠️";
-                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/50";
-                subEl.textContent = "Building CLI mental models from NetSec background.";
-            } else {
-                badgeEl.textContent = "L1 NOVICE (RECRUIT)";
-                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-slate-800 text-slate-400 border border-slate-700";
-                subEl.textContent = "Complete modules to promote your mastery tier.";
-            }
-        }
-
-        function resetAssessment() {
-            if (confirm("Apakah Anda yakin ingin mereset seluruh progress assessment?")) {
-                userAnswers = {};
-                sessionSeconds = 0;
-                currentlySelectedOption = null;
-                loadQuestion(0);
-                updateKPICards();
-            }
-        }
-
-        /* ==========================================================================
-           FULL INTERACTIVE TERMINAL SANDBOX ENGINE (CLI PARSER)
-           ========================================================================== */
-        function handleSandboxTermKeyDown(e) {
-            if (e.key === 'Enter') {
-                execSandboxCommand();
-            }
-        }
-
-        function execSandboxCommand() {
-            const inputEl = document.getElementById('sandbox-term-input');
-            const rawCmd = inputEl.value.trim();
-            if (!rawCmd) return;
-
-            inputEl.value = '';
-            appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}`);
-
-            const cmdLower = rawCmd.toLowerCase();
-
-            if (cmdLower === 'clear') {
-                clearTerminalScreen();
-                return;
-            }
-
-            if (cmdLower === 'help') {
-                appendSandboxOutput(`
-Available Assessment Sandbox Commands:
-  • systemctl status payment-api - Cek status daemon backend
-  • top -b -n 1                  - Inspect CPU & RAM top processes
-  • df -h /var/log               - Check disk partition usage
-  • dmesg -T | grep -i oom       - Inspect kernel OOM Killer events
-  • journalctl -u auth-service -f - Live stream error log tailing
-  • docker logs order-processor  - Inspect container internal log
-  • curl -i http://localhost:8080/healthz - HTTP L7 Healthcheck probe
-  • ss -tulpn                    - List active TCP/UDP socket listeners
-  • openssl x509...              - Inspect SSL certificate dates
-  • clear / help                 - Terminal utilities
-                `, 'cyan');
-                return;
-            }
-
-            const matchedQ = questionBank.find(q => q.validCommands.some(vc => cmdLower.includes(vc.toLowerCase())));
-            if (matchedQ) {
-                appendSandboxOutput(matchedQ.terminalOutputLines.join('\n'), 'emerald');
-            } else if (cmdLower.startsWith('systemctl status')) {
-                appendSandboxOutput("● service - Systemd Service Manager\n   Active: active (running) since Sat 2026-08-01 08:00:00 WIB", 'emerald');
-            } else if (cmdLower.startsWith('ping')) {
-                appendSandboxOutput("PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.\n64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.042 ms", 'slate');
-            } else {
-                appendSandboxOutput(`bash: ${rawCmd}: command executed in sandbox mode. (Type 'help' for command list)`, 'amber');
-            }
-        }
-
-        function appendSandboxOutput(text, color = 'slate') {
-            const screen = document.getElementById('sandbox-term-screen');
-            const line = document.createElement('div');
-            
-            let colorClass = "text-slate-300";
-            if (color === 'cyan') colorClass = "text-cyan-300";
-            if (color === 'emerald') colorClass = "text-emerald-400 font-semibold";
-            if (color === 'amber') colorClass = "text-amber-300";
-
-            line.className = `whitespace-pre-wrap ${colorClass}`;
-            line.textContent = text;
-            screen.appendChild(line);
-            screen.scrollTop = screen.scrollHeight;
-        }
-
-        function clearTerminalScreen() {
-            const screen = document.getElementById('sandbox-term-screen');
-            screen.innerHTML = `<div class="text-slate-400">Terminal buffer cleared. Ready for input.</div>`;
-        }
-
-        /* ==========================================================================
-           MODALS & AUXILIARY HELPERS
-           ========================================================================== */
-        function showHintModal() {
-            const q = activeFilteredQuestions[currentQuestionIndex];
-            document.getElementById('hint-modal-text').textContent = q.hintText;
-            document.getElementById('hint-modal').classList.remove('hidden');
-        }
-
-        function closeHintModal() {
-            document.getElementById('hint-modal').classList.add('hidden');
-        }
-
-        function openSOPModal() {
-            document.getElementById('sop-escalation-modal').classList.remove('hidden');
-        }
-
-        function closeSOPModal() {
-            document.getElementById('sop-escalation-modal').classList.add('hidden');
-        }
-
-        function confirmSOPEscalation() {
-            closeSOPModal();
-            userAnswers[15] = {
-                selectedOption: 'B',
-                typedCommand: 'SOP Escalation Ticket Submitted',
-                isCorrect: true,
-                score: 100
-            };
-            loadQuestion(currentQuestionIndex);
-            updateKPICards();
-            updateQuestionDots();
-        }
-
-        function switchViewMode(mode) {
-            currentViewMode = mode;
-            const btnGuided = document.getElementById('mode-guided');
-            const btnSandbox = document.getElementById('mode-sandbox');
-            const leftPanel = document.getElementById('left-assessment-panel');
-
-            if (mode === 'sandbox') {
-                btnGuided.className = "px-3 py-1 rounded text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
-                btnSandbox.className = "px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-cyan-400 shadow-sm transition";
-                leftPanel.classList.add('hidden');
-            } else {
-                btnGuided.className = "px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-cyan-400 shadow-sm transition";
-                btnSandbox.className = "px-3 py-1 rounded text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
-                leftPanel.classList.remove('hidden');
-            }
-        }
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag] || tag)
-            );
-        }
-    </script>
 </body>
 </html>
