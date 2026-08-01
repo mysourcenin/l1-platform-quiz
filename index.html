@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L1 Platform & Container Assessment | Incident Triage & Terminal Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B0F17',
+                            card: '#111827',
+                            border: '#1F2937',
+                            cyan: '#06B6D4',
+                            emerald: '#10B981',
+                            amber: '#F59E0B',
+                            rose: '#F43F5E',
+                            purple: '#A855F7'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080C14;
+            color: #E2E8F0;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        
+        .terminal-glow {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+        }
+        .emerald-glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+        .amber-glow {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        
+        .pulse-subtle {
+            animation: pulse-slow 3s infinite ease-in-out;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#070A11] text-slate-200 antialiased selection:bg-cyan-500 selection:text-black">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-teal-500 to-emerald-400 p-0.5 shadow-lg shadow-cyan-500/20">
+                    <div class="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-terminal text-cyan-400 text-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg font-bold bg-gradient-to-r from-slate-100 via-cyan-200 to-emerald-400 bg-clip-text text-transparent">
+                            L1 Platform & Container Simulator
+                        </span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono tracking-wider bg-cyan-950/80 text-cyan-400 border border-cyan-800/50 rounded-full font-semibold">
+                            ENTERPRISE LAB
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400">NetSec Specialist to Linux CLI & Container Assessor</p>
+                </div>
+            </div>
+
+            <!-- Header Right Stats & Controls -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-300">
+                    <i class="fa-solid fa-clock text-amber-400"></i>
+                    <span>Session: <span id="session-timer" class="text-cyan-400 font-semibold">00:00</span></span>
+                </div>
+                <button onclick="resetAssessment()" class="px-3 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg border border-slate-700/60 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Reset Progress</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Executive KPI Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Overall Progress Card -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-cyan-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Overall Completion</span>
+                    <i class="fa-solid fa-list-check text-cyan-400"></i>
+                </div>
+                <div class="flex items-baseline space-x-2 my-1">
+                    <span id="kpi-completion-percent" class="text-2xl font-bold font-mono text-white">0%</span>
+                    <span id="kpi-completion-count" class="text-xs text-slate-400 font-mono">(0/10 Complete)</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-2">
+                    <div id="kpi-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+
+            <!-- Score KPI Card -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Correct Answers</span>
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                </div>
+                <div class="flex items-baseline space-x-3 my-1">
+                    <span id="kpi-correct" class="text-2xl font-bold font-mono text-emerald-400">0</span>
+                    <span class="text-xs text-slate-400">Score: <span id="kpi-score-pts" class="text-emerald-300 font-mono font-bold">0 pts</span></span>
+                </div>
+                <div class="text-[11px] text-slate-400">Target accuracy &gt; 80% for L1 readiness</div>
+            </div>
+
+            <!-- Incorrect Answers Card -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-rose-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Incorrect / Retried</span>
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+                </div>
+                <div class="flex items-baseline space-x-3 my-1">
+                    <span id="kpi-incorrect" class="text-2xl font-bold font-mono text-rose-400">0</span>
+                    <span class="text-xs text-slate-400">Retry allowed anytime</span>
+                </div>
+                <div class="text-[11px] text-slate-400">Mental analogies build mastery</div>
+            </div>
+
+            <!-- Mastery Tier Badge Card -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-amber-500">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="font-medium tracking-wide uppercase">Mastery Level</span>
+                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                </div>
+                <div class="flex items-center space-x-2 my-1">
+                    <span id="kpi-mastery-badge" class="px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                        L1 NOVICE (RECRUIT)
+                    </span>
+                </div>
+                <div class="text-[11px] text-slate-400" id="kpi-mastery-sub">Complete modules to promote to L1 Practitioner</div>
+            </div>
+        </div>
+
+        <!-- Module Cluster Filters & Mode Switcher -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 glass-panel rounded-xl p-3">
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap items-center gap-1.5" id="module-tabs">
+                <button onclick="filterModule('all')" id="tab-all" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i>All Modules (10)
+                </button>
+                <button onclick="filterModule(1)" id="tab-mod1" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
+                    <i class="fa-brands fa-linux mr-1.5 text-amber-400"></i>Modul 1: Linux & Triage
+                </button>
+                <button onclick="filterModule(2)" id="tab-mod2" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
+                    <i class="fa-solid fa-server mr-1.5 text-cyan-400"></i>Modul 2: Web & SSL
+                </button>
+                <button onclick="filterModule(3)" id="tab-mod3" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
+                    <i class="fa-brands fa-docker mr-1.5 text-blue-400"></i>Modul 3: Containerization
+                </button>
+                <button onclick="filterModule(4)" id="tab-mod4" class="mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition">
+                    <i class="fa-solid fa-lock mr-1.5 text-emerald-400"></i>Modul 4: Storage & SOP
+                </button>
+            </div>
+
+            <!-- View Mode Switcher -->
+            <div class="flex items-center space-x-2 bg-slate-950 p-1 rounded-lg border border-slate-800 shrink-0">
+                <button onclick="switchViewMode('guided')" id="mode-guided" class="px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-cyan-400 shadow-sm transition">
+                    <i class="fa-solid fa-list-check mr-1.5"></i>Guided Quiz & CLI
+                </button>
+                <button onclick="switchViewMode('sandbox')" id="mode-sandbox" class="px-3 py-1 rounded text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
+                    <i class="fa-solid fa-terminal mr-1.5"></i>Full Terminal Sandbox
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace (Grid 2 Column Layout) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6" id="workspace-container">
+
+            <!-- LEFT COLUMN: Assessment Question & Interactive Terminal Launcher (7 Cols) -->
+            <div class="lg:col-span-7 space-y-6" id="left-assessment-panel">
+
+                <!-- Question Navigation Bar -->
+                <div class="glass-panel rounded-xl p-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="prevQuestion()" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed" id="btn-prev-q">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <span class="text-xs font-mono text-slate-300">
+                            Question <span id="current-q-index" class="text-cyan-400 font-bold">1</span> of <span id="total-q-count" class="text-slate-400">10</span>
+                        </span>
+                        <button onclick="nextQuestion()" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed" id="btn-next-q">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Quick Indicator Dots -->
+                    <div class="hidden sm:flex items-center space-x-1.5" id="q-dots-container">
+                        <!-- Dots populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Main Active Question Card -->
+                <div class="glass-panel rounded-xl p-6 border border-slate-800/90 shadow-2xl relative overflow-hidden" id="active-q-card">
+
+                    <!-- Question Badge Header -->
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span id="q-module-badge" class="px-2.5 py-1 rounded-md text-[11px] font-bold font-mono bg-cyan-950 text-cyan-400 border border-cyan-800/60">
+                                MODUL 1: LINUX FUNDAMENTAL
+                            </span>
+                            <span id="q-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-800 text-slate-400">
+                                UNANSWERED
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-1 text-xs text-slate-400 font-mono">
+                            <i class="fa-solid fa-tag text-slate-500"></i>
+                            <span id="q-topic-tag">Service Status & Triage</span>
+                        </div>
+                    </div>
+
+                    <!-- Incident Briefing Header Box (Real Enterprise Context) -->
+                    <div class="bg-slate-950/90 rounded-xl p-4 border-l-4 border-amber-500 border-y border-r border-slate-800 mb-5">
+                        <div class="flex items-center space-x-2 text-amber-400 font-mono text-xs font-bold mb-1.5">
+                            <i class="fa-solid fa-triangle-exclamation pulse-subtle"></i>
+                            <span id="q-incident-id">INCIDENT #INC-8821 (HIGH SEVERITY)</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white mb-2" id="q-title">
+                            Mobile Banking App returning 502 Bad Gateway
+                        </h3>
+                        <p class="text-xs text-slate-300 leading-relaxed" id="q-description">
+                            Pelanggan melaporkan error HTTP 502 saat membuka aplikasi Banking. Tim Network telah memastikan Firewall tidak memblokir traffic port 80/443. Sebagai L1 Platform Engineer, Anda harus memeriksa status web server Nginx di server RHEL `prod-app-node01`.
+                        </p>
+                    </div>
+
+                    <!-- NetSec Specialist Analogy Primer -->
+                    <div class="bg-cyan-950/20 rounded-lg p-3 border border-cyan-900/40 mb-6 flex items-start space-x-3">
+                        <div class="mt-0.5 text-cyan-400 shrink-0">
+                            <i class="fa-solid fa-network-wired text-sm"></i>
+                        </div>
+                        <div class="text-xs">
+                            <span class="font-bold text-cyan-300">Network / Firewall Mental Analogy:</span>
+                            <span id="q-netsec-analogy" class="text-slate-300 ml-1">
+                                Sama seperti saat mengecek daemon service status pada Palo Alto/Fortigate via `get system status` atau `show service`, di Linux Anda perlu memeriksa process daemon supervisor (`systemd`).
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mode Selectable: Interactive CLI Input vs Options -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
+                                <i class="fa-solid fa-code text-cyan-400"></i>
+                                <span>Eksekusi Perintah CLI atau Pilih Jawaban</span>
+                            </label>
+                            <span class="text-[11px] text-slate-400 font-mono">Ketik di terminal atau klik opsi</span>
+                        </div>
+
+                        <!-- Embedded Interactive Mini CLI Terminal Input -->
+                        <div class="bg-slate-950 rounded-xl border border-slate-800 p-3 shadow-inner font-mono text-xs">
+                            <div class="flex items-center space-x-2 text-slate-400 border-b border-slate-800/80 pb-2 mb-2">
+                                <span class="h-2.5 w-2.5 rounded-full bg-rose-500 inline-block"></span>
+                                <span class="h-2.5 w-2.5 rounded-full bg-amber-500 inline-block"></span>
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                                <span class="ml-2 text-[10px] text-slate-400">root@prod-app-node01: ~</span>
+                            </div>
+
+                            <form onsubmit="handleCLIFormSubmit(event)" class="flex items-center space-x-2">
+                                <span class="text-emerald-400 font-bold select-none">[root@prod-node01 ~]#</span>
+                                <input type="text" id="cli-input-box" autocomplete="off" placeholder="Ketik perintah CLI di sini (misal: systemctl status nginx)..." 
+                                    class="flex-1 bg-transparent border-none outline-none text-cyan-300 placeholder-slate-600 focus:ring-0 text-xs font-mono">
+                                <button type="submit" class="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-sans rounded text-xs transition">
+                                    Run CLI
+                                </button>
+                            </form>
+
+                            <!-- Command Hints / Quick Fill Pills -->
+                            <div class="flex flex-wrap items-center gap-1.5 mt-3 pt-2 border-t border-slate-900" id="q-command-hints">
+                                <span class="text-[10px] text-slate-400 font-sans">Quick fill hint:</span>
+                                <!-- Hint buttons populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Multiple Choice Options List -->
+                        <div class="space-y-2 mt-4" id="q-options-container">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Submit & Action Controls -->
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                        <button onclick="showHintModal()" class="text-xs text-amber-400 hover:text-amber-300 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Butuh Petunjuk Logika Network?</span>
+                        </button>
+                        
+                        <div class="flex items-center space-x-3">
+                            <button onclick="clearCurrentAnswer()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200">
+                                Clear
+                            </button>
+                            <button onclick="submitCurrentAnswer()" id="btn-submit-answer" class="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Submit Answer</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Comprehensive Feedback & Mental Model Panel (Triggers After Answer) -->
+                <div id="feedback-panel" class="hidden glass-panel rounded-xl p-6 border-l-4 border-cyan-500 space-y-5">
+                    
+                    <!-- Result Status Banner -->
+                    <div id="feedback-status-banner" class="p-3 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div id="feedback-icon" class="h-8 w-8 rounded-full flex items-center justify-center text-lg"></div>
+                            <div>
+                                <h4 id="feedback-title" class="text-sm font-bold">Jawaban Benar!</h4>
+                                <p id="feedback-subtitle" class="text-xs text-slate-300">Perintah CLI yang Anda jalankan tepat untuk insiden ini.</p>
+                            </div>
+                        </div>
+                        <span id="feedback-points" class="px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-emerald-400">
+                            +100 PTS
+                        </span>
+                    </div>
+
+                    <!-- Visual Mental Model & Firewall Analogy Box (Key Requirement #3) -->
+                    <div class="bg-slate-950/80 rounded-xl p-4 border border-cyan-900/50 space-y-3">
+                        <div class="flex items-center space-x-2 text-cyan-400 text-xs font-bold">
+                            <i class="fa-solid fa-brain"></i>
+                            <span class="uppercase tracking-wider">Visual Mental Model & Network Specialist Analogy</span>
+                        </div>
+                        <div class="text-xs text-slate-300 leading-relaxed" id="feedback-analogy-content">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Line-by-Line Terminal Output Breakdown -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-200 flex items-center space-x-1.5">
+                                <i class="fa-solid fa-list-ol text-amber-400"></i>
+                                <span>Breakdown Arti Line Output Terminal Linux:</span>
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-mono">RHEL 8 Systemctl/Log Parser</span>
+                        </div>
+
+                        <!-- Rendered Terminal Output Box -->
+                        <div class="bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-300 border border-slate-800 overflow-x-auto shadow-inner" id="feedback-terminal-output">
+                            <!-- Terminal raw output lines rendered here -->
+                        </div>
+
+                        <!-- Explanation Cards for Terminal Lines -->
+                        <div class="space-y-2 mt-3" id="feedback-line-explanations">
+                            <!-- Line by line cards populated via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Interactive Terminal Simulator & Cheat Sheet (5 Cols) -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <!-- Interactive Terminal Simulator Widget (Full Sandbox CLI) -->
+                <div class="glass-panel rounded-xl border border-slate-800 overflow-hidden shadow-2xl terminal-glow flex flex-col h-[520px]">
+                    <!-- Terminal Header Bar -->
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="h-3 w-3 rounded-full bg-rose-500 inline-block cursor-pointer" onclick="clearTerminalScreen()"></span>
+                            <span class="h-3 w-3 rounded-full bg-amber-500 inline-block"></span>
+                            <span class="h-3 w-3 rounded-full bg-emerald-500 inline-block"></span>
+                            <span class="text-xs font-mono text-slate-300 font-semibold ml-2">
+                                <i class="fa-solid fa-terminal text-cyan-400 mr-1.5"></i>RHEL 8 Interactive CLI Simulator
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 rounded">
+                                BASH ONLINE
+                            </span>
+                            <button onclick="clearTerminalScreen()" class="text-slate-400 hover:text-white text-xs px-1" title="Clear Screen">
+                                <i class="fa-solid fa-eraser"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Terminal Screen Buffer -->
+                    <div class="flex-1 bg-[#090D16] p-4 font-mono text-xs overflow-y-auto space-y-3" id="sandbox-term-screen">
+                        <div class="text-slate-400">
+                            Red Hat Enterprise Linux Server release 8.8 (Ootpa)<br>
+                            Kernel 4.18.0-425.3.1.el8.x86_64 on an x86_64<br>
+                            Type <span class="text-cyan-400 font-bold">help</span> or test commands like <span class="text-amber-400">systemctl status nginx</span>, <span class="text-amber-400">ss -tulpn</span>, <span class="text-amber-400">docker ps</span>, <span class="text-amber-400">df -h</span>, <span class="text-amber-400">journalctl -u nginx -f</span>.
+                        </div>
+                    </div>
+
+                    <!-- Terminal Input Line -->
+                    <div class="bg-slate-950 p-3 border-t border-slate-800 flex items-center space-x-2">
+                        <span class="text-emerald-400 font-mono font-bold text-xs select-none">[root@prod-node01 ~]#</span>
+                        <input type="text" id="sandbox-term-input" onkeydown="handleSandboxTermKeyDown(event)" autocomplete="off" placeholder="Ketik perintah RHEL / Docker di sini..."
+                            class="flex-1 bg-transparent border-none outline-none text-cyan-300 focus:ring-0 font-mono text-xs placeholder-slate-600">
+                        <button onclick="execSandboxCommand()" class="text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 px-2.5 py-1 rounded border border-slate-700">
+                            Exec
+                        </button>
+                    </div>
+                </div>
+
+                <!-- L1 Cheat Sheet & Network Specialist Translation Card -->
+                <div class="glass-panel rounded-xl p-5 border border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-book-bookmark text-cyan-400"></i>
+                            <span>NetSec to Linux CLI Cheat Sheet</span>
+                        </h4>
+                        <span class="text-[10px] text-slate-400 font-mono">Quick Reference</span>
+                    </div>
+
+                    <div class="space-y-2 text-xs font-mono">
+                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-cyan-400 font-bold">ss -tulpn / netstat</div>
+                                <div class="text-[11px] font-sans text-slate-400">Cek IP, listening port & PID listener</div>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show ip sockets</span>
+                        </div>
+
+                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-cyan-400 font-bold">systemctl status &lt;svc&gt;</div>
+                                <div class="text-[11px] font-sans text-slate-400">Cek status daemon service (Active/Failed)</div>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">get sys status</span>
+                        </div>
+
+                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-cyan-400 font-bold">journalctl -u &lt;svc&gt; -f</div>
+                                <div class="text-[11px] font-sans text-slate-400">Live stream syslog / journal errors</div>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">debug log tail</span>
+                        </div>
+
+                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-cyan-400 font-bold">docker ps -a</div>
+                                <div class="text-[11px] font-sans text-slate-400">List status container microservices</div>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show vdom/vrf</span>
+                        </div>
+
+                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-cyan-400 font-bold">df -h / df -i</div>
+                                <div class="text-[11px] font-sans text-slate-400">Cek sisa storage & batas inode disk</div>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show flash status</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SPECIAL MODAL / COMPONENT: Incident Escalation SOP Builder (Q7) -->
+        <div id="sop-escalation-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="glass-panel max-w-2xl w-full rounded-2xl p-6 border border-slate-700 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-file-signature text-amber-400 text-lg"></i>
+                        <h3 class="text-base font-bold text-white">Format Escalation Ticket L1 &gt; L2 (Banking SOP)</h3>
+                    </div>
+                    <button onclick="closeSOPModal()" class="text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Ticket Title & Severity:</label>
+                        <input type="text" readonly value="[INC-9912] L1 Escalation: Banking Gateway Upstream Connection Refused on Port 8080" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-cyan-300 font-mono">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Impacted Component:</label>
+                            <input type="text" readonly value="Mobile Banking Core API / Nginx Proxy" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-slate-300">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">SOP Ticket Priority:</label>
+                            <span class="inline-block px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800 rounded font-bold">P1 - HIGH SEVERITY</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Hasil Triage L1 & Proof (CLI Command Output Attached):</label>
+                        <textarea readonly rows="4" class="w-full bg-slate-950 border border-slate-800 rounded p-2 font-mono text-[11px] text-slate-300">
+[L1 Triage Check - 2026-07-31 17:40]
+1. `systemctl status nginx` -> Active (running)
+2. `journalctl -u nginx` -> [error] 502 connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080
+3. `ss -tulpn | grep 8080` -> No output (Backend Service Port 8080 Down)
+Action Requested L2: Check Java Application Server on port 8080.
+                        </textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button onclick="confirmSOPEscalation()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded text-xs">
+                        Dispatch SOP Escalation Ticket to L2
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HINT MODAL -->
+        <div id="hint-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="glass-panel max-w-md w-full rounded-xl p-5 border border-amber-500/40 shadow-2xl space-y-3">
+                <div class="flex items-center space-x-2 text-amber-400 font-bold text-sm">
+                    <i class="fa-solid fa-lightbulb text-lg"></i>
+                    <span>NetSec Logic Hint</span>
+                </div>
+                <p id="hint-modal-text" class="text-xs text-slate-300 leading-relaxed">
+                    <!-- Hint text populated dynamically -->
+                </p>
+                <div class="flex justify-end pt-2">
+                    <button onclick="closeHintModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 rounded">
+                        Tutup Petunjuk
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                <span class="font-bold text-cyan-400">L1 Platform & Container Triage Assessment</span> &copy; Enterprise Operations Lab
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-slate-400">Targeting RHEL 8 / Container / NetSec Transition</span>
+                <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MAIN JAVASCRIPT ENGINE -->
+    <script>
+        /* ==========================================================================
+           QUESTION BANK (10 COMPREHENSIVE INCIDENT & TRIAGE SCENARIOS)
+           ========================================================================== */
+        const questionBank = [
+            {
+                id: 1,
+                module: 1,
+                moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & TRIAGE",
+                topic: "Service Status & Triage",
+                title: "Aplikasi Mobile Banking melempar error 502 Bad Gateway",
+                incidentId: "INCIDENT #INC-8821 (P1 SEVERITY)",
+                description: "Pelanggan melaporkan error HTTP 502 saat membuka aplikasi Banking. Network Firewall dipastikan normal. Sebagai L1 Engineer, Anda harus memeriksa status web server Nginx di server RHEL `prod-app-node01`.",
+                netsecAnalogy: "Sama seperti mengecek daemon status di firewall (`get system status` atau `show service`), di Linux CLI Anda memeriksa status daemon supervisor (`systemd`).",
+                hintText: "Gunakan perintah `systemctl` diikuti sub-command `status` dan nama service `nginx`.",
+                validCommands: ["systemctl status nginx", "systemctl status nginx.service", "sudo systemctl status nginx"],
+                options: [
+                    { id: 'A', text: 'systemctl status nginx', correct: true },
+                    { id: 'B', text: 'service status nginx.log', correct: false },
+                    { id: 'C', text: 'ping 127.0.0.1:80', correct: false },
+                    { id: 'D', text: 'netstat -kill nginx', correct: false }
+                ],
+                terminalOutputLines: [
+                    "● nginx.service - The NGINX HTTP and reverse proxy server",
+                    "   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)",
+                    "   Active: inactive (dead) since Thu 2026-07-30 14:22:01 WIB; 1h 15min ago",
+                    "  Process: 14205 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)",
+                    " Main PID: 14205 (code=exited, status=0/SUCCESS)"
+                ],
+                lineExplanations: [
+                    { line: "Active: inactive (dead)", text: "🔴 MENANDAKAN SERVICE DOWN! Process Nginx telah mati. Inilah penyebab utama 502 Bad Gateway (Port 80/443 tidak ada yang mendengarkan)." },
+                    { line: "Loaded: loaded (... enabled)", text: "🟢 Service terdaftar di systemd dan dikonfigurasi untuk auto-start saat reboot." },
+                    { line: "Main PID: 14205 (code=exited)", text: "⚠️ PID (Process ID) terakhir sebelum service mati secara normal atau di-stop." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Mirip dengan status <code class="text-amber-300">Status: Down / Inactive</code> pada BGP Session atau IPSec Tunnel interface di Cisco/Fortigate.</p>
+                    <p><strong>Kenapa <code class="text-cyan-300">systemctl status nginx</code> Benar?</strong> Command ini memberikan gambaran langsung status supervisor process Linux (<code class="text-cyan-300">systemd</code>). Dari output di atas, kita tahu Nginx berstatus <em>inactive (dead)</em> sehingga Nginx perlu di-restart dengan <code class="text-emerald-400">systemctl start nginx</code>.</p>
+                `
+            },
+            {
+                id: 2,
+                module: 1,
+                moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & TRIAGE",
+                topic: "Live Log Tailing",
+                title: "Mendeteksi Penyebab Live Log Error HTTP 500 Internal Server Error",
+                incidentId: "INCIDENT #INC-8825 (P2 SEVERITY)",
+                description: "User mengalami crash saat checkout pembayaran. Anda diminta memantau log error Nginx secara realtime (live stream) untuk menangkap error HTTP 500 yang baru terjadi.",
+                netsecAnalogy: "Sama seperti menjalankan `debug log tail` atau Syslog live monitor di Palo Alto / Cisco ASA untuk melihat log traffic yang sedang lewat saat itu juga.",
+                hintText: "Gunakan `tail -f` pada file log error atau `journalctl -u nginx -f` dengan flag `-f` (follow/tail).",
+                validCommands: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log", "journalctl -f -u nginx", "sudo tail -f /var/log/nginx/error.log"],
+                options: [
+                    { id: 'A', text: 'cat /var/log/nginx/error.log', correct: false },
+                    { id: 'B', text: 'journalctl -u nginx -f', correct: true },
+                    { id: 'C', text: 'nano /var/log/nginx/error.log', correct: false },
+                    { id: 'D', text: 'grep "500" /etc/nginx/nginx.conf', correct: false }
+                ],
+                terminalOutputLines: [
+                    "2026/07/31 17:15:02 [error] 18442#0: *49122 FastCGI sent in stderr: \"PHP message: PHP Fatal error: Uncaught Exception: Database connection timeout in /var/www/html/api/db.php:42\"",
+                    "2026/07/31 17:15:02 [info] 18442#0: *49122 client 10.20.4.150 requests GET /api/checkout HTTP/1.1 response 500"
+                ],
+                lineExplanations: [
+                    { line: "journalctl -u nginx -f", text: "⚡ Flag `-f` (follow) terus menempel pada stream log, menampilkan baris baru secara langsung (live continuous output)." },
+                    { line: "PHP Fatal error: Database connection timeout", text: "🔍 ROOT CAUSE IDENTIFIED: Web server aman, tetapi backend Database (port 3306/5432) mengalami timeout koneksi." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Membuka <code class="text-amber-300">cat</code> biasa mirip seperti meng-export file PCAP yang sudah selesai. Sedangkan <code class="text-cyan-300">journalctl -f</code> atau <code class="text-cyan-300">tail -f</code> adalah <code class="text-emerald-400">Wireshark Live Packet Capture</code>.</p>
+                    <p><strong>Kenapa Flag -f Penting?</strong> Tanpa flag <code class="text-amber-300">-f</code>, perintah hanya akan membaca log sampai detik terakhir dan selesai (exit), bukan memantau insiden live secara terus menerus.</p>
+                `
+            },
+            {
+                id: 3,
+                module: 2,
+                moduleTitle: "MODUL 2: RUNTIME & WEB SERVER",
+                topic: "Network Sockets & Port Conflict",
+                title: "Pengecekan Listening Port & IP Socket (`ss -tulpn`)",
+                incidentId: "INCIDENT #INC-8901 (P2 SEVERITY)",
+                description: "Nginx gagal di-start dengan error `Address already in use: 0.0.0.0:80`. Anda perlu mengidentifikasi Process ID (PID) dan nama aplikasi yang mencuri/mendengarkan port 80 tersebut.",
+                netsecAnalogy: "Sama seperti menjalankan `show ip sockets` atau `show connection table` pada Firewall untuk melihat port mana yang terikat ke daemon mana.",
+                hintText: "Gunakan perintah modern Linux `ss` dengan flag `-tulpn` (TCP, UDP, Listening, Process, Numeric).",
+                validCommands: ["ss -tulpn", "netstat -tulpn", "sudo ss -tulpn", "ss -tulpn | grep 80"],
+                options: [
+                    { id: 'A', text: 'ping 0.0.0.0:80', correct: false },
+                    { id: 'B', text: 'ss -tulpn', correct: true },
+                    { id: 'C', text: 'ifconfig eth0 port 80', correct: false },
+                    { id: 'D', text: 'traceroute 127.0.0.1 80', correct: false }
+                ],
+                terminalOutputLines: [
+                    "Netid  State   Recv-Q  Send-Q   Local Address:Port   Peer Address:Port  Process",
+                    "tcp    LISTEN  0       128            0.0.0.0:80          0.0.0.0:*      users:((\"httpd\",pid=8841,fd=4))",
+                    "tcp    LISTEN  0       128            0.0.0.0:22          0.0.0.0:*      users:((\"sshd\",pid=1024,fd=3))"
+                ],
+                lineExplanations: [
+                    { line: "tcp LISTEN 0.0.0.0:80 users:((\"httpd\",pid=8841))", text: "⚠️ PORT CONFLICT: Port 80 ternyata sedang dipakai oleh Apache (httpd) dengan PID 8841!" },
+                    { line: "ss -tulpn (t=tcp, u=udp, l=listen, p=process, n=numeric)", text: "💡 Flag `-p` sangat krusial karena menampilkan Nama Process & PID pengikat socket." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Dalam Network Switch/Firewall, 2 interface tidak boleh memakai IP yang sama. Di Linux, 2 aplikasi tidak boleh menggunakan Listening Port yang sama pada IP 0.0.0.0.</p>
+                    <p><strong>Action Remediadi L1:</strong> Matikan httpd (<code class="text-cyan-300">systemctl stop httpd</code> atau <code class="text-rose-400">kill -9 8841</code>) baru kemudian start Nginx!</p>
+                `
+            },
+            {
+                id: 4,
+                module: 3,
+                moduleTitle: "MODUL 3: CONTAINERIZATION",
+                topic: "Docker Container Lifecycle",
+                title: "Container Payment Microservice Mendadak Exit/Crash",
+                incidentId: "INCIDENT #INC-9012 (P1 SEVERITY)",
+                description: "Microservice Container `payment-gateway` tidak merespon traffic. Anda harus memeriksa daftar seluruh container di server (baik yang sedang running maupun yang sudah Exited/Crash).",
+                netsecAnalogy: "Sama seperti mengecek status Virtual Domain (VDOM) atau Tunnel VRF interface di router/firewall.",
+                hintText: "Gunakan `docker ps -a` (flag `-a` atau `--all` untuk melihat container yang sudah mati/exited).",
+                validCommands: ["docker ps -a", "docker ps --all", "sudo docker ps -a"],
+                options: [
+                    { id: 'A', text: 'docker ps', correct: false },
+                    { id: 'B', text: 'docker ps -a', correct: true },
+                    { id: 'C', text: 'systemctl status docker.log', correct: false },
+                    { id: 'D', text: 'docker run payment-gateway', correct: false }
+                ],
+                terminalOutputLines: [
+                    "CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS                    PORTS     NAMES",
+                    "a1b2c3d4e5f6   payment-api:v2.1      \"docker-entrypoint.s…\"   2 hours ago    Exited (137) 10 min ago             payment-gateway",
+                    "f9e8d7c6b5a4   redis:alpine          \"docker-entrypoint.s…\"   5 days ago     Up 5 days                           6379/tcp  redis-cache"
+                ],
+                lineExplanations: [
+                    { line: "Exited (137) 10 minutes ago", text: "🔴 CRASH ANALYSIS: Exit code 137 biasanya berarti Out Of Memory (OOM Killed oleh Linux Kernel) atau di-kill secara paksa!" },
+                    { line: "docker ps vs docker ps -a", text: "⚠️ `docker ps` biasa HANYA menampilkan container yang Aktif (Up). Flag `-a` wajib digunakan untuk melacak container yang MATI." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> <code class="text-cyan-300">docker ps</code> biasa seperti perintah <code class="text-amber-300">show interfaces brief | grep UP</code>. Sedangkan <code class="text-cyan-300">docker ps -a</code> seperti <code class="text-emerald-400">show interfaces brief (All UP & DOWN)</code>.</p>
+                    <p><strong>Kenapa pilihan B benar?</strong> Tanpa flag <code class="text-cyan-300">-a</code>, Anda tidak akan menemukan container <code class="text-rose-400">payment-gateway</code> di list karena statusnya sudah Exited!</p>
+                `
+            },
+            {
+                id: 5,
+                module: 4,
+                moduleTitle: "MODUL 4: STORAGE & SOP",
+                topic: "Disk Space & Partition Full Triage",
+                title: "Alert Grafana: Disk Partition /var/log Full 100%",
+                incidentId: "INCIDENT #INC-9105 (P2 SEVERITY)",
+                description: "Server log menolak menulis baris log baru dan error `No space left on device`. Anda perlu mengonfirmasi penggunaan kapasitas disk per mount point (Human Readable).",
+                netsecAnalogy: "Sama seperti mengecek kapasitas Flash Memory / System Storage pada Router / Firewall hardware (`show flash:`) untuk mencegah crash akibat log overflow.",
+                hintText: "Gunakan `df -h` (Disk Free dengan flag `-h` Human Readable).",
+                validCommands: ["df -h", "sudo df -h", "df -h /var/log"],
+                options: [
+                    { id: 'A', text: 'du -sh *', correct: false },
+                    { id: 'B', text: 'df -h', correct: true },
+                    { id: 'C', text: 'fdisk -l /dev/ram0', correct: false },
+                    { id: 'D', text: 'format C: /q', correct: false }
+                ],
+                terminalOutputLines: [
+                    "Filesystem                  Size  Used Avail Use% Mounted on",
+                    "devtmpfs                    3.9G     0  3.9G   0% /dev",
+                    "/dev/mapper/rhel-root        20G   18G  2.0G  90% /",
+                    "/dev/mapper/rhel-var_log    10G   10G    0B 100% /var/log"
+                ],
+                lineExplanations: [
+                    { line: "/dev/mapper/rhel-var_log 10G 10G 0B 100% /var/log", text: "🚨 CRITICAL FULL DISK: Mount point `/var/log` tepat 100% terpakai (0 Bytes tersisa!)." },
+                    { line: "df -h vs du -sh", text: "💡 `df -h` menampilkan ringkasan Filesystem Mount Point. `du -sh` digunakan nanti untuk melacak folder spesifik yang paling besar." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Saat storage log di Firewall 100% Penuh, syslog daemon akan hang dan drop koneksi admin CLI.</p>
+                    <p><strong>L1 Remediation SOP:</strong> Gunakan <code class="text-cyan-300">logrotate -f</code> atau kompres log lama (<code class="text-amber-300">.gz</code>) di <code class="text-amber-300">/var/log/nginx/</code> untuk mengosongkan ruang.</p>
+                `
+            },
+            {
+                id: 6,
+                module: 1,
+                moduleTitle: "MODUL 1: LINUX FUNDAMENTAL & TRIAGE",
+                topic: "Package Management in RHEL",
+                title: "Instalasi Web Server Package Nginx Menggunakan RPM Package Manager",
+                incidentId: "INCIDENT #REQ-7712 (PROVISIONING)",
+                description: "Server RHEL 8 baru disiapkan. Anda diminta menginstal package `nginx` dari repository resmi menggunakan Package Manager standar Red Hat (YUM/DNF).",
+                netsecAnalogy: "Sama seperti mengunduh dan menginstal Firmware Image / Application Signature Package pada Security Gateway.",
+                hintText: "Gunakan `yum install -y nginx` atau `dnf install -y nginx`.",
+                validCommands: ["yum install -y nginx", "dnf install -y nginx", "sudo yum install -y nginx", "sudo dnf install -y nginx"],
+                options: [
+                    { id: 'A', text: 'apt-get install nginx', correct: false },
+                    { id: 'B', text: 'yum install -y nginx', correct: true },
+                    { id: 'C', text: 'pip install nginx-web', correct: false },
+                    { id: 'D', text: 'npm install nginx -g', correct: false }
+                ],
+                terminalOutputLines: [
+                    "Updating Subscription Management repositories.",
+                    "Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)",
+                    "Dependencies resolved.",
+                    "================================================================================",
+                    " Package         Architecture    Version                Repository         Size",
+                    "================================================================================",
+                    "Installing:",
+                    " nginx           x86_64          1:1.18.0-2.module_el8  rhel-8-appstream   581 k",
+                    "Complete!"
+                ],
+                lineExplanations: [
+                    { line: "yum / dnf (Red Hat Package Manager)", text: "🟢 YUM/DNF adalah package manager standar RHEL/CentOS. (`apt-get` digunakan oleh Debian/Ubuntu)." },
+                    { line: "Flag -y", text: "⚡ Flag `-y` otomatis menjawab 'YES' untuk konfirmasi unduhan dependency." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> <code class="text-cyan-300">apt-get</code> adalah untuk Ubuntu/Debian. Di server Red Hat Enterprise Linux (RHEL), standar operasinya menggunakan <code class="text-emerald-400">yum</code> atau <code class="text-emerald-400">dnf</code>.</p>
+                `
+            },
+            {
+                id: 7,
+                module: 4,
+                moduleTitle: "MODUL 4: STORAGE & SOP",
+                topic: "Escalation & Incident SOP",
+                title: "Format Log Insiden & Eskalasi L1 ke L2 Sesuai Banking SOP",
+                incidentId: "INCIDENT #INC-9912 (ESCALATION SOP)",
+                description: "Hasil triage L1 menunjukkan Nginx Running, tetapi melempar `Connection Refused` pada upstream port 8080 (backend Java Application Down). Buat ticket eskalasi ke L2.",
+                netsecAnalogy: "Mirip dengan membuat escalations ticket ke Tier-2 TAC (Cisco/Palo Alto) dengan melampirkan log exact error & bukti triage awal.",
+                hintText: "Klik opsi B untuk membuka Interactive SOP Escalation Ticket Modal.",
+                validCommands: ["sop escalation", "escalate l2", "ticket create"],
+                isSOPScenario: true,
+                options: [
+                    { id: 'A', text: 'Kirim pesan WA tanpa bukti output terminal', correct: false },
+                    { id: 'B', text: 'Buka Interactive Ticket Escalation (SOP Form dengan bukti CLI)', correct: true },
+                    { id: 'C', text: 'Reboot server fisik secara mendadak tanpa koordinasi', correct: false },
+                    { id: 'D', text: 'Tutup ticket dengan status Solved', correct: false }
+                ],
+                terminalOutputLines: [
+                    "[SOP L1-TO-L2 DISPATCH SUCCESS]",
+                    "Ticket ID: #INC-9912-L2",
+                    "Assigned Group: L2 AppDev Middleware Team",
+                    "Evidence Included: systemctl status, journalctl error logs, ss -tulpn output.",
+                    "Status: ESCALATED TO TIER 2"
+                ],
+                lineExplanations: [
+                    { line: "Status: ESCALATED TO TIER 2", text: "✅ Triage L1 lengkap mengurangi MTTR (Mean Time To Resolution) tim L2 secara signifikan." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Enterprise Banking SOP:</strong> Jangan pernah mengeskalasi insiden hanya dengan perkataan "Aplikasi error". Selalu sertakan: <strong>1. Impact, 2. Output Command Triage, 3. Hipotesis Root Cause</strong>.</p>
+                `
+            },
+            {
+                id: 8,
+                module: 2,
+                moduleTitle: "MODUL 2: RUNTIME & WEB SERVER",
+                topic: "SSL Certificate Expiration",
+                title: "Pengecekan SSL/TLS Certificate Expiration Date via CLI",
+                incidentId: "INCIDENT #INC-9340 (P1 SEVERITY)",
+                description: "Browser nasabah menampilkan peringatan HTTPS `NET::ERR_CERT_DATE_INVALID`. Anda perlu mengecek tanggal kedaluwarsa file sertifikat SSL `/etc/nginx/ssl/server.crt`.",
+                netsecAnalogy: "Sama seperti mengecek Certificate Validity Period pada SSL VPN Gateway atau GlobalProtect portal.",
+                hintText: "Gunakan perintah `openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates`.",
+                validCommands: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates", "openssl x509 -noout -dates -in /etc/nginx/ssl/server.crt"],
+                options: [
+                    { id: 'A', text: 'cat /etc/nginx/ssl/server.crt', correct: false },
+                    { id: 'B', text: 'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates', correct: true },
+                    { id: 'C', text: 'ping ssl.banking.com', correct: false },
+                    { id: 'D', text: 'certutil -delete /etc/ssl', correct: false }
+                ],
+                terminalOutputLines: [
+                    "notBefore=Jan 15 00:00:00 2025 GMT",
+                    "notAfter=Jul 30 23:59:59 2026 GMT"
+                ],
+                lineExplanations: [
+                    { line: "notAfter=Jul 30 23:59:59 2026 GMT", text: "🔴 EXPIRED CERTIFICATE: Tanggal saat ini sudah melewati `notAfter`! Sertifikat SSL perlu diperbarui (renew)." },
+                    { line: "openssl x509 -noout -dates", text: "💡 Tool OpenSSL membaca metadata X.509 tanpa menampilkan kunci publik yang di-encode Base64." }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> File sertifikat <code class="text-cyan-300">.crt</code> di-encode dalam teks PEM. Perintah <code class="text-cyan-300">cat</code> biasa hanya memperlihatkan string acak <code class="text-slate-400">-----BEGIN CERTIFICATE-----</code>. Perintah <code class="text-emerald-400">openssl x509</code> membedah struktur cert tersebut.</p>
+                `
+            },
+            {
+                id: 9,
+                module: 3,
+                moduleTitle: "MODUL 3: CONTAINERIZATION",
+                topic: "Container Internal Logs",
+                title: "Membaca Logs Internal Docker Container Microservice",
+                incidentId: "INCIDENT #INC-9420 (P2 SEVERITY)",
+                description: "Container `payment-api` menunjukkan status `Up 3 hours`, namun API internal merespon Error 500. Anda harus memeriksa console output (stdout/stderr) dari dalam container tersebut.",
+                netsecAnalogy: "Sama seperti melihat buffer console log dari sub-module atau virtual slot tertentu.",
+                hintText: "Gunakan `docker logs --tail 20 payment-api`.",
+                validCommands: ["docker logs payment-api", "docker logs --tail 20 payment-api", "docker logs -f payment-api"],
+                options: [
+                    { id: 'A', text: 'cat /var/log/docker.log', correct: false },
+                    { id: 'B', text: 'docker logs --tail 20 payment-api', correct: true },
+                    { id: 'C', text: 'docker inspect payment-api --delete', correct: false },
+                    { id: 'D', text: 'systemctl logs docker', correct: false }
+                ],
+                terminalOutputLines: [
+                    "2026-07-31 17:30:11.402 [main] INFO  c.b.payment.Application - Pool initialized",
+                    "2026-07-31 17:35:40.819 [http-exec-1] ERROR c.b.payment.Controller - StackTrace:",
+                    "java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB host 10.10.4.50:5432 refused)"
+                ],
+                lineExplanations: [
+                    { line: "Connection to DB host 10.10.4.50:5432 refused", text: "🔍 ROOT CAUSE: Microservice container hidup, tetapi koneksi jaringan dari container ke DB Host 10.10.4.50 port 5432 di-refuse!" }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Aplikasi di dalam container membuang log ke <code class="text-cyan-300">stdout/stderr</code>. Perintah <code class="text-emerald-400">docker logs</code> menangkap output console internal tersebut.</p>
+                `
+            },
+            {
+                id: 10,
+                module: 4,
+                moduleTitle: "MODUL 4: STORAGE & SOP",
+                topic: "File Permissions & Ownership",
+                title: "Nginx Error 403 Forbidden: Triage File Permission & Ownership",
+                incidentId: "INCIDENT #INC-9550 (P2 SEVERITY)",
+                description: "Setelah deployment website baru ke `/var/www/html/index.html`, pengunjung mendapat error `403 Forbidden`. Periksa izin akses (permission & ownership) file tersebut.",
+                netsecAnalogy: "Sama seperti kesalahan konfigurasi Access Control List (ACL) rule yang menolak traffic berdasarkan kriteria identitas user/group.",
+                hintText: "Gunakan `ls -la /var/www/html` untuk melihat permission bit (-rw-------) dan owner (root vs nginx).",
+                validCommands: ["ls -la /var/www/html", "ls -l /var/www/html/index.html", "ls -la /var/www/html/"],
+                options: [
+                    { id: 'A', text: 'chmod 777 /etc/nginx/nginx.conf', correct: false },
+                    { id: 'B', text: 'ls -la /var/www/html', correct: true },
+                    { id: 'C', text: 'rm -rf /var/www/html', correct: false },
+                    { id: 'D', text: 'ping /var/www/html', correct: false }
+                ],
+                terminalOutputLines: [
+                    "drwxr-xr-x 2 root root 4096 Jul 31 10:00 .",
+                    "-rw------- 1 root root 1024 Jul 31 10:00 index.html"
+                ],
+                lineExplanations: [
+                    { line: "-rw------- 1 root root", text: "🔴 PERMISSION MISMATCH: File `index.html` hanya bisa dibaca oleh user `root` (mode 600). Worker process Nginx (user `nginx`) tidak memiliki izin read, menyebabkan HTTP 403 Forbidden!" }
+                ],
+                analogyExplanation: `
+                    <p class="mb-2"><strong>Dunia Firewall/Network:</strong> Ini adalah masalah ACL / Access Rights. Penanganan yang aman: <code class="text-cyan-300">chmod 644 /var/www/html/index.html</code> atau <code class="text-cyan-300">chown nginx:nginx /var/www/html/index.html</code> (Jangan berikan permission 777 membabi buta!).</p>
+                `
+            }
+        ];
+
+        /* ==========================================================================
+           APPLICATION STATE & VARIABLES
+           ========================================================================== */
+        let currentQuestionIndex = 0;
+        let activeFilteredQuestions = [...questionBank];
+        let userAnswers = {}; // { questionId: { selectedOption, typedCommand, isCorrect, score } }
+        let sessionSeconds = 0;
+        let timerInterval = null;
+        let currentViewMode = 'guided'; // 'guided' | 'sandbox'
+        let currentlySelectedOption = null;
+
+        /* ==========================================================================
+           INITIALIZATION & LIFECYCLE
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            startSessionTimer();
+            renderQuestionDots();
+            loadQuestion(0);
+            updateKPICards();
+        });
+
+        function startSessionTimer() {
+            timerInterval = setInterval(() => {
+                sessionSeconds++;
+                const mins = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
+                const secs = (sessionSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('session-timer').textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        /* ==========================================================================
+           QUESTION NAVIGATION & RENDERING ENGINE
+           ========================================================================== */
+        function loadQuestion(index) {
+            if (index < 0 || index >= activeFilteredQuestions.length) return;
+            currentQuestionIndex = index;
+            currentlySelectedOption = null; // Always reset selected option on question change!
+
+            const q = activeFilteredQuestions[index];
+
+            // Update Header & Index text
+            document.getElementById('current-q-index').textContent = index + 1;
+            document.getElementById('total-q-count').textContent = activeFilteredQuestions.length;
+            document.getElementById('q-module-badge').textContent = q.moduleTitle;
+            document.getElementById('q-topic-tag').textContent = q.topic;
+            document.getElementById('q-incident-id').textContent = q.incidentId;
+            document.getElementById('q-title').textContent = q.title;
+            document.getElementById('q-description').textContent = q.description;
+            document.getElementById('q-netsec-analogy').textContent = q.netsecAnalogy;
+
+            // Nav buttons disabled status
+            document.getElementById('btn-prev-q').disabled = (index === 0);
+            document.getElementById('btn-next-q').disabled = (index === activeFilteredQuestions.length - 1);
+
+            // Command Box reset & hints populate
+            const cliInput = document.getElementById('cli-input-box');
+            cliInput.value = '';
+            
+            const hintsContainer = document.getElementById('q-command-hints');
+            hintsContainer.innerHTML = `<span class="text-[10px] text-slate-400 font-sans">Quick fill hint:</span>`;
+            q.validCommands.forEach(cmd => {
+                const hintBtn = document.createElement('button');
+                hintBtn.className = "px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded text-[11px] text-cyan-300 font-mono transition";
+                hintBtn.textContent = cmd;
+                hintBtn.onclick = (e) => {
+                    e.preventDefault();
+                    cliInput.value = cmd;
+                };
+                hintsContainer.appendChild(hintBtn);
+            });
+
+            // Render Options
+            const optionsContainer = document.getElementById('q-options-container');
+            optionsContainer.innerHTML = '';
+            q.options.forEach(opt => {
+                const optEl = document.createElement('div');
+                optEl.className = `q-opt-item p-3 rounded-lg border border-slate-800 bg-slate-950/70 hover:bg-slate-900 hover:border-slate-700 cursor-pointer transition flex items-center justify-between text-xs font-mono`;
+                optEl.id = `opt-card-${opt.id}`;
+                optEl.onclick = () => selectOption(opt.id);
+                optEl.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="opt-badge h-6 w-6 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs shrink-0">${opt.id}</span>
+                        <span class="text-slate-200">${escapeHTML(opt.text)}</span>
+                    </div>
+                    <i class="fa-regular fa-circle text-slate-600 text-sm opt-radio"></i>
+                `;
+                optionsContainer.appendChild(optEl);
+            });
+
+            // Check if already answered
+            const savedAns = userAnswers[q.id];
+            const feedbackPanel = document.getElementById('feedback-panel');
+            const statusBadge = document.getElementById('q-status-badge');
+
+            if (savedAns) {
+                statusBadge.textContent = savedAns.isCorrect ? "SOLVED" : "INCORRECT";
+                statusBadge.className = savedAns.isCorrect 
+                    ? "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800"
+                    : "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-950 text-rose-400 border border-rose-800";
+                
+                if (savedAns.selectedOption) {
+                    highlightOptionSelection(savedAns.selectedOption);
+                }
+                if (savedAns.typedCommand) {
+                    cliInput.value = savedAns.typedCommand;
+                }
+                showFeedback(q, savedAns.isCorrect);
+            } else {
+                statusBadge.textContent = "UNANSWERED";
+                statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-800 text-slate-400";
+                feedbackPanel.classList.add('hidden');
+            }
+
+            updateQuestionDots();
+        }
+
+        function selectOption(optId) {
+            currentlySelectedOption = optId;
+            highlightOptionSelection(optId);
+        }
+
+        function highlightOptionSelection(optId) {
+            document.querySelectorAll('.q-opt-item').forEach(el => {
+                el.classList.remove('border-cyan-500', 'bg-cyan-950/30');
+                const radio = el.querySelector('.opt-radio');
+                if (radio) {
+                    radio.className = "fa-regular fa-circle text-slate-600 text-sm opt-radio";
+                }
+            });
+            const selEl = document.getElementById(`opt-card-${optId}`);
+            if (selEl) {
+                selEl.classList.add('border-cyan-500', 'bg-cyan-950/30');
+                const radio = selEl.querySelector('.opt-radio');
+                if (radio) {
+                    radio.className = "fa-solid fa-circle-check text-cyan-400 text-sm opt-radio";
+                }
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) loadQuestion(currentQuestionIndex - 1);
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < activeFilteredQuestions.length - 1) loadQuestion(currentQuestionIndex + 1);
+        }
+
+        function filterModule(modId) {
+            // Update active tab button style
+            document.querySelectorAll('.mod-tab').forEach(b => {
+                b.className = "mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition";
+            });
+
+            if (modId === 'all') {
+                activeFilteredQuestions = [...questionBank];
+                document.getElementById('tab-all').className = "mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition";
+            } else {
+                activeFilteredQuestions = questionBank.filter(q => q.module === modId);
+                const tabEl = document.getElementById(`tab-mod${modId}`);
+                if (tabEl) tabEl.className = "mod-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition";
+            }
+
+            renderQuestionDots();
+            loadQuestion(0);
+        }
+
+        function renderQuestionDots() {
+            const container = document.getElementById('q-dots-container');
+            container.innerHTML = '';
+            activeFilteredQuestions.forEach((q, idx) => {
+                const dot = document.createElement('button');
+                dot.id = `q-dot-${idx}`;
+                dot.onclick = () => loadQuestion(idx);
+                dot.className = "h-2.5 w-2.5 rounded-full bg-slate-800 hover:bg-slate-700 transition";
+                container.appendChild(dot);
+            });
+            updateQuestionDots();
+        }
+
+        function updateQuestionDots() {
+            activeFilteredQuestions.forEach((q, idx) => {
+                const dot = document.getElementById(`q-dot-${idx}`);
+                if (!dot) return;
+                const ans = userAnswers[q.id];
+                if (idx === currentQuestionIndex) {
+                    dot.className = "h-3 w-3 rounded-full bg-cyan-400 ring-2 ring-cyan-500/50 transition";
+                } else if (ans && ans.isCorrect) {
+                    dot.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 transition";
+                } else if (ans && !ans.isCorrect) {
+                    dot.className = "h-2.5 w-2.5 rounded-full bg-rose-500 transition";
+                } else {
+                    dot.className = "h-2.5 w-2.5 rounded-full bg-slate-800 hover:bg-slate-700 transition";
+                }
+            });
+        }
+
+        /* ==========================================================================
+           ANSWER EVALUATION & FEEDBACK ENGINE
+           ========================================================================== */
+        function handleCLIFormSubmit(e) {
+            e.preventDefault();
+            const typed = document.getElementById('cli-input-box').value.trim();
+            if (!typed) return;
+            submitAnswerInternal(null, typed);
+        }
+
+        function submitCurrentAnswer() {
+            const typed = document.getElementById('cli-input-box').value.trim();
+            if (currentlySelectedOption) {
+                submitAnswerInternal(currentlySelectedOption, typed);
+            } else if (typed) {
+                submitAnswerInternal(null, typed);
+            } else {
+                alert("Pilih salah satu opsi jawaban atau ketik perintah CLI di kolom terminal!");
+            }
+        }
+
+        function submitAnswerInternal(optId, typedCmd) {
+            const q = activeFilteredQuestions[currentQuestionIndex];
+            let isCorrect = false;
+
+            // Check if Question is Special SOP Modal trigger (Q7)
+            if (q.isSOPScenario && optId === 'B') {
+                openSOPModal();
+                return;
+            }
+
+            if (optId) {
+                const selectedObj = q.options.find(o => o.id === optId);
+                if (selectedObj && selectedObj.correct) isCorrect = true;
+            } else if (typedCmd) {
+                const cleanTyped = typedCmd.toLowerCase().replace(/\s+/g, ' ');
+                isCorrect = q.validCommands.some(valid => cleanTyped === valid.toLowerCase().replace(/\s+/g, ' '));
+            }
+
+            userAnswers[q.id] = {
+                selectedOption: optId,
+                typedCommand: typedCmd,
+                isCorrect: isCorrect,
+                score: isCorrect ? 100 : 0
+            };
+
+            // Mirror command execution to Sandbox Terminal
+            const cmdToExec = typedCmd || (q.options.find(o => o.id === optId)?.text || '');
+            appendSandboxOutput(`[root@prod-node01 ~]# ${cmdToExec}`);
+            appendSandboxOutput(q.terminalOutputLines.join('\n'), 'cyan');
+
+            showFeedback(q, isCorrect);
+            updateKPICards();
+            updateQuestionDots();
+            loadQuestion(currentQuestionIndex); // Refresh state
+        }
+
+        function showFeedback(q, isCorrect) {
+            const panel = document.getElementById('feedback-panel');
+            const banner = document.getElementById('feedback-status-banner');
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const subtitle = document.getElementById('feedback-subtitle');
+            const pts = document.getElementById('feedback-points');
+            const analogyContent = document.getElementById('feedback-analogy-content');
+            const termOutput = document.getElementById('feedback-terminal-output');
+            const lineExplanations = document.getElementById('feedback-line-explanations');
+
+            panel.classList.remove('hidden');
+
+            if (isCorrect) {
+                panel.className = "glass-panel rounded-xl p-6 border-l-4 border-emerald-500 space-y-5 shadow-xl emerald-glow";
+                banner.className = "p-3 rounded-lg flex items-center justify-between bg-emerald-950/60 border border-emerald-800/60 text-emerald-300";
+                icon.className = "h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base";
+                icon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                title.textContent = "Jawaban / CLI Command BENAR!";
+                subtitle.textContent = "Triage yang Anda lakukan tepat sasaran sesuai SOP Banking Enterprise.";
+                pts.textContent = "+100 PTS";
+                pts.className = "px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-emerald-400 border border-emerald-800";
+            } else {
+                panel.className = "glass-panel rounded-xl p-6 border-l-4 border-rose-500 space-y-5 shadow-xl";
+                banner.className = "p-3 rounded-lg flex items-center justify-between bg-rose-950/60 border border-rose-800/60 text-rose-300";
+                icon.className = "h-8 w-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-base";
+                icon.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+                title.textContent = "Jawaban Kurang Tepat";
+                subtitle.textContent = "Perhatikan analogi network & breakdown baris terminal di bawah untuk perbaikan.";
+                pts.textContent = "0 PTS (Retrying...)";
+                pts.className = "px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-rose-400 border border-rose-800";
+            }
+
+            // Fill Analogy Content
+            analogyContent.innerHTML = q.analogyExplanation;
+
+            // Fill Terminal Raw Output
+            termOutput.innerHTML = q.terminalOutputLines.map(line => {
+                let colorClass = "text-slate-300";
+                if (line.includes("inactive (dead)") || line.includes("Exited") || line.includes("error") || line.includes("100%") || line.includes("notAfter")) {
+                    colorClass = "text-rose-400 font-semibold";
+                } else if (line.includes("Active: active") || line.includes("Complete!") || line.includes("LISTEN")) {
+                    colorClass = "text-emerald-400 font-semibold";
+                }
+                return `<div class="${colorClass}">${escapeHTML(line)}</div>`;
+            }).join('');
+
+            // Fill Line Explanations
+            lineExplanations.innerHTML = '';
+            q.lineExplanations.forEach(item => {
+                const expCard = document.createElement('div');
+                expCard.className = "p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs flex items-start space-x-2";
+                expCard.innerHTML = `
+                    <i class="fa-solid fa-terminal text-cyan-400 mt-0.5 shrink-0"></i>
+                    <div>
+                        <span class="font-mono text-amber-300 font-semibold block mb-0.5">${escapeHTML(item.line)}</span>
+                        <span class="text-slate-300 font-sans">${item.text}</span>
+                    </div>
+                `;
+                lineExplanations.appendChild(expCard);
+            });
+        }
+
+        function clearCurrentAnswer() {
+            const q = activeFilteredQuestions[currentQuestionIndex];
+            delete userAnswers[q.id];
+            currentlySelectedOption = null;
+            loadQuestion(currentQuestionIndex);
+            updateKPICards();
+        }
+
+        /* ==========================================================================
+           KPI DASHBOARD & MASTERY LEVEL CALCULATOR
+           ========================================================================== */
+        function updateKPICards() {
+            const answeredKeys = Object.keys(userAnswers);
+            const totalCount = questionBank.length;
+            const completedCount = answeredKeys.length;
+            
+            let correctCount = 0;
+            let incorrectCount = 0;
+
+            answeredKeys.forEach(k => {
+                if (userAnswers[k].isCorrect) correctCount++;
+                else incorrectCount++;
+            });
+
+            const completionPct = Math.round((completedCount / totalCount) * 100);
+            const scorePts = correctCount * 100;
+
+            // Render KPI values
+            document.getElementById('kpi-completion-percent').textContent = `${completionPct}%`;
+            document.getElementById('kpi-completion-count').textContent = `(${completedCount}/${totalCount} Complete)`;
+            document.getElementById('kpi-progress-bar').style.width = `${completionPct}%`;
+            
+            document.getElementById('kpi-correct').textContent = correctCount;
+            document.getElementById('kpi-score-pts').textContent = `${scorePts} pts`;
+            document.getElementById('kpi-incorrect').textContent = incorrectCount;
+
+            // Mastery Tier Badge logic
+            const badgeEl = document.getElementById('kpi-mastery-badge');
+            const subEl = document.getElementById('kpi-mastery-sub');
+
+            if (correctCount >= 9) {
+                badgeEl.textContent = "L1 COMMAND MASTER 🏆";
+                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 emerald-glow";
+                subEl.textContent = "Ready for Enterprise Incident Triage On-Call!";
+            } else if (correctCount >= 6) {
+                badgeEl.textContent = "L1 PRACTITIONER ⚡";
+                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/50";
+                subEl.textContent = "Strong Linux CLI & Container fundamentals.";
+            } else if (correctCount >= 3) {
+                badgeEl.textContent = "L1 JUNIOR TRIAGER 🛠️";
+                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/50";
+                subEl.textContent = "Building CLI mental models from NetSec background.";
+            } else {
+                badgeEl.textContent = "L1 NOVICE (RECRUIT)";
+                badgeEl.className = "px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-slate-800 text-slate-400 border border-slate-700";
+                subEl.textContent = "Complete modules to promote your mastery tier.";
+            }
+        }
+
+        function resetAssessment() {
+            if (confirm("Apakah Anda yakin ingin mereset seluruh progress assessment?")) {
+                userAnswers = {};
+                sessionSeconds = 0;
+                currentlySelectedOption = null;
+                loadQuestion(0);
+                updateKPICards();
+            }
+        }
+
+        /* ==========================================================================
+           FULL INTERACTIVE TERMINAL SANDBOX ENGINE (CLI PARSER)
+           ========================================================================== */
+        function handleSandboxTermKeyDown(e) {
+            if (e.key === 'Enter') {
+                execSandboxCommand();
+            }
+        }
+
+        function execSandboxCommand() {
+            const inputEl = document.getElementById('sandbox-term-input');
+            const rawCmd = inputEl.value.trim();
+            if (!rawCmd) return;
+
+            inputEl.value = '';
+            appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}`);
+
+            const cmdLower = rawCmd.toLowerCase();
+
+            if (cmdLower === 'clear') {
+                clearTerminalScreen();
+                return;
+            }
+
+            if (cmdLower === 'help') {
+                appendSandboxOutput(`
+Available Assessment Sandbox Commands:
+  • systemctl status nginx   - Cek status daemon web server
+  • journalctl -u nginx -f   - Live stream error log Nginx
+  • ss -tulpn                - Cek listening ports & PID
+  • docker ps -a             - List status container microservice
+  • docker logs payment-api  - Inspect container internal log
+  • df -h                    - Cek sisa storage mount point
+  • yum install -y nginx     - Run RPM package manager installation
+  • openssl x509...          - Inspect SSL cert dates
+  • clear / help             - Terminal utilities
+                `, 'cyan');
+                return;
+            }
+
+            // Command Matching to Question Responses or General Output
+            const matchedQ = questionBank.find(q => q.validCommands.some(vc => cmdLower.includes(vc.toLowerCase())));
+            if (matchedQ) {
+                appendSandboxOutput(matchedQ.terminalOutputLines.join('\n'), 'emerald');
+            } else if (cmdLower.startsWith('systemctl status')) {
+                appendSandboxOutput("● service - Systemd Service Manager\n   Active: active (running) since Fri 2026-07-31 08:00:00 WIB", 'emerald');
+            } else if (cmdLower.startsWith('ping')) {
+                appendSandboxOutput("PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.\n64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.042 ms", 'slate');
+            } else {
+                appendSandboxOutput(`bash: ${rawCmd}: command executed in sandbox mode. (Type 'help' for command list)`, 'amber');
+            }
+        }
+
+        function appendSandboxOutput(text, color = 'slate') {
+            const screen = document.getElementById('sandbox-term-screen');
+            const line = document.createElement('div');
+            
+            let colorClass = "text-slate-300";
+            if (color === 'cyan') colorClass = "text-cyan-300";
+            if (color === 'emerald') colorClass = "text-emerald-400 font-semibold";
+            if (color === 'amber') colorClass = "text-amber-300";
+
+            line.className = `whitespace-pre-wrap ${colorClass}`;
+            line.textContent = text;
+            screen.appendChild(line);
+            screen.scrollTop = screen.scrollHeight;
+        }
+
+        function clearTerminalScreen() {
+            const screen = document.getElementById('sandbox-term-screen');
+            screen.innerHTML = `<div class="text-slate-400">Terminal buffer cleared. Ready for input.</div>`;
+        }
+
+        /* ==========================================================================
+           MODALS & AUXILIARY HELPERS
+           ========================================================================== */
+        function showHintModal() {
+            const q = activeFilteredQuestions[currentQuestionIndex];
+            document.getElementById('hint-modal-text').textContent = q.hintText;
+            document.getElementById('hint-modal').classList.remove('hidden');
+        }
+
+        function closeHintModal() {
+            document.getElementById('hint-modal').classList.add('hidden');
+        }
+
+        function openSOPModal() {
+            document.getElementById('sop-escalation-modal').classList.remove('hidden');
+        }
+
+        function closeSOPModal() {
+            document.getElementById('sop-escalation-modal').classList.add('hidden');
+        }
+
+        function confirmSOPEscalation() {
+            closeSOPModal();
+            userAnswers[7] = {
+                selectedOption: 'B',
+                typedCommand: 'SOP Escalation Ticket Submitted',
+                isCorrect: true,
+                score: 100
+            };
+            loadQuestion(currentQuestionIndex);
+            updateKPICards();
+            updateQuestionDots();
+        }
+
+        function switchViewMode(mode) {
+            currentViewMode = mode;
+            const btnGuided = document.getElementById('mode-guided');
+            const btnSandbox = document.getElementById('mode-sandbox');
+            const leftPanel = document.getElementById('left-assessment-panel');
+
+            if (mode === 'sandbox') {
+                btnGuided.className = "px-3 py-1 rounded text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
+                btnSandbox.className = "px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-cyan-400 shadow-sm transition";
+                leftPanel.classList.add('hidden');
+            } else {
+                btnGuided.className = "px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-cyan-400 shadow-sm transition";
+                btnSandbox.className = "px-3 py-1 rounded text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
+                leftPanel.classList.remove('hidden');
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
