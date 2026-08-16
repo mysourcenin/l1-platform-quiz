@@ -565,6 +565,11 @@ devtmpfs 3.9G 0 3.9G 0% /dev
 /dev/mapper/rhel-root 20G 18G 2.0G 90% /
 /dev/mapper/rhel-var_log 10G 10G 0B 100% /var/log`,
 
+            "df -i": `Filesystem Inodes IUsed IFree IUse% Mounted on
+devtmpfs 1003420 0 1003420 0% /dev
+/dev/mapper/rhel-root 1310720 1310720 0 100% /
+/dev/mapper/rhel-var_log 655360 655360 0 100% /var/log`,
+
             "free -m": `              total        used        free      shared  buff/cache   available
 Mem:           7840        5120         720         128        2000        2400
 Swap:          2048         512        1536`,
@@ -1032,6 +1037,26 @@ Ncat: Connected to 10.10.4.50:3306.
             loadQuestion(currentQuestionIndex);
         }
 
+        function getTerminalOutputForCommand(rawCmd) {
+            if (!rawCmd) return "● Process executed on RHEL 8 Kernel";
+            const cmdLower = rawCmd.toLowerCase().trim();
+
+            if (terminalResponses[cmdLower]) return terminalResponses[cmdLower];
+
+            let exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower.includes(k.toLowerCase()));
+            if (exactMatchKey && terminalResponses[exactMatchKey]) {
+                return terminalResponses[exactMatchKey];
+            }
+
+            const firstWord = cmdLower.split(' ')[0];
+            exactMatchKey = Object.keys(terminalResponses).find(k => k.toLowerCase().startsWith(firstWord));
+            if (exactMatchKey && terminalResponses[exactMatchKey]) {
+                return terminalResponses[exactMatchKey];
+            }
+
+            return `● ${rawCmd} - Process executed on RHEL 8 Kernel.\n   Status: Service unit state updated.`;
+        }
+
         function showFeedback(q, isCorrect) {
             const panel = document.getElementById('feedback-panel');
             const banner = document.getElementById('feedback-status-banner');
@@ -1066,7 +1091,7 @@ Ncat: Connected to 10.10.4.50:3306.
 
             analogyContent.innerHTML = escapeHTML(q.analogy);
             
-            let sampleOutput = terminalResponses[q.valid[0]] || `● ${q.valid[0]} - Executed on RHEL 8\n   Status: Command process completed successfully.`;
+            let sampleOutput = getTerminalOutputForCommand(q.valid[0]);
 
             termOutput.innerHTML = `
                 <div class="text-amber-400 font-bold mb-1">KUNCI PERINDAH CLI TRIAGE & PEMBAHASAN:</div>
