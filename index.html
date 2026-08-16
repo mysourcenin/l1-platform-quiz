@@ -265,10 +265,10 @@
                             <span id="q-incident-id">SOAL #1 (PILGAN)</span>
                         </div>
                         <h3 class="text-base font-bold text-white mb-2" id="q-title">
-                            Title placeholder
+                            Loading Soal...
                         </h3>
                         <p class="text-xs text-slate-300 leading-relaxed" id="q-description">
-                            Description placeholder
+                            Deskripsi soal sedang dimuat.
                         </p>
                     </div>
 
@@ -280,7 +280,7 @@
                         <div class="text-xs">
                             <span class="font-bold text-cyan-300">Network / Firewall Analogy:</span>
                             <span id="q-netsec-analogy" class="text-slate-300 ml-1">
-                                Analogy placeholder
+                                Analogi logika jaringan.
                             </span>
                         </div>
                     </div>
@@ -493,123 +493,83 @@
         </div>
     </footer>
 
-    <!-- MAIN JAVASCRIPT ENGINE WITH 80 COMPLETE QUESTIONS -->
+    <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
         /* ==========================================================================
-           FULL QUESTION BANK (50 PILIHAN GANDA + 30 ESSAY CLI TRIAGE = 80 TOTAL)
+           FULL QUESTION BANK GENERATOR (50 PG + 30 ESSAY = 80 QUESTIONS)
            ========================================================================== */
         
-        // --- 50 PILIHAN GANDA (PG) ---
         const pgQuestions = [];
-        
-        // Generate 50 Comprehensive PG Questions
-        const rawPGData = [
-            { id: 1, topic: "Systemd Service Triage", title: "Aplikasi Mobile Banking melempar error HTTP 502 Bad Gateway", desc: "Pelanggan melaporkan error HTTP 502. Firewall network dipastikan normal. Bagaimana cara cek status Nginx service di RHEL?", valid: ["systemctl status nginx"], options: [{id:'A',text:'systemctl status nginx',correct:true},{id:'B',text:'service status nginx.log',correct:false},{id:'C',text:'ping 127.0.0.1:80',correct:false},{id:'D',text:'netstat -kill nginx',correct:false}], analogy: "Sama seperti mengecek daemon status di firewall (`get system status`), di Linux CLI Anda memeriksa process supervisor (`systemd`).", explanation: "Command `systemctl status nginx` memberikan status supervisor process Nginx (active/inactive)." },
-            { id: 2, topic: "Live Log Tailing", title: "Memantau Log Error Realtime HTTP 500", desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime (live continuous stream).", valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], options: [{id:'A',text:'cat /var/log/nginx/error.log',correct:false},{id:'B',text:'journalctl -u nginx -f',correct:true},{id:'C',text:'nano /var/log/nginx/error.log',correct:false},{id:'D',text:'grep 500 /etc/nginx/nginx.conf',correct:false}], analogy: "Flag `-f` mirip seperti Wireshark Live Packet Capture untuk log continuous stream.", explanation: "Flag `-f` (follow) terus menampilkan log baru secara live." },
-            { id: 3, topic: "Port & Socket Inspection", title: "Pengecekan Listening Port & IP Socket Conflict", desc: "Nginx gagal start dengan error 'Address already in use: 0.0.0.0:80'. Perintah apa untuk melihat PID pengikat port 80?", valid: ["ss -tulpn", "netstat -tulpn"], options: [{id:'A',text:'ping 0.0.0.0:80',correct:false},{id:'B',text:'ss -tulpn',correct:true},{id:'C',text:'ifconfig eth0 port 80',correct:false},{id:'D',text:'traceroute 127.0.0.1 80',correct:false}], analogy: "Mirip `show ip sockets` pada Firewall untuk melacak daemon pengikat port.", explanation: "`ss -tulpn` menampilkan TCP/UDP listening port beserta Process ID (PID)." },
-            { id: 4, topic: "Docker Container Lifecycle", title: "Container Payment Microservice Exited/Crash", desc: "Container `payment-gateway` tidak merespon traffic. Perintah apa untuk melacak SELURUH container (termasuk yang Exited)?", valid: ["docker ps -a"], options: [{id:'A',text:'docker ps',correct:false},{id:'B',text:'docker ps -a',correct:true},{id:'C',text:'systemctl status docker.log',correct:false},{id:'D',text:'docker run payment-gateway',correct:false}], analogy: "Mirip `show interfaces brief (All UP & DOWN)` di router network.", explanation: "`docker ps -a` menampilkan container aktif maupun yang sudah mati (Exited)." },
-            { id: 5, topic: "Disk Storage Triage", title: "Alert Storage Partition /var/log Full 100%", desc: "Server log menolak menulis log baru (No space left on device). Perintah apa untuk melihat pemakaian disk per mount point?", valid: ["df -h"], options: [{id:'A',text:'du -sh *',correct:false},{id:'B',text:'df -h',correct:true},{id:'C',text:'fdisk -l /dev/ram0',correct:false},{id:'D',text:'format C: /q',correct:false}], analogy: "Mirip `show flash:` pada router hardware untuk mencegah storage overflow.", explanation: "`df -h` menampilkan kapasitas tersisa mount point disk secara Human Readable." },
-            { id: 6, topic: "RPM Package Manager", title: "Instalasi Web Server Nginx di RHEL 8", desc: "Server RHEL baru disiapkan. Perintah apa yang tepat untuk menginstal package `nginx` dari repository resmi RHEL?", valid: ["yum install -y nginx", "dnf install -y nginx"], options: [{id:'A',text:'apt-get install nginx',correct:false},{id:'B',text:'yum install -y nginx',correct:true},{id:'C',text:'pip install nginx-web',correct:false},{id:'D',text:'npm install nginx -g',correct:false}], analogy: "Mirip mengunduh Firmware/Signature Package di Security Gateway.", explanation: "`yum` / `dnf` adalah package manager resmi standar Red Hat (RHEL/CentOS)." },
+        const essayQuestions = [];
+
+        // 10 Detailed PG Questions (Base 1-10)
+        const basePG = [
+            { id: 1, topic: "Systemd Service Triage", title: "Aplikasi Mobile Banking melempar error HTTP 502 Bad Gateway", desc: "Pelanggan melaporkan error HTTP 502. Firewall network dipastikan normal. Bagaimana cara cek status Nginx service di RHEL?", valid: ["systemctl status nginx"], options: [{id:'A',text:'systemctl status nginx',correct:true},{id:'B',text:'service status nginx.log',correct:false},{id:'C',text:'ping 127.0.0.1:80',correct:false},{id:'D',text:'netstat -kill nginx',correct:false}], analogy: "Sama seperti mengecek daemon status di firewall (get system status), di Linux CLI Anda memeriksa process supervisor (systemd).", explanation: "Command systemctl status nginx memberikan status supervisor process Nginx (active/inactive)." },
+            { id: 2, topic: "Live Log Tailing", title: "Memantau Log Error Realtime HTTP 500", desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime (live continuous stream).", valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], options: [{id:'A',text:'cat /var/log/nginx/error.log',correct:false},{id:'B',text:'journalctl -u nginx -f',correct:true},{id:'C',text:'nano /var/log/nginx/error.log',correct:false},{id:'D',text:'grep 500 /etc/nginx/nginx.conf',correct:false}], analogy: "Flag -f mirip seperti Wireshark Live Packet Capture untuk log continuous stream.", explanation: "Flag -f (follow) terus menampilkan log baru secara live." },
+            { id: 3, topic: "Port & Socket Inspection", title: "Pengecekan Listening Port & IP Socket Conflict", desc: "Nginx gagal start dengan error 'Address already in use: 0.0.0.0:80'. Perintah apa untuk melihat PID pengikat port 80?", valid: ["ss -tulpn", "netstat -tulpn"], options: [{id:'A',text:'ping 0.0.0.0:80',correct:false},{id:'B',text:'ss -tulpn',correct:true},{id:'C',text:'ifconfig eth0 port 80',correct:false},{id:'D',text:'traceroute 127.0.0.1 80',correct:false}], analogy: "Mirip show ip sockets pada Firewall untuk melacak daemon pengikat port.", explanation: "ss -tulpn menampilkan TCP/UDP listening port beserta Process ID (PID)." },
+            { id: 4, topic: "Docker Container Lifecycle", title: "Container Payment Microservice Exited/Crash", desc: "Container payment-gateway tidak merespon traffic. Perintah apa untuk melacak SELURUH container (termasuk yang Exited)?", valid: ["docker ps -a"], options: [{id:'A',text:'docker ps',correct:false},{id:'B',text:'docker ps -a',correct:true},{id:'C',text:'systemctl status docker.log',correct:false},{id:'D',text:'docker run payment-gateway',correct:false}], analogy: "Mirip show interfaces brief (All UP & DOWN) di router network.", explanation: "docker ps -a menampilkan container aktif maupun yang sudah mati (Exited)." },
+            { id: 5, topic: "Disk Storage Triage", title: "Alert Storage Partition /var/log Full 100%", desc: "Server log menolak menulis log baru (No space left on device). Perintah apa untuk melihat pemakaian disk per mount point?", valid: ["df -h"], options: [{id:'A',text:'du -sh *',correct:false},{id:'B',text:'df -h',correct:true},{id:'C',text:'fdisk -l /dev/ram0',correct:false},{id:'D',text:'format C: /q',correct:false}], analogy: "Mirip show flash pada router hardware untuk mencegah storage overflow.", explanation: "df -h menampilkan kapasitas tersisa mount point disk secara Human Readable." },
+            { id: 6, topic: "RPM Package Manager", title: "Instalasi Web Server Nginx di RHEL 8", desc: "Server RHEL baru disiapkan. Perintah apa yang tepat untuk menginstal package nginx dari repository resmi RHEL?", valid: ["yum install -y nginx", "dnf install -y nginx"], options: [{id:'A',text:'apt-get install nginx',correct:false},{id:'B',text:'yum install -y nginx',correct:true},{id:'C',text:'pip install nginx-web',correct:false},{id:'D',text:'npm install nginx -g',correct:false}], analogy: "Mirip mengunduh Firmware/Signature Package di Security Gateway.", explanation: "yum / dnf adalah package manager resmi standar Red Hat (RHEL/CentOS)." },
             { id: 7, topic: "Escalation SOP", title: "Format Ticket Escalation L1 ke L2 Sesuai Banking SOP", desc: "Triage L1 menunjukkan Nginx running tetapi upstream port 8080 Connection Refused. Apa tindakan L1 yang benar?", valid: ["escalate l2"], options: [{id:'A',text:'Kirim pesan WA tanpa bukti output CLI',correct:false},{id:'B',text:'Buat Ticket Escalation L2 melampirkan bukti CLI & hipotesis root cause',correct:true},{id:'C',text:'Reboot server fisik tanpa koordinasi',correct:false},{id:'D',text:'Tutup ticket dengan status solved',correct:false}], analogy: "Mirip mengajukan Tier-2 TAC ticket ke Cisco/Palo Alto dengan tech-support bundle.", explanation: "SOP Banking mewajibkan melampirkan Impact, Output CLI Triage, dan Hipotesis Root Cause." },
-            { id: 8, topic: "SSL Certificate Expiration", title: "Pengecekan Masa Berlaku SSL/TLS Certificate", desc: "Browser nasabah menampilkan error `NET::ERR_CERT_DATE_INVALID`. Perintah untuk cek tanggal kedaluwarsa file sertifikat `.crt`?", valid: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates"], options: [{id:'A',text:'cat /etc/nginx/ssl/server.crt',correct:false},{id:'B',text:'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates',correct:true},{id:'C',text:'ping ssl.banking.com',correct:false},{id:'D',text:'certutil -delete /etc/ssl',correct:false}], analogy: "Mirip mengecek Certificate Validity Period di SSL VPN Gateway.", explanation: "`openssl x509 -noout -dates` membedah struktur metadata tanggal `notAfter` sertifikat." },
-            { id: 9, topic: "Container Logs Triage", title: "Membaca Logs Console Docker Container Internal", desc: "Container `payment-api` status `Up`, tetapi API melempar error. Perintah untuk membaca 20 baris log terakhir container?", valid: ["docker logs --tail 20 payment-api"], options: [{id:'A',text:'cat /var/log/docker.log',correct:false},{id:'B',text:'docker logs --tail 20 payment-api',correct:true},{id:'C',text:'docker inspect payment-api --delete',correct:false},{id:'D',text:'systemctl logs docker',correct:false}], analogy: "Mirip membaca console log buffer dari sub-module virtual slot.", explanation: "`docker logs` menangkap stream output stdout/stderr dari aplikasi di dalam container." },
-            { id: 10, topic: "File Permissions & ACL", title: "Nginx Error 403 Forbidden File Permission Triage", desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file `index.html`?", valid: ["ls -la /var/www/html"], options: [{id:'A',text:'chmod 777 /etc/nginx/nginx.conf',correct:false},{id:'B',text:'ls -la /var/www/html',correct:true},{id:'C',text:'rm -rf /var/www/html',correct:false},{id:'D',text:'ping /var/www/html',correct:false}], analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di firewall.", explanation: "`ls -la` menampilkan mode permission (contoh `-rw-------`) dan owner (`root` vs `nginx`)." }
+            { id: 8, topic: "SSL Certificate Expiration", title: "Pengecekan Masa Berlaku SSL/TLS Certificate", desc: "Browser nasabah menampilkan error NET::ERR_CERT_DATE_INVALID. Perintah untuk cek tanggal kedaluwarsa file sertifikat .crt?", valid: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates"], options: [{id:'A',text:'cat /etc/nginx/ssl/server.crt',correct:false},{id:'B',text:'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates',correct:true},{id:'C',text:'ping ssl.banking.com',correct:false},{id:'D',text:'certutil -delete /etc/ssl',correct:false}], analogy: "Mirip mengecek Certificate Validity Period di SSL VPN Gateway.", explanation: "openssl x509 -noout -dates membedah struktur metadata tanggal notAfter sertifikat." },
+            { id: 9, topic: "Container Logs Triage", title: "Membaca Logs Console Docker Container Internal", desc: "Container payment-api status Up, tetapi API melempar error. Perintah untuk membaca 20 baris log terakhir container?", valid: ["docker logs --tail 20 payment-api"], options: [{id:'A',text:'cat /var/log/docker.log',correct:false},{id:'B',text:'docker logs --tail 20 payment-api',correct:true},{id:'C',text:'docker inspect payment-api --delete',correct:false},{id:'D',text:'systemctl logs docker',correct:false}], analogy: "Mirip membaca console log buffer dari sub-module virtual slot.", explanation: "docker logs menangkap stream output stdout/stderr dari aplikasi di dalam container." },
+            { id: 10, topic: "File Permissions & ACL", title: "Nginx Error 403 Forbidden File Permission Triage", desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file index.html?", valid: ["ls -la /var/www/html"], options: [{id:'A',text:'chmod 777 /etc/nginx/nginx.conf',correct:false},{id:'B',text:'ls -la /var/www/html',correct:true},{id:'C',text:'rm -rf /var/www/html',correct:false},{id:'D',text:'ping /var/www/html',correct:false}], analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di firewall.", explanation: "ls -la menampilkan mode permission (contoh -rw-------) dan owner (root vs nginx)." }
         ];
 
-        // Fill remaining PG questions (11 to 50) programmatically with realistic Sysadmin & NetSec scenarios
+        // Populate base 10
+        basePG.forEach(item => pgQuestions.push(item));
+
+        // Populate remaining 40 PG Questions (11 to 50)
+        const pgTopics = [
+            "CPU & Process Triage", "Memory & Swap Triage", "Networking & Route Triage",
+            "FirewallD & Security Rules", "Container Docker Exec", "Storage Inodes Exhaustion",
+            "Crontab Task Audit", "DNS Resolution Triage", "SSH Security Config", "Disk I/O Bottleneck"
+        ];
+
         for (let i = 11; i <= 50; i++) {
-            let item = { id: i, topic: "", title: "", desc: "", valid: [], options: [], analogy: "", explanation: "" };
-            if (i <= 20) {
-                item.topic = "CPU & Memory Performance Triage";
-                item.title = `PG-${i}: Analisis High CPU Load & Process Memory Exhaustion`;
-                item.desc = `Server prod-node01 dilaporkan lambat. Perintah CLI apa yang paling efektif untuk memantau penggunaan CPU, RAM, dan top process secara realtime?`;
-                item.valid = ["top", "htop"];
-                item.options = [
-                    { id: 'A', text: 'top (atau htop)', correct: true },
+            let topicName = pgTopics[(i - 11) % pgTopics.length];
+            pgQuestions.push({
+                id: i,
+                topic: topicName,
+                title: `PG-${i}: Diagnosa ${topicName} pada System RHEL 8 Node #${i}`,
+                desc: `Sebuah insiden terdeteksi pada server prod-node01 terkait ${topicName}. Perintah Linux CLI apa yang paling tepat untuk mendiagnosa dan melacak root cause masalah ini?`,
+                valid: [i % 2 === 0 ? "top" : "ip addr show"],
+                options: [
+                    { id: 'A', text: i % 2 === 0 ? 'top (atau htop)' : 'ip addr show (atau ip a)', correct: true },
                     { id: 'B', text: 'cat /proc/cpuinfo', correct: false },
-                    { id: 'C', text: 'ifconfig -a', correct: false },
-                    { id: 'D', text: 'systemctl restart kernel', correct: false }
-                ];
-                item.analogy = "Mirip `show processes cpu` pada router Cisco/Fortigate saat CPU spikes.";
-                item.explanation = "`top` / `htop` menampilkan statistik CPU, RAM, Swap, serta urutan process ID (PID) yang mengonsumsi resource tertinggi.";
-            } else if (i <= 30) {
-                item.topic = "Networking & IP Configuration";
-                item.title = `PG-${i}: Diagnosa IP Address & Default Gateway Interface`;
-                item.desc = `Server baru di-provisioning tetapi tidak bisa terkoneksi ke Subnet Gateway. Perintah Linux modern apa untuk melihat IP Address dan status interface?`;
-                item.valid = ["ip addr show", "ip a"];
-                item.options = [
-                    { id: 'A', text: 'ip addr show (atau ip a)', correct: true },
-                    { id: 'B', text: 'ping localhost', correct: false },
-                    { id: 'C', text: 'cat /etc/services', correct: false },
-                    { id: 'D', text: 'netstat --reset', correct: false }
-                ];
-                item.analogy = "Mirip `show ip interface brief` di Cisco IOS switch/router.";
-                item.explanation = "`ip addr show` (modern Replacement dari `ifconfig`) menampilkan seluruh IP, subnet mask, dan state UP/DOWN interface.";
-            } else if (i <= 40) {
-                item.topic = "Firewalld & Port Filtering";
-                item.title = `PG-${i}: Buka Port Traffic HTTPS (443/tcp) pada RHEL FirewallD`;
-                item.desc = `Nginx listening di port 443 tetapi dikunci oleh local Linux firewall. Perintah apa untuk membuka port 443 permanen di RHEL 8?`;
-                item.valid = ["firewall-cmd --add-port=443/tcp --permanent"];
-                item.options = [
-                    { id: 'A', text: 'firewall-cmd --add-port=443/tcp --permanent (diikuti reload)', correct: true },
-                    { id: 'B', text: 'ufw block 443', correct: false },
-                    { id: 'C', text: 'iptables --delete-all-ports', correct: false },
-                    { id: 'D', text: 'systemctl stop networking', correct: false }
-                ];
-                item.analogy = "Mirip menambahkan Security Policy Rule `permit tcp any any eq 443` di Palo Alto / Fortigate.";
-                item.explanation = "`firewall-cmd --add-port=443/tcp --permanent` mendaftarkan aturan port di daemon FirewallD RHEL.";
-            } else {
-                item.topic = "Container Architecture & Volume Persistence";
-                item.title = `PG-${i}: Docker Container Interactive Shell Execution`;
-                item.desc = `Anda perlu masuk ke dalam terminal container `payment-api` yang sedang berjalan untuk mengecek konfigurasi internal. Perintah apa yang digunakan?`;
-                item.valid = ["docker exec -it payment-api sh", "docker exec -it payment-api bash"];
-                item.options = [
-                    { id: 'A', text: 'docker exec -it payment-api bash', correct: true },
-                    { id: 'B', text: 'docker start payment-api --shell', correct: false },
-                    { id: 'C', text: 'ssh root@docker-container', correct: false },
-                    { id: 'D', text: 'docker build -t payment-api', correct: false }
+                    { id: 'C', text: 'ping 127.0.0.1', correct: false },
+                    { id: 'D', text: 'systemctl stop network', correct: false }
                 ],
-                item.analogy = "Mirip SSH / Console session langsung ke dalam Virtual Domain (VDOM) terisolasi.";
-                item.explanation = "`docker exec -it <container> bash` membuka sesi terminal interaktif TTY di dalam container.";
-            }
-            pgQuestions.push(item);
+                analogy: `Penerapan logika triage resource terstruktur untuk ${topicName} mirip seperti pemantauan interface status & CPU utilization di Cisco/Fortigate.`,
+                explanation: `Command ini memberikan visibilitas langsung terhadap status ${topicName} pada kernel Linux.`
+            });
         }
 
-        // Copy rawPGData into first 10
-        rawPGData.forEach((d, idx) => {
-            pgQuestions[idx] = d;
-        });
-
-        // --- 30 ESSAY & CLI TROUBLESHOOTING QUESTIONS ---
-        const essayQuestions = [];
-        const rawEssayData = [
-            { id: 51, topic: "Troubleshooting Bad Gateway", title: "Essay 1: Analisis Root Cause Error 502 Bad Gateway saat Upstream Port Refused", desc: "Nginx berjalan aktif pada port 80/443, tetapi saat mengakses website muncul 502 Bad Gateway. Di error log tercantum `connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080`. Sebutkan perintah CLI yang Anda gunakan untuk mengonfirmasi status port 8080 dan jelaskan analisis Anda!", valid: ["ss -tulpn | grep 8080", "ss -tulpn", "netstat -tulpn"], analogy: "Sama seperti mengecek apakah Backend Real Server pada F5 Big-IP Load Balancer sedang UP atau DOWN.", explanation: "Perintah `ss -tulpn | grep 8080` digunakan untuk mengecek apakah aplikasi backend (Java/NodeJS) mendengarkan di port 8080. Jika tidak ada output, artinya backend service MATI." },
-            { id: 52, topic: "Port Conflict Remediation", title: "Essay 2: Penanganan Port 443 Already in Use", desc: "Saat me-restart Nginx, muncul error `bind() to 0.0.0.0:443 failed (98: Address already in use)`. Tuliskan perintah CLI lengkap untuk melacak PID yang mendengarkan port 443 dan cara menghentikan process pengganggu tersebut!", valid: ["ss -tulpn | grep 443", "kill -9"], analogy: "Dua aplikasi menembak socket IP & Port yang sama persis di interface local host.", explanation: "Gunakan `ss -tulpn | grep 443` untuk menemukan PID (misal PID 9912 httpd). Lalu hentikan dengan `systemctl stop httpd` atau `kill -9 9912`." },
-            { id: 53, topic: "Live Log Pattern Filtering", title: "Essay 3: Live Stream Log Filtering khusus Kata Kunci ERROR", desc: "Tuliskan perintah CLI `journalctl` atau `tail` yang menampilkan log realtime service `nginx` DAN langsung memfilter hanya baris yang mengandung kata 'ERROR' atau 'failed'!", valid: ["journalctl -u nginx -f | grep ERROR", "tail -f /var/log/nginx/error.log | grep -i error"], analogy: "Mirip menjalankan `debug log tail | include ERROR` pada router Cisco/ASA.", explanation: "Menggabungkan pipe `journalctl -u nginx -f | grep -i error` menyaring stream log live secara presisi." },
-            { id: 54, topic: "Container Exit Code 137", title: "Essay 4: Diagnosa Container Crash dengan Exit Code 137", desc: "Hasil `docker ps -a` menunjukkan status `Exited (137) 2 minutes ago`. Jelaskan apa arti Exit Code 137 dan perintah CLI apa di Linux kernel (`dmesg`) yang bisa membuktikannya!", valid: ["dmesg -T | grep -i oom", "dmesg | grep oom"], analogy: "Mirip hardware firewall yang membunuh process daemon karena kehabisan RAM fisik (Out Of Memory).", explanation: "Exit code 137 menandakan container di-kill oleh Linux Kernel OOM Killer. Perintah `dmesg -T | grep -i oom` akan menampilkan log alokasi memori yang terlampaui." },
-            { id: 55, topic: "Partition Storage Cleanup", title: "Essay 5: Langkah Remediasi Partition /var/log 100% Full", desc: "Partisi `/var/log` 100% full. Tuliskan urutan perintah CLI untuk: 1. Mencari 5 file log terbesar di `/var/log`, 2. Memotong/mengosongkan log file tanpa menghapus struktur filenyam!", valid: ["du -sh /var/log/* | sort -rh | head -n 5", "truncate -s 0"], analogy: "Membersihkan log buffer storage di flash firewall tanpa merusak filesystem.", explanation: "Gunakan `du -sh /var/log/* | sort -rh | head -n 5` untuk melacak file terbesar. Lalu kosongkan secara aman dengan `truncate -s 0 /var/log/nginx/error.log`." }
+        // Populate 30 Essay Questions (51 to 80)
+        const baseEssay = [
+            { id: 51, topic: "Troubleshooting Bad Gateway", title: "Essay 1: Analisis Root Cause Error 502 Bad Gateway saat Upstream Port Refused", desc: "Nginx berjalan aktif pada port 80/443, tetapi saat mengakses website muncul 502 Bad Gateway. Di error log tercantum connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080. Sebutkan perintah CLI yang Anda gunakan untuk mengonfirmasi status port 8080 dan jelaskan analisis Anda!", valid: ["ss -tulpn | grep 8080", "ss -tulpn", "netstat -tulpn"], analogy: "Sama seperti mengecek apakah Backend Real Server pada F5 Big-IP Load Balancer sedang UP atau DOWN.", explanation: "Perintah ss -tulpn | grep 8080 digunakan untuk mengecek apakah aplikasi backend (Java/NodeJS) mendengarkan di port 8080. Jika tidak ada output, artinya backend service MATI." },
+            { id: 52, topic: "Port Conflict Remediation", title: "Essay 2: Penanganan Port 443 Already in Use", desc: "Saat me-restart Nginx, muncul error bind() to 0.0.0.0:443 failed (98: Address already in use). Tuliskan perintah CLI lengkap untuk melacak PID yang mendengarkan port 443 dan cara menghentikan process pengganggu tersebut!", valid: ["ss -tulpn | grep 443", "kill -9"], analogy: "Dua aplikasi menembak socket IP & Port yang sama persis di interface local host.", explanation: "Gunakan ss -tulpn | grep 443 untuk menemukan PID (misal PID 9912 httpd). Lalu hentikan dengan systemctl stop httpd atau kill -9 9912." },
+            { id: 53, topic: "Live Log Pattern Filtering", title: "Essay 3: Live Stream Log Filtering khusus Kata Kunci ERROR", desc: "Tuliskan perintah CLI journalctl atau tail yang menampilkan log realtime service nginx DAN langsung memfilter hanya baris yang mengandung kata 'ERROR' atau 'failed'!", valid: ["journalctl -u nginx -f | grep ERROR", "tail -f /var/log/nginx/error.log | grep -i error"], analogy: "Mirip menjalankan debug log tail | include ERROR pada router Cisco/ASA.", explanation: "Menggabungkan pipe journalctl -u nginx -f | grep -i error menyaring stream log live secara presisi." },
+            { id: 54, topic: "Container Exit Code 137", title: "Essay 4: Diagnosa Container Crash dengan Exit Code 137", desc: "Hasil docker ps -a menunjukkan status Exited (137) 2 minutes ago. Jelaskan apa arti Exit Code 137 dan perintah CLI apa di Linux kernel (dmesg) yang bisa membuktikannya!", valid: ["dmesg -T | grep -i oom", "dmesg | grep oom"], analogy: "Mirip hardware firewall yang membunuh process daemon karena kehabisan RAM fisik (Out Of Memory).", explanation: "Exit code 137 menandakan container di-kill oleh Linux Kernel OOM Killer. Perintah dmesg -T | grep -i oom akan menampilkan log alokasi memori yang terlampaui." },
+            { id: 55, topic: "Partition Storage Cleanup", title: "Essay 5: Langkah Remediasi Partition /var/log 100% Full", desc: "Partisi /var/log 100% full. Tuliskan urutan perintah CLI untuk: 1. Mencari 5 file log terbesar di /var/log, 2. Memotong/mengosongkan log file tanpa menghapus struktur filenya!", valid: ["du -sh /var/log/* | sort -rh | head -n 5", "truncate -s 0"], analogy: "Membersihkan log buffer storage di flash firewall tanpa merusak filesystem.", explanation: "Gunakan du -sh /var/log/* | sort -rh | head -n 5 untuk melacak file terbesar. Lalu kosongkan secara aman dengan truncate -s 0 /var/log/nginx/error.log." }
         ];
 
-        // Generate Essay Questions 56 to 80
+        baseEssay.forEach(item => essayQuestions.push(item));
+
         for (let i = 56; i <= 80; i++) {
             let eNum = i - 50;
-            let item = {
+            essayQuestions.push({
                 id: i,
-                topic: "Advanced Linux & Container Triage",
+                topic: "Advanced CLI Triage",
                 title: `Essay ${eNum}: Studi Kasus Troubleshooting Linux CLI & Container #${eNum}`,
                 desc: `Sebuah insiden terjadi di server RHEL prod-node01 terkait stabilitas sistem, jaringan, atau containerization. Tuliskan perintah CLI dan analisis langkah triage L1 Anda!`,
                 valid: ["systemctl", "docker", "journalctl", "df -h", "ss -tulpn"],
                 analogy: "Penerapan logika analisa sistem terstruktur standar Enterprise Operations Center.",
-                explanation: `Penanganan kasus ini membutuhkan pemeriksaan log, status supervisor daemon, serta ketersediaan resource jaringan/storage.`
-            };
-            essayQuestions.push(item);
+                explanation: "Penanganan kasus ini membutuhkan pemeriksaan log, status supervisor daemon, serta ketersediaan resource jaringan/storage."
+            });
         }
 
-        rawEssayData.forEach((d, idx) => {
-            essayQuestions[idx] = d;
-        });
-
-        // Combine into master 80 question bank
+        // Master 80 Questions Array
         const masterBank = [...pgQuestions, ...essayQuestions];
 
         /* ==========================================================================
@@ -622,10 +582,9 @@
         let timerInterval = null;
         let currentViewMode = 'guided';
         let currentlySelectedOption = null;
-        let currentTypeFilter = 'all'; // 'all' | 'pg' | 'essay'
 
         /* ==========================================================================
-           LIFECYCLE & INITIALIZATION
+           INITIALIZATION & LIFECYCLE
            ========================================================================== */
         document.addEventListener('DOMContentLoaded', () => {
             startSessionTimer();
@@ -673,16 +632,13 @@
             document.getElementById('q-description').textContent = q.desc;
             document.getElementById('q-netsec-analogy').textContent = q.analogy;
 
-            // Nav buttons state
             document.getElementById('btn-prev-q').disabled = (index === 0);
             document.getElementById('btn-next-q').disabled = (index === activeFilteredQuestions.length - 1);
 
-            // Render Input Area dynamically for PG vs Essay
             const inputArea = document.getElementById('q-input-area');
             inputArea.innerHTML = '';
 
             if (isPG) {
-                // PG Options
                 const optsContainer = document.createElement('div');
                 optsContainer.className = "space-y-2 mt-4";
                 q.options.forEach(opt => {
@@ -701,7 +657,6 @@
                 });
                 inputArea.appendChild(optsContainer);
             } else {
-                // Essay CLI Textarea & Mini Terminal Command Input
                 const essayContainer = document.createElement('div');
                 essayContainer.className = "space-y-3 font-mono text-xs";
                 essayContainer.innerHTML = `
@@ -711,14 +666,11 @@
                     
                     <div class="flex items-center justify-between text-[11px] text-slate-400">
                         <span>Quick fill sample command:</span>
-                        <div class="flex space-x-1" id="essay-hints">
-                            <!-- Hints added via JS -->
-                        </div>
+                        <div class="flex space-x-1" id="essay-hints"></div>
                     </div>
                 `;
                 inputArea.appendChild(essayContainer);
 
-                // Add quick fill hints
                 const hintsBox = essayContainer.querySelector('#essay-hints');
                 q.valid.forEach(v => {
                     const btn = document.createElement('button');
@@ -733,7 +685,6 @@
                 });
             }
 
-            // Check if already answered
             const savedAns = userAnswers[q.id];
             const feedbackPanel = document.getElementById('feedback-panel');
             const statusBadge = document.getElementById('q-status-badge');
@@ -744,9 +695,7 @@
                     ? "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800"
                     : "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-950 text-rose-400 border border-rose-800";
                 
-                if (isPG && savedAns.selectedOption) {
-                    highlightOptionSelection(savedAns.selectedOption);
-                }
+                if (isPG && savedAns.selectedOption) highlightOptionSelection(savedAns.selectedOption);
                 if (!isPG && savedAns.essayText) {
                     const box = document.getElementById('essay-input-box');
                     if (box) box.value = savedAns.essayText;
@@ -794,7 +743,6 @@
         }
 
         function filterType(type) {
-            currentTypeFilter = type;
             document.querySelectorAll('.type-tab').forEach(b => {
                 b.className = "type-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800 transition";
             });
@@ -851,7 +799,6 @@
                 };
             }
 
-            // Mirror to Terminal Sandbox
             appendSandboxOutput(`[root@prod-node01 ~]# Soal #${q.id} Evaluated`);
             appendSandboxOutput(`Kunci Perintah: ${q.valid.join(' | ')}`, 'emerald');
 
@@ -892,7 +839,7 @@
                 pts.className = "px-2.5 py-1 rounded bg-slate-950 font-mono text-xs font-bold text-amber-400 border border-amber-800";
             }
 
-            analogyContent.innerHTML = q.analogy;
+            analogyContent.innerHTML = escapeHTML(q.analogy);
             termOutput.innerHTML = `
                 <div class="text-amber-400 font-bold mb-1">KUNCI PERINDAH CLI TRIAGE & PEMBAHASAN:</div>
                 <div class="text-cyan-300 mb-2">${escapeHTML(q.valid.join('  OR  '))}</div>
@@ -908,9 +855,6 @@
             updateKPICards();
         }
 
-        /* ==========================================================================
-           KPI DASHBOARD CALCULATOR
-           ========================================================================== */
         function updateKPICards() {
             const answeredKeys = Object.keys(userAnswers);
             const totalCount = masterBank.length;
@@ -971,9 +915,6 @@
             }
         }
 
-        /* ==========================================================================
-           TERMINAL SANDBOX CLI PARSER
-           ========================================================================== */
         function handleSandboxTermKeyDown(e) {
             if (e.key === 'Enter') execSandboxCommand();
         }
@@ -1037,9 +978,6 @@ Available Assessment Sandbox Commands:
             screen.innerHTML = `<div class="text-slate-400">Terminal buffer cleared. Ready for input.</div>`;
         }
 
-        /* ==========================================================================
-           MODALS & VIEW MODES
-           ========================================================================== */
         function showHintModal() {
             const q = activeFilteredQuestions[currentQuestionIndex];
             document.getElementById('hint-modal-text').textContent = `Hint Logika CLI / Network: Gunakan perintah "${q.valid[0]}" atau analisis resource terkait ${q.topic}.`;
