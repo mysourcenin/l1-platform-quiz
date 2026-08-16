@@ -686,27 +686,293 @@ Ncat: Connected to 10.10.4.50:3306.
            EXPLICIT 50 PILIHAN GANDA (PG 1 - 50)
            ========================================================================== */
         const pgQuestions = [
-            { id: 1, topic: "Systemd Service Triage", title: "Aplikasi Mobile Banking melempar error HTTP 502 Bad Gateway", desc: "Pelanggan melaporkan error HTTP 502. Firewall network dipastikan normal. Bagaimana cara cek status Nginx service di RHEL?", valid: ["systemctl status nginx"], options: [{id:'A',text:'systemctl status nginx',correct:true},{id:'B',text:'service status nginx.log',correct:false},{id:'C',text:'ping 127.0.0.1:80',correct:false},{id:'D',text:'netstat -kill nginx',correct:false}], analogy: "Sama seperti mengecek daemon status di firewall (get system status), di Linux CLI Anda memeriksa process supervisor (systemd).", explanation: "Command systemctl status nginx memberikan status supervisor process Nginx (active/inactive)." },
-            { id: 2, topic: "Live Log Tailing", title: "Memantau Log Error Realtime HTTP 500 saat Checkout", desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime (live continuous stream).", valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], options: [{id:'A',text:'cat /var/log/nginx/error.log',correct:false},{id:'B',text:'journalctl -u nginx -f',correct:true},{id:'C',text:'nano /var/log/nginx/error.log',correct:false},{id:'D',text:'grep 500 /etc/nginx/nginx.conf',correct:false}], analogy: "Flag -f mirip seperti Wireshark Live Packet Capture untuk log continuous stream.", explanation: "Flag -f (follow) terus menampilkan log baru secara live." },
-            { id: 3, topic: "Port & Socket Inspection", title: "Pengecekan Listening Port & IP Socket Conflict", desc: "Nginx gagal start dengan error 'Address already in use: 0.0.0.0:80'. Perintah apa untuk melihat PID pengikat port 80?", valid: ["ss -tulpn", "netstat -tulpn"], options: [{id:'A',text:'ping 0.0.0.0:80',correct:false},{id:'B',text:'ss -tulpn',correct:true},{id:'C',text:'ifconfig eth0 port 80',correct:false},{id:'D',text:'traceroute 127.0.0.1 80',correct:false}], analogy: "Mirip show ip sockets pada Firewall untuk melacak daemon pengikat port.", explanation: "ss -tulpn menampilkan TCP/UDP listening port beserta Process ID (PID)." },
-            { id: 4, topic: "Docker Container Lifecycle", title: "Container Payment Microservice Exited/Crash", desc: "Container payment-gateway tidak merespon traffic. Perintah apa untuk melacak SELURUH container (termasuk yang Exited)?", valid: ["docker ps -a"], options: [{id:'A',text:'docker ps',correct:false},{id:'B',text:'docker ps -a',correct:true},{id:'C',text:'systemctl status docker.log',correct:false},{id:'D',text:'docker run payment-gateway',correct:false}], analogy: "Mirip show interfaces brief (All UP & DOWN) di router network.", explanation: "docker ps -a menampilkan container aktif maupun yang sudah mati (Exited)." },
-            { id: 5, topic: "Disk Storage Triage", title: "Alert Storage Partition /var/log Full 100%", desc: "Server log menolak menulis log baru (No space left on device). Perintah apa untuk melihat pemakaian disk per mount point?", valid: ["df -h"], options: [{id:'A',text:'du -sh *',correct:false},{id:'B',text:'df -h',correct:true},{id:'C',text:'fdisk -l /dev/ram0',correct:false},{id:'D',text:'format C: /q',correct:false}], analogy: "Mirip show flash pada router hardware untuk mencegah storage overflow.", explanation: "df -h menampilkan kapasitas tersisa mount point disk secara Human Readable." },
-            { id: 6, topic: "RPM Package Manager", title: "Instalasi Web Server Nginx di RHEL 8", desc: "Server RHEL baru disiapkan. Perintah apa yang tepat untuk menginstal package nginx dari repository resmi RHEL?", valid: ["yum install -y nginx", "dnf install -y nginx"], options: [{id:'A',text:'apt-get install nginx',correct:false},{id:'B',text:'yum install -y nginx',correct:true},{id:'C',text:'pip install nginx-web',correct:false},{id:'D',text:'npm install nginx -g',correct:false}], analogy: "Mirip mengunduh Firmware/Signature Package di Security Gateway.", explanation: "yum / dnf adalah package manager resmi standar Red Hat (RHEL/CentOS)." },
-            { id: 7, topic: "Escalation SOP", title: "Format Ticket Escalation L1 ke L2 Sesuai Banking SOP", desc: "Triage L1 menunjukkan Nginx running tetapi upstream port 8080 Connection Refused. Apa tindakan L1 yang benar?", valid: ["escalate l2"], options: [{id:'A',text:'Kirim pesan WA tanpa bukti output CLI',correct:false},{id:'B',text:'Buat Ticket Escalation L2 melampirkan bukti CLI & hipotesis root cause',correct:true},{id:'C',text:'Reboot server fisik tanpa koordinasi',correct:false},{id:'D',text:'Tutup ticket dengan status solved',correct:false}], analogy: "Mirip mengajukan Tier-2 TAC ticket ke Cisco/Palo Alto dengan tech-support bundle.", explanation: "SOP Banking mewajibkan melampirkan Impact, Output CLI Triage, dan Hipotesis Root Cause." },
-            { id: 8, topic: "SSL Certificate Expiration", title: "Pengecekan Masa Berlaku SSL/TLS Certificate", desc: "Browser nasabah menampilkan error NET::ERR_CERT_DATE_INVALID. Perintah untuk cek tanggal kedaluwarsa file sertifikat .crt?", valid: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates"], options: [{id:'A',text:'cat /etc/nginx/ssl/server.crt',correct:false},{id:'B',text:'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates',correct:true},{id:'C',text:'ping ssl.banking.com',correct:false},{id:'D',text:'certutil -delete /etc/ssl',correct:false}], analogy: "Mirip mengecek Certificate Validity Period di SSL VPN Gateway.", explanation: "openssl x509 -noout -dates membedah struktur metadata tanggal notAfter sertifikat." },
-            { id: 9, topic: "Container Logs Triage", title: "Membaca Logs Console Docker Container Internal", desc: "Container payment-api status Up, tetapi API melempar error. Perintah untuk membaca 20 baris log terakhir container?", valid: ["docker logs --tail 20 payment-api"], options: [{id:'A',text:'cat /var/log/docker.log',correct:false},{id:'B',text:'docker logs --tail 20 payment-api',correct:true},{id:'C',text:'docker inspect payment-api --delete',correct:false},{id:'D',text:'systemctl logs docker',correct:false}], analogy: "Mirip membaca console log buffer dari sub-module virtual slot.", explanation: "docker logs menangkap stream output stdout/stderr dari aplikasi di dalam container." },
-            { id: 10, topic: "File Permissions & ACL", title: "Nginx Error 403 Forbidden File Permission Triage", desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file index.html?", valid: ["ls -la /var/www/html"], options: [{id:'A',text:'chmod 777 /etc/nginx/nginx.conf',correct:false},{id:'B',text:'ls -la /var/www/html',correct:true},{id:'C',text:'rm -rf /var/www/html',correct:false},{id:'D',text:'ping /var/www/html',correct:false}], analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di firewall.", explanation: "ls -la menampilkan mode permission (contoh -rw-------) dan owner (root vs nginx)." },
+            { 
+                id: 1, 
+                topic: "Systemd Service Triage", 
+                title: "Aplikasi Mobile Banking melempar error HTTP 502 Bad Gateway", 
+                desc: "Pelanggan melaporkan error HTTP 502. Firewall network dipastikan normal. Perintah CLI manakah yang digunakan oleh Platform Operator untuk memeriksa status daemon Nginx di RHEL 8?", 
+                valid: ["systemctl status nginx"], 
+                options: [
+                    {id:'A',text:'systemctl status nginx (Cek status supervisor process & unit state)',correct:true},
+                    {id:'B',text:'service status nginx.log (Membaca file log secara manual)',correct:false},
+                    {id:'C',text:'ping 127.0.0.1:80 (Tes ICMP ping yang tidak menguji HTTP service)',correct:false},
+                    {id:'D',text:'netstat -kill nginx (Perintah kill port yang tidak valid)',correct:false}
+                ], 
+                analogy: "Mirip mengecek status daemon/service di firewall (get system status / show service status). Di Linux CLI, supervisor process dikelola oleh Systemd Init Manager.", 
+                explanation: "MENGAPA MEMILIH `systemctl status nginx`?\n1. Systemd adalah init system & service manager standar di RHEL 8.\n2. `systemctl status` tidak hanya mengecekapakah Nginx running (Active: active/inactive), tetapi juga menampilkan PID utama, memori tersisa, dan 5 baris log error terbawah secara instan.\n3. Opsi B salah karena `service status` adalah sintaks lama CentOS 6. Opsi C salah karena `ping` menggunakan protokol Layer-3 ICMP dan tidak bisa mendeteksi crash pada Layer-7 HTTP." 
+            },
+            { 
+                id: 2, 
+                topic: "Live Log Tailing", 
+                title: "Memantau Log Error Realtime HTTP 500 saat Checkout", 
+                desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime saat user mencoba transaksi ulang. Perintah apa yang digunakan?", 
+                valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], 
+                options: [
+                    {id:'A',text:'cat /var/log/nginx/error.log (Membaca log secara statis sekali baca)',correct:false},
+                    {id:'B',text:'journalctl -u nginx -f (Live continuous log stream follow mode)',correct:true},
+                    {id:'C',text:'nano /var/log/nginx/error.log (Membuka file log di text editor)',correct:false},
+                    {id:'D',text:'grep 500 /etc/nginx/nginx.conf (Mencari di file konfigurasi, bukan log)',correct:false}
+                ], 
+                analogy: "Mirip menjalankan `terminal monitor` pada router Cisco atau Wireshark Live Packet Capture untuk memantau traffic continuous stream.", 
+                explanation: "MENGAPA MEMILIH `journalctl -u nginx -f`?\n1. Flag `-f` (follow) terus memantau dan menampilkan baris log baru secara realtime saat transaksi berlangsung.\n2. Flag `-u nginx` memfilter log khusus unit service Nginx dari binary journald database.\n3. Opsi A (`cat`) dan C (`nano`) tidak bisa menampilkan log baru yang tercipta setelah file dibuka." 
+            },
+            { 
+                id: 3, 
+                topic: "Port & Socket Inspection", 
+                title: "Pengecekan Listening Port & IP Socket Conflict", 
+                desc: "Nginx gagal start dengan error `Address already in use: 0.0.0.0:80`. Perintah CLI apa untuk melihat PID pengikat port 80?", 
+                valid: ["ss -tulpn", "netstat -tulpn"], 
+                options: [
+                    {id:'A',text:'ping 0.0.0.0:80 (Tidak menguji socket port binding)',correct:false},
+                    {id:'B',text:'ss -tulpn (Socket Statistics: Cek TCP/UDP listening & PID listener)',correct:true},
+                    {id:'C',text:'ifconfig eth0 port 80 (Sintaks konfigurasi IP yang tidak valid)',correct:false},
+                    {id:'D',text:'traceroute 127.0.0.1 80 (Melacak hop routing jaringan)',correct:false}
+                ], 
+                analogy: "Mirip `show ip sockets` atau `show control-plane host open-ports` pada Firewall untuk melacak daemon pengikat port.", 
+                explanation: "MENGAPA MEMILIH `ss -tulpn`?\n1. `ss` (Socket Statistics) adalah tool RHEL 8 modern pengganti `netstat`.\n2. Kombinasi flag `-tulpn` (TCP, UDP, Listening, Process Name, Numeric Port) merinci IP Address, Port 80, serta Process ID (PID) yang mengunci port tersebut (misal PID 8841 httpd).\n3. L1 Platform Engineer menggunakan PID ini untuk menghentikan process pengganggu." 
+            },
+            { 
+                id: 4, 
+                topic: "Docker Container Lifecycle", 
+                title: "Container Payment Microservice Exited/Crash", 
+                desc: "Container payment-gateway tidak merespon traffic. Perintah apa untuk melacak SELURUH container (termasuk yang Exited/Crash)?", 
+                valid: ["docker ps -a"], 
+                options: [
+                    {id:'A',text:'docker ps (Hanya menampilkan container yang sedang aktif UP)',correct:false},
+                    {id:'B',text:'docker ps -a (Menampilkan ALL container aktif maupun Exited/Mati)',correct:true},
+                    {id:'C',text:'systemctl status docker.log (File log systemd yang tidak valid)',correct:false},
+                    {id:'D',text:'docker run payment-gateway (Mencoba membuat container baru)',correct:false}
+                ], 
+                analogy: "Mirip `show interfaces brief` (menampilkan interface state All UP & DOWN) di router network.", 
+                explanation: "MENGAPA MEMILIH `docker ps -a`?\n1. Tanpa flag `-a` (all), perintah `docker ps` hanya menampilkan container yang sedang berjalan (UP).\n2. Jika container mengalami crash dan mati (Exited 137 / Exited 1), `docker ps` biasa tidak akan menampilkannya.\n3. `docker ps -a` menampilkan container mati beserta Exit Code dan durasi kapan container tersebut mati." 
+            },
+            { 
+                id: 5, 
+                topic: "Disk Storage Triage", 
+                title: "Alert Storage Partition /var/log Full 100%", 
+                desc: "Server menolak menulis log baru (`No space left on device`). Perintah apa untuk melihat kapasitas sisa disk per mount point?", 
+                valid: ["df -h"], 
+                options: [
+                    {id:'A',text:'du -sh * (Melihat ukuran folder di direktori saat ini)',correct:false},
+                    {id:'B',text:'df -h (Disk Free: Cek kapasitas sisa disk per mount point secara Human Readable)',correct:true},
+                    {id:'C',text:'fdisk -l /dev/ram0 (Melihat tabel partisi mentah disk)',correct:false},
+                    {id:'D',text:'format C: /q (Perintah formatting Windows)',correct:false}
+                ], 
+                analogy: "Mirip `show flash` / `show disk` pada router hardware untuk mencegah storage log overflow.", 
+                explanation: "MENGAPA MEMILIH `df -h`?\n1. `df` (Disk Free) menampilkan penggunaan partisi filesystem per mount point (`/`, `/var/log`, `/tmp`).\n2. Flag `-h` (human-readable) mengonversi byte menjadi Megabyte (MB) atau Gigabyte (GB).\n3. Platform Ops langsung tahu partisi mana yang 100% full (misal `/var/log` 10G/10G)." 
+            },
+            { 
+                id: 6, 
+                topic: "RPM Package Manager", 
+                title: "Instalasi Web Server Nginx di RHEL 8", 
+                desc: "Server RHEL 8 baru disiapkan. Perintah Package Manager resmi RHEL 8 apa yang tepat untuk menginstal nginx?", 
+                valid: ["yum install -y nginx", "dnf install -y nginx"], 
+                options: [
+                    {id:'A',text:'apt-get install nginx (Package manager khusus Debian/Ubuntu)',correct:false},
+                    {id:'B',text:'yum install -y nginx (Package manager resmi Red Hat / RHEL)',correct:true},
+                    {id:'C',text:'pip install nginx-web (Package manager Python library)',correct:false},
+                    {id:'D',text:'npm install nginx -g (Package manager NodeJS module)',correct:false}
+                ], 
+                analogy: "Mirip mengunduh Firmware / Signature Package resmi di Security Gateway.", 
+                explanation: "MENGAPA MEMILIH `yum install -y nginx`?\n1. `yum` / `dnf` adalah RPM package manager standar di ekosistem Red Hat Enterprise Linux (RHEL).\n2. Opsi A (`apt-get`) hanya bekerja di Ubuntu/Debian.\n3. Flag `-y` otomatis menyetujui prompt instalasi GPG key & repositori resmi." 
+            },
+            { 
+                id: 7, 
+                topic: "Escalation SOP", 
+                title: "Format Ticket Escalation L1 ke L2 Sesuai Banking SOP", 
+                desc: "Triage L1 menunjukkan Nginx running tetapi upstream port 8080 Connection Refused. Apa tindakan SOP L1 yang benar?", 
+                valid: ["escalate l2"], 
+                options: [
+                    {id:'A',text:'Kirim pesan WA tanpa bukti output CLI',correct:false},
+                    {id:'B',text:'Buat Ticket Escalation L2 melampirkan bukti CLI & hipotesis root cause',correct:true},
+                    {id:'C',text:'Reboot server fisik tanpa koordinasi',correct:false},
+                    {id:'D',text:'Tutup ticket dengan status solved',correct:false}
+                ], 
+                analogy: "Mirip mengajukan Tier-2 TAC ticket ke Cisco / Palo Alto dengan melampirkan tech-support bundle.", 
+                explanation: "MENGAPA MEMILIH OPTION B?\n1. SOP Banking Enterprise melarang melakukan reboot server prod tanpa approval change request.\n2. Triage L1 wajib melampirkan 3 komponen di Ticket Escalation: Impact bisnis, Bukti Output CLI (`ss -tulpn`), dan Hipotesis Root Cause (Backend App Down)." 
+            },
+            { 
+                id: 8, 
+                topic: "SSL Certificate Expiration", 
+                title: "Pengecekan Masa Berlaku SSL/TLS Certificate", 
+                desc: "Browser nasabah menampilkan error `NET::ERR_CERT_DATE_INVALID`. Perintah untuk cek tanggal kedaluwarsa file sertifikat .crt?", 
+                valid: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates"], 
+                options: [
+                    {id:'A',text:'cat /etc/nginx/ssl/server.crt (Mencetak hash string PEM terenkripsi)',correct:false},
+                    {id:'B',text:'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates (Membedah metadata tanggal notAfter)',correct:true},
+                    {id:'C',text:'ping ssl.banking.com (Hanya tes konektivitas ICMP)',correct:false},
+                    {id:'D',text:'certutil -delete /etc/ssl (Perintah Windows cert utility)',correct:false}
+                ], 
+                analogy: "Mirip mengecek Certificate Validity Period & Expiration Date di SSL VPN Gateway / WAF.", 
+                explanation: "MENGAPA MEMILIH `openssl x509 -noout -dates`?\n1. File `.crt` disimpan dalam format terenkripsi PEM (Base64).\n2. Membaca file dengan `cat` hanya menampilkan karakter acak `-----BEGIN CERTIFICATE-----`.\n3. Perintah `openssl x509 -noout -dates` membedah metadata X509 dan menampilkan tanggal pasti `notBefore` dan `notAfter` (kedaluwarsa)." 
+            },
+            { 
+                id: 9, 
+                topic: "Container Logs Triage", 
+                title: "Membaca Logs Console Docker Container Internal", 
+                desc: "Container payment-api status Up, tetapi API melempar error. Perintah untuk membaca 20 baris log terakhir container?", 
+                valid: ["docker logs --tail 20 payment-api"], 
+                options: [
+                    {id:'A',text:'cat /var/log/docker.log (Membaca log internal daemon docker, bukan aplikasi)',correct:false},
+                    {id:'B',text:'docker logs --tail 20 payment-api (Menangkap 20 baris log console stdout/stderr container)',correct:true},
+                    {id:'C',text:'docker inspect payment-api --delete (Perintah tidak valid)',correct:false},
+                    {id:'D',text:'systemctl logs docker (Sintaks systemd tidak valid)',correct:false}
+                ], 
+                analogy: "Mirip membaca console log buffer dari sub-module virtual slot terisolasi.", 
+                explanation: "MENGAPA MEMILIH `docker logs --tail 20`?\n1. Aplikasi di dalam container menulis log ke stdout/stderr console.\n2. `docker logs` menangkap stream console tersebut dari host driver.\n3. Flag `--tail 20` membatasi output hanya 20 baris terakhir agar tidak membanjiri layar terminal." 
+            },
+            { 
+                id: 10, 
+                topic: "File Permissions & ACL", 
+                title: "Nginx Error 403 Forbidden File Permission Triage", 
+                desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file index.html?", 
+                valid: ["ls -la /var/www/html"], 
+                options: [
+                    {id:'A',text:'chmod 777 /etc/nginx/nginx.conf (Mengubah permission config Nginx secara berbahaya)',correct:false},
+                    {id:'B',text:'ls -la /var/www/html (List All: Cek permission bit -rw------- dan owner root vs nginx)',correct:true},
+                    {id:'C',text:'rm -rf /var/www/html (Menghapus seluruh file website)',correct:false},
+                    {id:'D',text:'ping /var/www/html (Sintaks ping tidak valid)',correct:false}
+                ], 
+                analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di security zone firewall.", 
+                explanation: "MENGAPA MEMILIH `ls -la`?\n1. Error 403 Forbidden sering disebabkan oleh permission file yang tertutup (`-rw-------`) atau owner file masih `root` sehingga Nginx worker process tidak bisa membaca file.\n2. `ls -la` menampilkan mode rwx permission bit dan owner/group file secara rinci." 
+            },
 
             // PG 11 s/d 50
-            { id: 11, topic: "CPU & Process Spike Triage", title: "CPU Server Spikes 99% - Melacak Process ID (PID) Terpengaruh", desc: "Server prod-node01 dilaporkan lambat. Perintah CLI apa yang paling efektif untuk memantau penggunaan CPU, RAM, dan top process yang mengonsumsi resource tertinggi?", valid: ["top", "htop", "ps aux"], options: [{id:'A',text:'top (atau htop / ps aux)',correct:true},{id:'B',text:'cat /proc/cpuinfo',correct:false},{id:'C',text:'ping 127.0.0.1',correct:false},{id:'D',text:'systemctl stop network',correct:false}], analogy: "Mirip `show processes cpu` pada router Cisco/Fortigate saat CPU spikes.", explanation: "Command `top` / `htop` / `ps aux` menampilkan realtime CPU, RAM, dan Process ID (PID) pengonsumsi resource." },
-            { id: 12, topic: "RAM & Swap Memory Triage", title: "Melacak Sisa Physical RAM & Pemakaian Swap Memory di Server", desc: "Aplikasi melempar warning memory low. Perintah apa yang digunakan untuk menampilkan sisa RAM dan Swap dalam format megabyte (MB)?", valid: ["free -m", "free -h"], options: [{id:'A',text:'free -m (atau free -h)',correct:true},{id:'B',text:'ls -la /proc/meminfo',correct:false},{id:'C',text:'ping 10.0.0.1',correct:false},{id:'D',text:'route -n',correct:false}], analogy: "Mirip `show memory` pada hardware router/firewall.", explanation: "`free -m` menampilkan Total, Used, Free, Buff/Cache, serta Swap Memory." },
-            { id: 13, topic: "Process Termination", title: "Menghentikan Process Zombie/Hung (PID 9912) Secara Paksa", desc: "Process Java (PID 9912) hang dan tidak merespon `kill -15`. Perintah apa untuk mengirimkan signal SIGKILL paksa ke PID 9912?", valid: ["kill -9 9912"], options: [{id:'A',text:'kill -9 9912',correct:true},{id:'B',text:'stop 9912',correct:false},{id:'C',text:'delete pid 9912',correct:false},{id:'D',text:'systemctl pause 9912',correct:false}], analogy: "Mirip melakukan forced process kill / session drop pada firewall admin console.", explanation: "`kill -9` mengirimkan signal SIGKILL yang langsung dihentikan oleh kernel." },
-            { id: 14, topic: "Kernel Out-Of-Memory (OOM)", title: "Melacak Event Log Kernel OOM Killer yang Membunuh Process", desc: "Container Database mendadak hilang/down tanpa crash dump. Perintah apa di kernel ring buffer (`dmesg`) untuk membuktikan jika process di-kill oleh OOM Killer?", valid: ["dmesg -T | grep -i oom"], options: [{id:'A',text:'dmesg -T | grep -i oom',correct:true},{id:'B',text:'cat /etc/hosts',correct:false},{id:'C',text:'ifconfig eth0',correct:false},{id:'D',text:'traceroute localhost',correct:false}], analogy: "Mirip hardware firewall logging daemon restart karena memory overrun.", explanation: "`dmesg -T | grep -i oom` menampilkan timestamp kernel saat membunuh process karena kehabisan RAM." },
-            { id: 15, topic: "Network Interface Triage", title: "Memeriksa IP Address & Link State Interface pada RHEL 8", desc: "Server baru di-provisioning. Perintah CLI modern RHEL 8 apa untuk melihat IP Address, subnet mask, dan status UP/DOWN interface?", valid: ["ip addr show", "ip a"], options: [{id:'A',text:'ip addr show (atau ip a)',correct:true},{id:'B',text:'netstat -r',correct:false},{id:'C',text:'cat /etc/fstab',correct:false},{id:'D',text:'crontab -l',correct:false}], analogy: "Mirip `show ip interface brief` di Cisco IOS router.", explanation: "`ip addr show` (atau `ip a`) adalah perintah modern pengganti `ifconfig`." },
-            { id: 16, topic: "TCP Port Connectivity Test", title: "Menguji Konektivitas Port TCP 3306 Database Server dari Web Server", desc: "Aplikasi melempar error 'Database connection refused'. Perintah apa untuk menguji jangkauan port TCP 3306 dari Web Server ke DB Server 10.10.4.50?", valid: ["nc -zvw3 10.10.4.50 3306", "telnet 10.10.4.50 3306"], options: [{id:'A',text:'nc -zvw3 10.10.4.50 3306 (atau telnet)',correct:true},{id:'B',text:'ping -c 4 10.10.4.50',correct:false},{id:'C',text:'traceroute 127.0.0.1',correct:false},{id:'D',text:'nslookup database',correct:false}], analogy: "Ping hanya menguji ICMP Layer 3; Netcat (`nc`) menguji TCP Handshake Layer 4 pada port spesifik.", explanation: "`nc -zvw3` melakukan handshaking TCP port untuk memastikan firewall/socket membuka koneksi." },
-            { id: 17, topic: "FirewallD Port Management", title: "Membuka Port Traffic HTTPS (443/tcp) Permanen di RHEL 8", desc: "Web server HTTPS tidak bisa diakses dari luar karena diblokir FirewallD. Perintah apa untuk membuka port 443/tcp secara permanen?", valid: ["firewall-cmd --add-port=443/tcp --permanent"], options: [{id:'A',text:'firewall-cmd --add-port=443/tcp --permanent',correct:true},{id:'B',text:'ufw allow 443',correct:false},{id:'C',text:'iptables -F',correct:false},{id:'D',text:'systemctl stop firewalld',correct:false}], analogy: "Mirip menambahkan Security Policy Rule `permit tcp any any eq 443` di Palo Alto / Fortigate.", explanation: "`firewall-cmd --add-port=443/tcp --permanent` mendaftarkan port di zona aktif RHEL." },
-            { id: 18, topic: "Container Interactive Shell", title: "Masuk ke Terminal Sesi Interaktif Container Docker", desc: "Anda perlu mengecek file konfigurasi internal di dalam container `payment-api` yang sedang running. Perintah apa yang digunakan?", valid: ["docker exec -it payment-api bash"], options: [{id:'A',text:'docker exec -it payment-api bash',correct:true},{id:'B',text:'docker start payment-api --shell',correct:false},{id:'C',text:'ssh root@docker',correct:false},{id:'D',text:'docker build -t payment-api',correct:false}], analogy: "Mirip SSH / Console session langsung ke dalam Virtual Domain (VDOM) terisolasi.", explanation: "`docker exec -it <container> bash` membuka terminal interaktif TTY di dalam container." },
-            { id: 19, topic: "Storage Inodes Exhaustion", title: "Penyebab Disk Full Padahal Capacity MB Masih Tersisa", desc: "Server melempar error 'No space left on device', tetapi `df -h` menunjukkan sisa disk masih 40%. Perintah apa untuk memeriksa kehabisan inode disk?", valid: ["df -i"], options: [{id:'A',text:'df -i',correct:true},{id:'B',text:'free -m',correct:false},{id:'C',text:'top',correct:false},{id:'D',text:'uptime',correct:false}], analogy: "Mirip tabel NAT session limit yang penuh meskipun bandwidth port fisik masih kosong.", explanation: "`df -i` memeriksa Inode Consumption (jumlah total file kecil yang telah menghabiskan tabel index filesystem)." },
+            { 
+                id: 11, 
+                topic: "CPU & Process Spike Triage", 
+                title: "CPU Server Spikes 99% - Melacak Process ID (PID) Terpengaruh", 
+                desc: "Server prod-node01 dilaporkan lambat. Perintah CLI apa yang paling efektif untuk memantau penggunaan CPU, RAM, dan top process yang mengonsumsi resource tertinggi?", 
+                valid: ["top", "htop", "ps aux"], 
+                options: [
+                    {id:'A',text:'top / htop / ps aux (Interactive Realtime CPU & RAM Task Manager)',correct:true},
+                    {id:'B',text:'cat /proc/cpuinfo (Membaca info arsitektur hardware CPU statis)',correct:false},
+                    {id:'C',text:'ping 127.0.0.1 (Tes konektivitas loopback ICMP)',correct:false},
+                    {id:'D',text:'systemctl stop network (Mematikan antarmuka jaringan server)',correct:false}
+                ], 
+                analogy: "Mirip `show processes cpu` atau `show system resource` pada router Cisco / Fortigate saat CPU Spikes 99%.", 
+                explanation: "MENGAPA MEMILIH `top` / `htop` / `ps aux`?\n1. Perintah `top` / `htop` menyajikan task manager interaktif realtime yang mengurutkan PID process dari konsumsi %CPU dan %MEM tertinggi.\n2. Opsi B (`cat /proc/cpuinfo`) hanya menampilkan jumlah core CPU dan vendor Intel/AMD, bukan beban penggunaan realtime." 
+            },
+            { 
+                id: 12, 
+                topic: "RAM & Swap Memory Triage", 
+                title: "Melacak Sisa Physical RAM & Pemakaian Swap Memory di Server", 
+                desc: "Aplikasi melempar warning memory low. Perintah apa yang digunakan untuk menampilkan sisa RAM dan Swap dalam format megabyte (MB)?", 
+                valid: ["free -m", "free -h"], 
+                options: [
+                    {id:'A',text:'free -m (Free Memory: Menampilkan Total, Used, Free RAM & Swap dalam MB)',correct:true},
+                    {id:'B',text:'ls -la /proc/meminfo (Melihat daftar file memori)',correct:false},
+                    {id:'C',text:'ping 10.0.0.1 (Tes ICMP ping jaringan)',correct:false},
+                    {id:'D',text:'route -n (Melihat tabel routing IP)',correct:false}
+                ], 
+                analogy: "Mirip `show memory` pada hardware router/firewall untuk memantau buffer alokasi RAM.", 
+                explanation: "MENGAPA MEMILIH `free -m`?\n1. `free` merinci Total RAM, Memory Terpakai (Used), Sisa (Free), Buffers/Cache, dan Swap Memory.\n2. Flag `-m` memformat ukuran ke dalam Megabyte (MB) sehingga mudah dibaca saat insiden." 
+            },
+            { 
+                id: 13, 
+                topic: "Process Termination", 
+                title: "Menghentikan Process Zombie/Hung (PID 9912) Secara Paksa", 
+                desc: "Process Java (PID 9912) hang dan tidak merespon `kill -15`. Perintah apa untuk mengirimkan signal SIGKILL paksa ke PID 9912?", 
+                valid: ["kill -9 9912"], 
+                options: [
+                    {id:'A',text:'kill -9 9912 (Kirim signal SIGKILL paksa langsung dari Linux Kernel)',correct:true},
+                    {id:'B',text:'stop 9912 (Perintah yang tidak valid di Linux CLI)',correct:false},
+                    {id:'C',text:'delete pid 9912 (Perintah hapus yang tidak valid)',correct:false},
+                    {id:'D',text:'systemctl pause 9912 (Perintah systemd yang tidak valid)',correct:false}
+                ], 
+                analogy: "Mirip melakukan forced process kill / session drop pada firewall admin console saat daemon hung.", 
+                explanation: "MENGAPA MEMILIH `kill -9 9912`?\n1. Signal `15` (SIGTERM) meminta aplikasi berhenti secara halus (graceful), namun jika aplikasi hung/deadlock, ia akan mengabaikan signal 15.\n2. Signal `9` (SIGKILL) memerintahkan Linux Kernel untuk langsung memutus alokasi memori process tanpa menunggu konfirmasi dari aplikasi." 
+            },
+            { 
+                id: 14, 
+                topic: "Kernel Out-Of-Memory (OOM)", 
+                title: "Melacak Event Log Kernel OOM Killer yang Membunuh Process", 
+                desc: "Container Database mendadak hilang/down tanpa crash dump. Perintah apa di kernel ring buffer (`dmesg`) untuk membuktikan jika process di-kill oleh OOM Killer?", 
+                valid: ["dmesg -T | grep -i oom"], 
+                options: [
+                    {id:'A',text:'dmesg -T | grep -i oom (Filter log kernel ring buffer khusus event OOM Killer)',correct:true},
+                    {id:'B',text:'cat /etc/hosts (File pemetaan IP DNS lokal)',correct:false},
+                    {id:'C',text:'ifconfig eth0 (Melihat status interface jaringan)',correct:false},
+                    {id:'D',text:'traceroute localhost (Melacak hop rute jaringan)',correct:false}
+                ], 
+                analogy: "Mirip hardware firewall logging daemon restart karena memory overrun physical RAM.", 
+                explanation: "MENGAPA MEMILIH `dmesg -T | grep -i oom`?\n1. Ketika RAM fisik habis total, Linux Kernel mengaktifkan fitur `OOM Killer` untuk membunuh process pengonsumsi RAM terbesar demi mencegah OS Kernel Panic.\n2. `dmesg -T` mencetak log kernel ring buffer dengan timestamp human-readable.\n3. Pipe `| grep -i oom` mengisolasi bukti instan saat kernel membunuh process tersebut." 
+            },
+            { 
+                id: 15, 
+                topic: "Network Interface Triage", 
+                title: "Memeriksa IP Address & Link State Interface pada RHEL 8", 
+                desc: "Server baru di-provisioning. Perintah CLI modern RHEL 8 apa untuk melihat IP Address, subnet mask, dan status UP/DOWN interface?", 
+                valid: ["ip addr show", "ip a"], 
+                options: [
+                    {id:'A',text:'ip addr show / ip a (Perintah standar modern RHEL 8 IP & Link State)',correct:true},
+                    {id:'B',text:'netstat -r (Melihat tabel routing IP kuno)',correct:false},
+                    {id:'C',text:'cat /etc/fstab (Melihat mount point disk)',correct:false},
+                    {id:'D',text:'crontab -l (Melihat jadwal cron job)',correct:false}
+                ], 
+                analogy: "Mirip `show ip interface brief` di Cisco IOS router.", 
+                explanation: "MENGAPA MEMILIH `ip addr show`?\n1. Perintah kuno `ifconfig` sudah di-deprecated di RHEL 8 / Enterprise Linux.\n2. `ip addr show` (atau singkatannya `ip a`) adalah tool modern dari paket `iproute2` untuk memeriksa IP v4/v6, CIDR subnet mask, MAC address, serta status interface UP/DOWN." 
+            },
+            { 
+                id: 16, 
+                topic: "TCP Port Connectivity Test", 
+                title: "Menguji Konektivitas Port TCP 3306 Database Server dari Web Server", 
+                desc: "Aplikasi melempar error 'Database connection refused'. Perintah apa untuk menguji jangkauan port TCP 3306 dari Web Server ke DB Server 10.10.4.50?", 
+                valid: ["nc -zvw3 10.10.4.50 3306", "telnet 10.10.4.50 3306"], 
+                options: [
+                    {id:'A',text:'nc -zvw3 10.10.4.50 3306 (Netcat: Tes TCP 3-Way Handshake pada Layer 4)',correct:true},
+                    {id:'B',text:'ping -c 4 10.10.4.50 (Tes ICMP Layer 3 yang mengabaikan TCP Port 3306)',correct:false},
+                    {id:'C',text:'traceroute 127.0.0.1 (Melacak hop localhost)',correct:false},
+                    {id:'D',text:'nslookup database (Hanya menguji resolusi nama DNS)',correct:false}
+                ], 
+                analogy: "Ping hanya menguji ICMP Layer 3; Netcat (`nc`) menguji TCP Handshake Layer 4 pada port spesifik.", 
+                explanation: "MENGAPA MEMILIH `nc -zvw3 10.10.4.50 3306`?\n1. `ping` hanya menguji ICMP Layer 3 (IP Reachability). Meskipun ping sukses, port 3306 MySQL bisa saja diblokir firewall atau MySQL daemon mati.\n2. `nc -zvw3` (zero I/O, verbose, wait 3s) melakukan TCP 3-Way Handshake pada Layer 4 port 3306 untuk membuktikan socket benar-benar terbuka." 
+            },
+            { 
+                id: 17, 
+                topic: "FirewallD Port Management", 
+                title: "Membuka Port Traffic HTTPS (443/tcp) Permanen di RHEL 8", 
+                desc: "Web server HTTPS tidak bisa diakses dari luar karena diblokir FirewallD. Perintah apa untuk membuka port 443/tcp secara permanen?", 
+                valid: ["firewall-cmd --add-port=443/tcp --permanent"], 
+                options: [
+                    {id:'A',text:'firewall-cmd --add-port=443/tcp --permanent (Default RHEL FirewallD Utility)',correct:true},
+                    {id:'B',text:'ufw allow 443 (Firewall manager khusus Ubuntu/Debian)',correct:false},
+                    {id:'C',text:'iptables -F (Flushing seluruh aturan firewall yang sangat berbahaya)',correct:false},
+                    {id:'D',text:'systemctl stop firewalld (Mematikan seluruh perlindungan firewall server)',correct:false}
+                ], 
+                analogy: "Mirip menambahkan Security Policy Rule `permit tcp any any eq 443` di Palo Alto / Fortigate Firewall.", 
+                explanation: "MENGAPA MEMILIH `firewall-cmd --add-port=443/tcp --permanent`?\n1. FirewallD adalah daemon firewall bawaan resmi RHEL 8.\n2. Flag `--permanent` memastikan aturan tersimpan ke XML config sehingga port 443 tetap terbuka setelah server di-reboot." 
+            },
+            { 
+                id: 18, 
+                topic: "Container Interactive Shell", 
+                title: "Masuk ke Terminal Sesi Interaktif Container Docker", 
+                desc: "Anda perlu mengecek file konfigurasi internal di dalam container `payment-api` yang sedang running. Perintah apa yang digunakan?", 
+                valid: ["docker exec -it payment-api bash"], 
+                options: [
+                    {id:'A',text:'docker exec -it payment-api bash (Membuka sesi TTY interaktif di dalam container)',correct:true},
+                    {id:'B',text:'docker start payment-api --shell (Sintaks docker start tidak valid)',correct:false},
+                    {id:'C',text:'ssh root@docker (SSH langsung ke container tanpa SSH daemon)',correct:false},
+                    {id:'D',text:'docker build -t payment-api (Membangun Docker image baru)',correct:false}
+                ], 
+                analogy: "Mirip SSH / Console session langsung ke dalam Virtual Domain (VDOM) terisolasi.", 
+                explanation: "MENGAPA MEMILIH `docker exec -it payment-api bash`?\n1. Flag `-i` (interactive) dan `-t` (tty) mengalokasikan terminal TTY interaktif ke dalam namespace container yang berjalan.\n2. Memungkinkan Platform Ops mengecek file config internal tanpa perlu memasang SSH daemon di dalam container." 
+            },
+            { 
+                id: 19, 
+                topic: "Storage Inodes Exhaustion", 
+                title: "Penyebab Disk Full Padahal Capacity MB Masih Tersisa", 
+                desc: "Server melempar error 'No space left on device', tetapi `df -h` menunjukkan sisa disk masih 40%. Perintah apa untuk memeriksa kehabisan inode disk?", 
+                valid: ["df -i"], 
+                options: [
+                    {id:'A',text:'df -i (Disk Free Inodes: Cek persen alokasi file index inode per partisi)',correct:true},
+                    {id:'B',text:'free -m (Mengecek memori RAM)',correct:false},
+                    {id:'C',text:'top (Melihat penggunaan CPU)',correct:false},
+                    {id:'D',text:'uptime (Melihat lama waktu server aktif)',correct:false}
+                ], 
+                analogy: "Mirip tabel NAT session limit yang penuh meskipun bandwidth port fisik masih kosong.", 
+                explanation: "MENGAPA MEMILIH `df -i`?\n1. Di Linux, setiap file (sekecil apapun) membutuhkan 1 entri tabel Inode index.\n2. Jika aplikasi menghasilkan jutaan file log berukuran 1 KB, kapasitas Gigabyte disk masih tersisa, namun tabel Inode 100% habis.\n3. `df -i` memeriksa sisa kuota Inode index ini." 
+            },
             { id: 20, topic: "Open Files Limit (Ulimit)", title: "Melacak Error 'Too many open files' pada High-Traffic Web Server", desc: "Nginx melempar error `socket() failed (24: Too many open files)`. Mengapa kita memilih perintah `ulimit -n` untuk mengecek batas kuota open file descriptor?", valid: ["ulimit -n"], options: [{id:'A',text:'ulimit -n (Cek kuota Soft & Hard limit Open File / Socket)',correct:true},{id:'B',text:'chmod 777 /etc/limits (Ubah permission file sysconfig)',correct:false},{id:'C',text:'cat /proc/cpuinfo (Cek spesifikasi arsitektur CPU)',correct:false},{id:'D',text:'ping 8.8.8.8 (Tes konektivitas ICMP internet)',correct:false}], analogy: "Mirip Maximum Concurrent Session Limit (misal max 1024 session) pada Firewall Gateway / NAT Table. Saat kuota session penuh, koneksi TCP SYN baru akan di-drop oleh kernel firewall meskipun bandwidth 10Gbps masih kosong.", explanation: "MENGAPA MEMILIH `ulimit -n`?\n1. Konsep Linux: 'Everything is a file' — termasuk koneksi socket TCP HTTP/HTTPS nasabah.\n2. Saat gajian/promo, ribuan nasabah mengakses Nginx secara bersamaan. Setiap koneksi butuh 1 File Descriptor (FD).\n3. Default RHEL membatasi 1024 open files per process (seperti di terminal: open files (-n) 1024).\n4. Perintah `ulimit -n` (nofile) memeriksa batas limit ini. Jika penuh, Kernel Linux menolak socket baru dengan Error Code 24 (Too many open files).\n5. Solusi L1: Naikkan kuota nofile di /etc/security/limits.conf (contoh: nginx soft nofile 65536)." },
 
             // PG 21 s/d 50
