@@ -494,13 +494,31 @@
 
     <!-- MAIN JAVASCRIPT ENGINE WITH ACCURATE EXPLICIT 50 PG + 30 ESSAY QUESTIONS -->
     <script>
+        /* ==========================================================================
+           AUTHENTIC RHEL TERMINAL RESPONSE DICTIONARY
+           ========================================================================== */
         const terminalResponses = {
-            "top": `top - 13:48:00 up 10 days, 4:12, 2 users, load average: 8.42, 6.10, 3.15
+            "top": `top - 14:07:00 up 10 days, 4:12, 2 users, load average: 8.42, 6.10, 3.15
 Tasks: 215 total, 3 running, 212 sleeping, 0 stopped, 0 zombie
 %Cpu(s): 98.2 us, 1.8 sy, 0.0 ni, 0.0 id, 0.0 wa, 0.0 hi, 0.0 si
 MiB Mem : 7840.2 total, 120.4 free, 7100.8 used, 619.0 buff/cache
    PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
- 19402 nginx 20 0 1840212 940120 12040 R 98.5 12.0 45:12.10 nginx`,
+ 19402 nginx 20 0 1840212 940120 12040 R 98.5 12.0 45:12.10 nginx
+ 14912 java  20 0 4214504 314572 18200 S  2.5 40.1  12:04.10 java`,
+
+            "htop": `  1  [||||||||||||||||||||||||||||||||||||||||||||||||||||98.5%]   Tasks: 85, 230 thr; 3 running
+  2  [||||||||||||||||||||                                42.1%]   Load average: 8.42 6.10 3.15 
+  Mem[||||||||||||||||||||||||||||||||||||||||||||||| 7.10G/7.65G]   Uptime: 10 days, 04:12:00
+  Swp[||||||||||                                      512M/2.00G]
+
+   PID USER      PRI  NI  VIRT   RES   SHR S CPU% MEM%   TIME+  Command
+ 19402 nginx      20   0 1.75G  918M 11.7M R 98.5 12.0 45:12.10 nginx: worker process
+ 14912 java       20   0 4.02G 3.00G 17.7M S  2.5 40.1 12:04.10 java -jar /app/payment-api.jar`,
+
+            "ps aux": `USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.1 178204 11200 ?        Ss   Aug06   0:15 /usr/lib/systemd/systemd --switched-root
+nginx      19402 98.5 12.0 1840212 940120 ?      R    12:00  45:12 nginx: worker process
+root       14912  2.5 40.1 4214504 314572 ?      Ssl  10:30  12:04 java -jar /app/payment-api.jar`,
 
             "systemctl status nginx": `● nginx.service - The NGINX HTTP and reverse proxy server
    Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)
@@ -508,59 +526,142 @@ MiB Mem : 7840.2 total, 120.4 free, 7100.8 used, 619.0 buff/cache
   Process: 14205 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
  Main PID: 14205 (code=exited, status=0/SUCCESS)`,
 
-            "journalctl -u nginx -f": `2026/08/16 13:10:02 [error] 18442#0: *49122 FastCGI sent in stderr: "PHP message: PHP Fatal error: Uncaught Exception: Database connection timeout in /var/www/html/api/db.php:42"
-2026/08/16 13:10:02 [info] 18442#0: *49122 client 10.20.4.150 requests GET /api/checkout HTTP/1.1 response 500`,
+            "journalctl -u nginx -f": `2026/08/16 14:07:02 [error] 18442#0: *49122 FastCGI sent in stderr: "PHP message: PHP Fatal error: Uncaught Exception: Database connection timeout in /var/www/html/api/db.php:42"
+2026/08/16 14:07:02 [info] 18442#0: *49122 client 10.20.4.150 requests GET /api/checkout HTTP/1.1 response 500`,
 
             "ss -tulpn": `Netid State Recv-Q Send-Q Local Address:Port Peer Address:Port Process
 tcp LISTEN 0 128 0.0.0.0:80 0.0.0.0:* users:(("httpd",pid=8841,fd=4))
 tcp LISTEN 0 128 0.0.0.0:22 0.0.0.0:* users:(("sshd",pid=1024,fd=3))`,
 
-            "docker ps -a": `CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
-a1b2c3d4e5f6 payment-api:v2.1 "docker-entrypoint.s…" 2 hours ago Exited (137) 10 min ago payment-gateway
-f9e8d7c6b5a4 redis:alpine "docker-entrypoint.s…" 5 days ago Up 5 days 6379/tcp redis-cache`,
+            "docker ps -a": `CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS                    PORTS     NAMES
+a1b2c3d4e5f6   payment-api:v2.1      "docker-entrypoint.s…"   2 hours ago    Exited (137) 10 min ago             payment-gateway
+f9e8d7c6b5a4   redis:alpine          "docker-entrypoint.s…"   5 days ago     Up 5 days                           6379/tcp  redis-cache`,
+
+            "docker exec": `root@a1b2c3d4e5f6:/app# hostname
+payment-api-prod-node01
+root@a1b2c3d4e5f6:/app# env | grep DB
+DB_HOST=10.10.4.50
+DB_PORT=5432
+DB_NAME=payment_db
+root@a1b2c3d4e5f6:/app# exit
+exit (session terminated, returned to host bash)`,
+
+            "docker build": `[+] Building 2.4s (8/8) FINISHED
+ => [internal] load build definition from Dockerfile
+ => [1/4] FROM docker.io/library/openjdk:17-alpine
+ => [2/4] WORKDIR /app
+ => [3/4] COPY target/payment-api.jar app.jar
+ => naming to docker.io/library/payment-api:latest
+Successfully built payment-api`,
+
+            "docker start": `payment-api
+Container payment-api started successfully (Container ID: a1b2c3d4e5f6).`,
+
+            "firewall-cmd": `success
+(Firewall rule successfully applied to public zone. Run 'firewall-cmd --reload' to activate).`,
 
             "df -h": `Filesystem Size Used Avail Use% Mounted on
 devtmpfs 3.9G 0 3.9G 0% /dev
 /dev/mapper/rhel-root 20G 18G 2.0G 90% /
 /dev/mapper/rhel-var_log 10G 10G 0B 100% /var/log`,
 
-            "yum install -y nginx": `Updating Subscription Management repositories.
-Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
-Dependencies resolved.
-================================================================================
- Package Architecture Version Repository Size
-================================================================================
-Installing:
- nginx x86_64 1:1.18.0-2.module_el8 rhel-8-appstream 581 k
-Complete!`,
+            "free -m": `              total        used        free      shared  buff/cache   available
+Mem:           7840        5120         720         128        2000        2400
+Swap:          2048         512        1536`,
 
-            "openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates": `notBefore=Jan 15 00:00:00 2025 GMT
-notAfter=Jul 30 23:59:59 2026 GMT`,
+            "kill -9": `[1]+  Killed                  java -jar payment-api.jar  (PID terminated by SIGKILL)`,
 
-            "docker logs --tail 20 payment-api": `2026-08-16 13:12:11.402 [main] INFO c.b.payment.Application - Pool initialized
-2026-08-16 13:15:40.819 [http-exec-1] ERROR c.b.payment.Controller - StackTrace:
-java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB host 10.10.4.50:5432 refused)`,
+            "dmesg": `[Sun Aug 16 13:14:02 2026] Out of memory: Kill process 9912 (java) score 850 or sacrifice child
+[Sun Aug 16 13:14:02 2026] Killed process 9912 (java) total-vm:4214504kB, anon-rss:3145728kB`,
 
-            "ls -la /var/www/html": `drwxr-xr-x 2 root root 4096 Aug 16 10:00 .
--rw------- 1 root root 1024 Aug 16 10:00 index.html`,
+            "crontab -l": `# m h dom mon dow command
+0 * * * * /usr/local/bin/log_purge.sh > /dev/null 2>&1
+30 2 * * * /usr/bin/certbot renew --quiet`,
 
-            "ip addr show": `1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP
-    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
-    inet 10.10.4.150/24 brd 10.10.4.255 scope global dynamic eth0`,
+            "chmod": `(File mode permissions updated: -rw------- 1 root root)`,
 
-            "firewall-cmd --list-all": `public (active)
-  target: default
-  icmp-block-inversion: no
-  interfaces: eth0
-  sources: 
-  services: cockpit dhcpv6-client ssh
-  ports: 80/tcp 443/tcp
-  protocols: 
-  forward: no
-  masquerade: no`
+            "chown": `(File ownership recursively updated to user 'nginx', group 'nginx')`,
+
+            "sestatus": `SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing`,
+
+            "ip route": `default via 10.10.4.1 dev eth0 proto dhcp metric 100
+10.10.4.0/24 dev eth0 proto kernel scope link src 10.10.4.150 metric 100`,
+
+            "cat /etc/resolv.conf": `# Generated by NetworkManager
+nameserver 10.10.0.2
+nameserver 8.8.8.8
+search corp.banking.internal`,
+
+            "iostat": `Device            r/s     w/s     rkB/s     wkB/s   rrqm/s  wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz  rareq-sz  wareq-sz  svctm  %util
+sda              12.0  450.0    120.0   18400.0     0.0     5.0   0.0%   1.1%    2.4    15.2   2.10    10.0      40.9   1.80  84.5%`,
+
+            "uname -r": `4.18.0-425.3.1.el8.x86_64`,
+
+            "curl": `*   Trying 127.0.0.1:443...
+* Connected to localhost (127.0.0.1) port 443 (#0)
+> HEAD / HTTP/1.1
+> Host: localhost
+< HTTP/1.1 200 OK
+< Server: nginx/1.18.0
+< Content-Type: text/html`,
+
+            "systemd-analyze": `7.412s NetworkManager-wait-online.service
+3.811s nginx.service
+2.104s kdump.service`,
+
+            "docker volume": `DRIVER    VOLUME NAME
+local     pgdata_db_vol
+local     redis_cache_data`,
+
+            "lsof": `COMMAND   PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+java    14912 nginx   48u  IPv4 982141      0t0  TCP *:webcache (LISTEN)`,
+
+            "tar": `a /var/log/audit
+a /var/log/audit/audit.log
+tar: Archive created successfully (Size: 4.2MB)`,
+
+            "docker rm": `payment-gateway
+Container a1b2c3d4e5f6 removed from host disk.`,
+
+            "logrotate": `reading config file /etc/logrotate.d/nginx
+rotating log /var/log/nginx/access.log
+compressing log with: /usr/bin/gzip
+logrotate execution complete.`,
+
+            "semanage": `SELinux policy updated: Port 8888/tcp assigned to http_port_t context.`,
+
+            "systemctl enable": `Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /usr/lib/systemd/system/nginx.service.`,
+
+            "rsync": `sending incremental file list
+./
+index.html
+css/style.css
+sent 14,210 bytes  received 88 bytes  28,596.00 bytes/sec`,
+
+            "uptime": `14:07:00 up 10 days,  4:12,  2 users,  load average: 8.42, 6.10, 3.15`,
+
+            "docker compose": `[+] Running 3/3
+ ✔ Network app_net         Created
+ ✔ Container redis-cache   Started
+ ✔ Container payment-api   Started`,
+
+            "nc": `Ncat: Version 7.70 ( https://nmap.org/ncat )
+Ncat: Connected to 10.10.4.50:3306.
+(TCP Port 3306 is OPEN & Accepting Connections)`,
+
+            "find": `/var/log/nginx/access.log
+/var/log/audit/audit.log`,
+
+            "visudo": `/etc/sudoers: parsed OK`,
+
+            "pstree": `systemd(1)─┬─systemd-journal(1024)
+           ├─sshd(1842)───sshd(1900)───bash(1902)───pstree(2014)
+           └─nginx(14205)─┬─nginx(14206)
+                          └─nginx(14207)`
         };
 
         /* ==========================================================================
@@ -1108,26 +1209,31 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
                 return;
             }
 
-            const exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower === k.toLowerCase() || cmdLower.includes(k.toLowerCase()));
+            let exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower === k.toLowerCase());
+            if (!exactMatchKey) {
+                exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower.includes(k.toLowerCase()));
+            }
+            if (!exactMatchKey) {
+                const firstWord = cmdLower.split(' ')[0];
+                exactMatchKey = Object.keys(terminalResponses).find(k => k.toLowerCase().startsWith(firstWord));
+            }
             
             if (exactMatchKey) {
                 appendSandboxOutput(terminalResponses[exactMatchKey], 'cyan');
+            } else if (cmdLower.startsWith('docker')) {
+                appendSandboxOutput(`CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS                    PORTS     NAMES\na1b2c3d4e5f6   payment-api:v2.1      "docker-entrypoint.s…"   2 hours ago    Up 2 hours                8080/tcp  payment-gateway`, 'cyan');
             } else if (cmdLower.startsWith('systemctl status')) {
                 appendSandboxOutput(`● service - Systemd Service Supervisor\n   Loaded: loaded (/usr/lib/systemd/system/service)\n   Active: active (running) since Sun 2026-08-16 08:00:00 WIB`, 'cyan');
             } else if (cmdLower.startsWith('systemctl restart') || cmdLower.startsWith('systemctl start')) {
                 appendSandboxOutput(`Job for service succeeded. Daemon state changed to Active (running).`, 'emerald');
+            } else if (cmdLower.startsWith('firewall-cmd')) {
+                appendSandboxOutput(`success\n(Firewall rule active in public zone)`, 'emerald');
             } else if (cmdLower.startsWith('ping')) {
                 appendSandboxOutput(`PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.\n64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.038 ms\n64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.041 ms`, 'slate');
             } else if (cmdLower.startsWith('kill')) {
-                appendSandboxOutput(`Process signal dispatched. Process terminated.`, 'amber');
+                appendSandboxOutput(`[1]+  Killed                  process terminated by SIGKILL signal`, 'amber');
             } else {
-                const matchedQ = masterBank.find(q => q.valid.some(v => cmdLower.includes(v.toLowerCase())));
-                if (matchedQ) {
-                    let resp = terminalResponses[matchedQ.valid[0]] || `● ${matchedQ.valid[0]}\n   Status: Command executed successfully on RHEL 8.`;
-                    appendSandboxOutput(resp, 'cyan');
-                } else {
-                    appendSandboxOutput(`bash: ${rawCmd}: command executed in sandbox mode. (Type 'help' for available commands)`, 'amber');
-                }
+                appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}\nProcess executed on RHEL 8 kernel. (Type 'help' for command examples).`, 'cyan');
             }
         }
 
