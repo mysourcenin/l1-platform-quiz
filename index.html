@@ -47,7 +47,6 @@
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -388,7 +387,7 @@
                         <div class="text-slate-400">
                             Red Hat Enterprise Linux Server release 8.8 (Ootpa)<br>
                             Kernel 4.18.0-425.3.1.el8.x86_64 on an x86_64<br>
-                            Type <span class="text-cyan-400 font-bold">help</span> or test CLI commands like <span class="text-amber-400">systemctl status nginx</span>, <span class="text-amber-400">ss -tulpn</span>, <span class="text-amber-400">docker ps -a</span>, <span class="text-amber-400">df -h</span>, <span class="text-amber-400">journalctl -u nginx -f</span>.
+                            Type <span class="text-cyan-400 font-bold">help</span> or test CLI commands like <span class="text-amber-400">top</span>, <span class="text-amber-400">systemctl status nginx</span>, <span class="text-amber-400">ss -tulpn</span>, <span class="text-amber-400">docker ps -a</span>, <span class="text-amber-400">df -h</span>.
                         </div>
                     </div>
 
@@ -414,6 +413,14 @@
                     </div>
 
                     <div class="space-y-2 text-xs font-mono">
+                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-cyan-400 font-bold">top / htop / ps aux</div>
+                                <div class="text-[11px] font-sans text-slate-400">Cek High CPU & Process Memory</div>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show proc cpu</span>
+                        </div>
+
                         <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
                             <div>
                                 <div class="text-cyan-400 font-bold">ss -tulpn / netstat</div>
@@ -444,14 +451,6 @@
                                 <div class="text-[11px] font-sans text-slate-400">List status container microservices</div>
                             </div>
                             <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show vdom/vrf</span>
-                        </div>
-
-                        <div class="bg-slate-950/90 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="text-cyan-400 font-bold">df -h / df -i</div>
-                                <div class="text-[11px] font-sans text-slate-400">Cek sisa storage & batas inode disk</div>
-                            </div>
-                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded">show flash status</span>
                         </div>
                     </div>
                 </div>
@@ -493,12 +492,16 @@
         </div>
     </footer>
 
-    <!-- MAIN JAVASCRIPT ENGINE WITH AUTHENTIC TERMINAL SIMULATOR -->
+    <!-- MAIN JAVASCRIPT ENGINE WITH ACCURATE EXPLICIT 50 PG + 30 ESSAY QUESTIONS -->
     <script>
-        /* ==========================================================================
-           AUTHENTIC RHEL TERMINAL RESPONSE DICTIONARY
-           ========================================================================== */
         const terminalResponses = {
+            "top": `top - 13:48:00 up 10 days, 4:12, 2 users, load average: 8.42, 6.10, 3.15
+Tasks: 215 total, 3 running, 212 sleeping, 0 stopped, 0 zombie
+%Cpu(s): 98.2 us, 1.8 sy, 0.0 ni, 0.0 id, 0.0 wa, 0.0 hi, 0.0 si
+MiB Mem : 7840.2 total, 120.4 free, 7100.8 used, 619.0 buff/cache
+   PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
+ 19402 nginx 20 0 1840212 940120 12040 R 98.5 12.0 45:12.10 nginx`,
+
             "systemctl status nginx": `● nginx.service - The NGINX HTTP and reverse proxy server
    Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)
    Active: inactive (dead) since Thu 2026-07-30 14:22:01 WIB; 1h 15min ago
@@ -508,45 +511,38 @@
             "journalctl -u nginx -f": `2026/08/16 13:10:02 [error] 18442#0: *49122 FastCGI sent in stderr: "PHP message: PHP Fatal error: Uncaught Exception: Database connection timeout in /var/www/html/api/db.php:42"
 2026/08/16 13:10:02 [info] 18442#0: *49122 client 10.20.4.150 requests GET /api/checkout HTTP/1.1 response 500`,
 
-            "ss -tulpn": `Netid  State   Recv-Q  Send-Q   Local Address:Port   Peer Address:Port  Process
-tcp    LISTEN  0       128            0.0.0.0:80          0.0.0.0:*      users:(("httpd",pid=8841,fd=4))
-tcp    LISTEN  0       128            0.0.0.0:22          0.0.0.0:*      users:(("sshd",pid=1024,fd=3))`,
+            "ss -tulpn": `Netid State Recv-Q Send-Q Local Address:Port Peer Address:Port Process
+tcp LISTEN 0 128 0.0.0.0:80 0.0.0.0:* users:(("httpd",pid=8841,fd=4))
+tcp LISTEN 0 128 0.0.0.0:22 0.0.0.0:* users:(("sshd",pid=1024,fd=3))`,
 
-            "docker ps -a": `CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS                    PORTS     NAMES
-a1b2c3d4e5f6   payment-api:v2.1      "docker-entrypoint.s…"   2 hours ago    Exited (137) 10 min ago             payment-gateway
-f9e8d7c6b5a4   redis:alpine          "docker-entrypoint.s…"   5 days ago     Up 5 days                           6379/tcp  redis-cache`,
+            "docker ps -a": `CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
+a1b2c3d4e5f6 payment-api:v2.1 "docker-entrypoint.s…" 2 hours ago Exited (137) 10 min ago payment-gateway
+f9e8d7c6b5a4 redis:alpine "docker-entrypoint.s…" 5 days ago Up 5 days 6379/tcp redis-cache`,
 
-            "df -h": `Filesystem                  Size  Used Avail Use% Mounted on
-devtmpfs                    3.9G     0  3.9G   0% /dev
-/dev/mapper/rhel-root        20G   18G  2.0G  90% /
-/dev/mapper/rhel-var_log    10G   10G    0B 100% /var/log`,
+            "df -h": `Filesystem Size Used Avail Use% Mounted on
+devtmpfs 3.9G 0 3.9G 0% /dev
+/dev/mapper/rhel-root 20G 18G 2.0G 90% /
+/dev/mapper/rhel-var_log 10G 10G 0B 100% /var/log`,
 
             "yum install -y nginx": `Updating Subscription Management repositories.
 Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
 Dependencies resolved.
 ================================================================================
- Package         Architecture    Version                Repository         Size
+ Package Architecture Version Repository Size
 ================================================================================
 Installing:
- nginx           x86_64          1:1.18.0-2.module_el8  rhel-8-appstream   581 k
+ nginx x86_64 1:1.18.0-2.module_el8 rhel-8-appstream 581 k
 Complete!`,
 
             "openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates": `notBefore=Jan 15 00:00:00 2025 GMT
 notAfter=Jul 30 23:59:59 2026 GMT`,
 
-            "docker logs --tail 20 payment-api": `2026-08-16 13:12:11.402 [main] INFO  c.b.payment.Application - Pool initialized
+            "docker logs --tail 20 payment-api": `2026-08-16 13:12:11.402 [main] INFO c.b.payment.Application - Pool initialized
 2026-08-16 13:15:40.819 [http-exec-1] ERROR c.b.payment.Controller - StackTrace:
 java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB host 10.10.4.50:5432 refused)`,
 
             "ls -la /var/www/html": `drwxr-xr-x 2 root root 4096 Aug 16 10:00 .
 -rw------- 1 root root 1024 Aug 16 10:00 index.html`,
-
-            "top": `top - 13:20:00 up 10 days,  4:12,  2 users,  load average: 8.42, 6.10, 3.15
-Tasks: 215 total,   3 running, 212 sleeping,   0 stopped,   0 zombie
-%Cpu(s): 94.2 us,  3.8 sy,  0.0 ni,  1.5 id,  0.5 wa,  0.0 hi,  0.0 si
-MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
-   PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
- 19402 nginx     20   0 1840212 940120  12040 R  98.5  12.0  45:12.10 nginx`,
 
             "ip addr show": `1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -568,15 +564,11 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
         };
 
         /* ==========================================================================
-           FULL QUESTION BANK (50 PG + 30 ESSAY = 80 QUESTIONS)
+           EXPLICIT 50 PILIHAN GANDA (PG 1 - 50)
            ========================================================================== */
-        
-        const pgQuestions = [];
-        const essayQuestions = [];
-
-        const basePG = [
+        const pgQuestions = [
             { id: 1, topic: "Systemd Service Triage", title: "Aplikasi Mobile Banking melempar error HTTP 502 Bad Gateway", desc: "Pelanggan melaporkan error HTTP 502. Firewall network dipastikan normal. Bagaimana cara cek status Nginx service di RHEL?", valid: ["systemctl status nginx"], options: [{id:'A',text:'systemctl status nginx',correct:true},{id:'B',text:'service status nginx.log',correct:false},{id:'C',text:'ping 127.0.0.1:80',correct:false},{id:'D',text:'netstat -kill nginx',correct:false}], analogy: "Sama seperti mengecek daemon status di firewall (get system status), di Linux CLI Anda memeriksa process supervisor (systemd).", explanation: "Command systemctl status nginx memberikan status supervisor process Nginx (active/inactive)." },
-            { id: 2, topic: "Live Log Tailing", title: "Memantau Log Error Realtime HTTP 500", desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime (live continuous stream).", valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], options: [{id:'A',text:'cat /var/log/nginx/error.log',correct:false},{id:'B',text:'journalctl -u nginx -f',correct:true},{id:'C',text:'nano /var/log/nginx/error.log',correct:false},{id:'D',text:'grep 500 /etc/nginx/nginx.conf',correct:false}], analogy: "Flag -f mirip seperti Wireshark Live Packet Capture untuk log continuous stream.", explanation: "Flag -f (follow) terus menampilkan log baru secara live." },
+            { id: 2, topic: "Live Log Tailing", title: "Memantau Log Error Realtime HTTP 500 saat Checkout", desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime (live continuous stream).", valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], options: [{id:'A',text:'cat /var/log/nginx/error.log',correct:false},{id:'B',text:'journalctl -u nginx -f',correct:true},{id:'C',text:'nano /var/log/nginx/error.log',correct:false},{id:'D',text:'grep 500 /etc/nginx/nginx.conf',correct:false}], analogy: "Flag -f mirip seperti Wireshark Live Packet Capture untuk log continuous stream.", explanation: "Flag -f (follow) terus menampilkan log baru secara live." },
             { id: 3, topic: "Port & Socket Inspection", title: "Pengecekan Listening Port & IP Socket Conflict", desc: "Nginx gagal start dengan error 'Address already in use: 0.0.0.0:80'. Perintah apa untuk melihat PID pengikat port 80?", valid: ["ss -tulpn", "netstat -tulpn"], options: [{id:'A',text:'ping 0.0.0.0:80',correct:false},{id:'B',text:'ss -tulpn',correct:true},{id:'C',text:'ifconfig eth0 port 80',correct:false},{id:'D',text:'traceroute 127.0.0.1 80',correct:false}], analogy: "Mirip show ip sockets pada Firewall untuk melacak daemon pengikat port.", explanation: "ss -tulpn menampilkan TCP/UDP listening port beserta Process ID (PID)." },
             { id: 4, topic: "Docker Container Lifecycle", title: "Container Payment Microservice Exited/Crash", desc: "Container payment-gateway tidak merespon traffic. Perintah apa untuk melacak SELURUH container (termasuk yang Exited)?", valid: ["docker ps -a"], options: [{id:'A',text:'docker ps',correct:false},{id:'B',text:'docker ps -a',correct:true},{id:'C',text:'systemctl status docker.log',correct:false},{id:'D',text:'docker run payment-gateway',correct:false}], analogy: "Mirip show interfaces brief (All UP & DOWN) di router network.", explanation: "docker ps -a menampilkan container aktif maupun yang sudah mati (Exited)." },
             { id: 5, topic: "Disk Storage Triage", title: "Alert Storage Partition /var/log Full 100%", desc: "Server log menolak menulis log baru (No space left on device). Perintah apa untuk melihat pemakaian disk per mount point?", valid: ["df -h"], options: [{id:'A',text:'du -sh *',correct:false},{id:'B',text:'df -h',correct:true},{id:'C',text:'fdisk -l /dev/ram0',correct:false},{id:'D',text:'format C: /q',correct:false}], analogy: "Mirip show flash pada router hardware untuk mencegah storage overflow.", explanation: "df -h menampilkan kapasitas tersisa mount point disk secara Human Readable." },
@@ -584,36 +576,58 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
             { id: 7, topic: "Escalation SOP", title: "Format Ticket Escalation L1 ke L2 Sesuai Banking SOP", desc: "Triage L1 menunjukkan Nginx running tetapi upstream port 8080 Connection Refused. Apa tindakan L1 yang benar?", valid: ["escalate l2"], options: [{id:'A',text:'Kirim pesan WA tanpa bukti output CLI',correct:false},{id:'B',text:'Buat Ticket Escalation L2 melampirkan bukti CLI & hipotesis root cause',correct:true},{id:'C',text:'Reboot server fisik tanpa koordinasi',correct:false},{id:'D',text:'Tutup ticket dengan status solved',correct:false}], analogy: "Mirip mengajukan Tier-2 TAC ticket ke Cisco/Palo Alto dengan tech-support bundle.", explanation: "SOP Banking mewajibkan melampirkan Impact, Output CLI Triage, dan Hipotesis Root Cause." },
             { id: 8, topic: "SSL Certificate Expiration", title: "Pengecekan Masa Berlaku SSL/TLS Certificate", desc: "Browser nasabah menampilkan error NET::ERR_CERT_DATE_INVALID. Perintah untuk cek tanggal kedaluwarsa file sertifikat .crt?", valid: ["openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates"], options: [{id:'A',text:'cat /etc/nginx/ssl/server.crt',correct:false},{id:'B',text:'openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates',correct:true},{id:'C',text:'ping ssl.banking.com',correct:false},{id:'D',text:'certutil -delete /etc/ssl',correct:false}], analogy: "Mirip mengecek Certificate Validity Period di SSL VPN Gateway.", explanation: "openssl x509 -noout -dates membedah struktur metadata tanggal notAfter sertifikat." },
             { id: 9, topic: "Container Logs Triage", title: "Membaca Logs Console Docker Container Internal", desc: "Container payment-api status Up, tetapi API melempar error. Perintah untuk membaca 20 baris log terakhir container?", valid: ["docker logs --tail 20 payment-api"], options: [{id:'A',text:'cat /var/log/docker.log',correct:false},{id:'B',text:'docker logs --tail 20 payment-api',correct:true},{id:'C',text:'docker inspect payment-api --delete',correct:false},{id:'D',text:'systemctl logs docker',correct:false}], analogy: "Mirip membaca console log buffer dari sub-module virtual slot.", explanation: "docker logs menangkap stream output stdout/stderr dari aplikasi di dalam container." },
-            { id: 10, topic: "File Permissions & ACL", title: "Nginx Error 403 Forbidden File Permission Triage", desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file index.html?", valid: ["ls -la /var/www/html"], options: [{id:'A',text:'chmod 777 /etc/nginx/nginx.conf',correct:false},{id:'B',text:'ls -la /var/www/html',correct:true},{id:'C',text:'rm -rf /var/www/html',correct:false},{id:'D',text:'ping /var/www/html',correct:false}], analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di firewall.", explanation: "ls -la menampilkan mode permission (contoh -rw-------) dan owner (root vs nginx)." }
+            { id: 10, topic: "File Permissions & ACL", title: "Nginx Error 403 Forbidden File Permission Triage", desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file index.html?", valid: ["ls -la /var/www/html"], options: [{id:'A',text:'chmod 777 /etc/nginx/nginx.conf',correct:false},{id:'B',text:'ls -la /var/www/html',correct:true},{id:'C',text:'rm -rf /var/www/html',correct:false},{id:'D',text:'ping /var/www/html',correct:false}], analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di firewall.", explanation: "ls -la menampilkan mode permission (contoh -rw-------) dan owner (root vs nginx)." },
+
+            // PG 11 s/d 50
+            { id: 11, topic: "CPU & Process Spike Triage", title: "CPU Server Spikes 99% - Melacak Process ID (PID) Terpengaruh", desc: "Server prod-node01 dilaporkan lambat. Perintah CLI apa yang paling efektif untuk memantau penggunaan CPU, RAM, dan top process yang mengonsumsi resource tertinggi?", valid: ["top", "htop", "ps aux"], options: [{id:'A',text:'top (atau htop / ps aux)',correct:true},{id:'B',text:'cat /proc/cpuinfo',correct:false},{id:'C',text:'ping 127.0.0.1',correct:false},{id:'D',text:'systemctl stop network',correct:false}], analogy: "Mirip `show processes cpu` pada router Cisco/Fortigate saat CPU spikes.", explanation: "Command `top` / `htop` / `ps aux` menampilkan realtime CPU, RAM, dan Process ID (PID) pengonsumsi resource." },
+            { id: 12, topic: "RAM & Swap Memory Triage", title: "Melacak Sisa Physical RAM & Pemakaian Swap Memory di Server", desc: "Aplikasi melempar warning memory low. Perintah apa yang digunakan untuk menampilkan sisa RAM dan Swap dalam format megabyte (MB)?", valid: ["free -m", "free -h"], options: [{id:'A',text:'free -m (atau free -h)',correct:true},{id:'B',text:'ls -la /proc/meminfo',correct:false},{id:'C',text:'ping 10.0.0.1',correct:false},{id:'D',text:'route -n',correct:false}], analogy: "Mirip `show memory` pada hardware router/firewall.", explanation: "`free -m` menampilkan Total, Used, Free, Buff/Cache, serta Swap Memory." },
+            { id: 13, topic: "Process Termination", title: "Menghentikan Process Zombie/Hung (PID 9912) Secara Paksa", desc: "Process Java (PID 9912) hang dan tidak merespon `kill -15`. Perintah apa untuk mengirimkan signal SIGKILL paksa ke PID 9912?", valid: ["kill -9 9912"], options: [{id:'A',text:'kill -9 9912',correct:true},{id:'B',text:'stop 9912',correct:false},{id:'C',text:'delete pid 9912',correct:false},{id:'D',text:'systemctl pause 9912',correct:false}], analogy: "Mirip melakukan forced process kill / session drop pada firewall admin console.", explanation: "`kill -9` mengirimkan signal SIGKILL yang langsung dihentikan oleh kernel." },
+            { id: 14, topic: "Kernel Out-Of-Memory (OOM)", title: "Melacak Event Log Kernel OOM Killer yang Membunuh Process", desc: "Container Database mendadak hilang/down tanpa crash dump. Perintah apa di kernel ring buffer (`dmesg`) untuk membuktikan jika process di-kill oleh OOM Killer?", valid: ["dmesg -T | grep -i oom"], options: [{id:'A',text:'dmesg -T | grep -i oom',correct:true},{id:'B',text:'cat /etc/hosts',correct:false},{id:'C',text:'ifconfig eth0',correct:false},{id:'D',text:'traceroute localhost',correct:false}], analogy: "Mirip hardware firewall logging daemon restart karena memory overrun.", explanation: "`dmesg -T | grep -i oom` menampilkan timestamp kernel saat membunuh process karena kehabisan RAM." },
+            { id: 15, topic: "Network Interface Triage", title: "Memeriksa IP Address & Link State Interface pada RHEL 8", desc: "Server baru di-provisioning. Perintah CLI modern RHEL 8 apa untuk melihat IP Address, subnet mask, dan status UP/DOWN interface?", valid: ["ip addr show", "ip a"], options: [{id:'A',text:'ip addr show (atau ip a)',correct:true},{id:'B',text:'netstat -r',correct:false},{id:'C',text:'cat /etc/fstab',correct:false},{id:'D',text:'crontab -l',correct:false}], analogy: "Mirip `show ip interface brief` di Cisco IOS router.", explanation: "`ip addr show` (atau `ip a`) adalah perintah modern pengganti `ifconfig`." },
+            { id: 16, topic: "TCP Port Connectivity Test", title: "Menguji Konektivitas Port TCP 3306 Database Server dari Web Server", desc: "Aplikasi melempar error 'Database connection refused'. Perintah apa untuk menguji jangkauan port TCP 3306 dari Web Server ke DB Server 10.10.4.50?", valid: ["nc -zvw3 10.10.4.50 3306", "telnet 10.10.4.50 3306"], options: [{id:'A',text:'nc -zvw3 10.10.4.50 3306 (atau telnet)',correct:true},{id:'B',text:'ping -c 4 10.10.4.50',correct:false},{id:'C',text:'traceroute 127.0.0.1',correct:false},{id:'D',text:'nslookup database',correct:false}], analogy: "Ping hanya menguji ICMP Layer 3; Netcat (`nc`) menguji TCP Handshake Layer 4 pada port spesifik.", explanation: "`nc -zvw3` melakukan handshaking TCP port untuk memastikan firewall/socket membuka koneksi." },
+            { id: 17, topic: "FirewallD Port Management", title: "Membuka Port Traffic HTTPS (443/tcp) Permanen di RHEL 8", desc: "Web server HTTPS tidak bisa diakses dari luar karena diblokir FirewallD. Perintah apa untuk membuka port 443/tcp secara permanen?", valid: ["firewall-cmd --add-port=443/tcp --permanent"], options: [{id:'A',text:'firewall-cmd --add-port=443/tcp --permanent',correct:true},{id:'B',text:'ufw allow 443',correct:false},{id:'C',text:'iptables -F',correct:false},{id:'D',text:'systemctl stop firewalld',correct:false}], analogy: "Mirip menambahkan Security Policy Rule `permit tcp any any eq 443` di Palo Alto / Fortigate.", explanation: "`firewall-cmd --add-port=443/tcp --permanent` mendaftarkan port di zona aktif RHEL." },
+            { id: 18, topic: "Container Interactive Shell", title: "Masuk ke Terminal Sesi Interaktif Container Docker", desc: "Anda perlu mengecek file konfigurasi internal di dalam container `payment-api` yang sedang running. Perintah apa yang digunakan?", valid: ["docker exec -it payment-api bash"], options: [{id:'A',text:'docker exec -it payment-api bash',correct:true},{id:'B',text:'docker start payment-api --shell',correct:false},{id:'C',text:'ssh root@docker',correct:false},{id:'D',text:'docker build -t payment-api',correct:false}], analogy: "Mirip SSH / Console session langsung ke dalam Virtual Domain (VDOM) terisolasi.", explanation: "`docker exec -it <container> bash` membuka terminal interaktif TTY di dalam container." },
+            { id: 19, topic: "Storage Inodes Exhaustion", title: "Penyebab Disk Full Padahal Capacity MB Masih Tersisa", desc: "Server melempar error 'No space left on device', tetapi `df -h` menunjukkan sisa disk masih 40%. Perintah apa untuk memeriksa kehabisan inode disk?", valid: ["df -i"], options: [{id:'A',text:'df -i',correct:true},{id:'B',text:'free -m',correct:false},{id:'C',text:'top',correct:false},{id:'D',text:'uptime',correct:false}], analogy: "Mirip tabel NAT session limit yang penuh meskipun bandwidth port fisik masih kosong.", explanation: "`df -i` memeriksa Inode Consumption (jumlah total file kecil yang telah menghabiskan tabel index filesystem)." },
+            { id: 20, topic: "Open Files Limit (Ulimit)", title: "Melacak Error 'Too many open files' pada High-Traffic Web Server", desc: "Nginx melempar error `socket() failed (24: Too many open files)`. Perintah apa untuk mengecek batas maksimal open file descriptor di Linux?", valid: ["ulimit -n"], options: [{id:'A',text:'ulimit -n',correct:true},{id:'B',text:'chmod 777 /etc/limits',correct:false},{id:'C',text:'cat /proc/cpuinfo',correct:false},{id:'D',text:'ping 8.8.8.8',correct:false}], analogy: "Mirip Maximum Concurrent Session Limit per IP pada Firewall gateway.", explanation: "`ulimit -n` menampilkan batas Soft & Hard limit jumlah file/socket descriptor per session." },
+
+            // PG 21 s/d 50
+            { id: 21, topic: "Nginx Reload vs Restart", title: "Memperbarui Konfigurasi Nginx Tanpa Drop Koneksi User Active", desc: "Anda baru mengubah `nginx.conf`. Perintah apa untuk me-apply perubahan konfigurasi tanpa menghentikan worker process yang melayani user?", valid: ["systemctl reload nginx"], options: [{id:'A',text:'systemctl reload nginx',correct:true},{id:'B',text:'systemctl restart nginx',correct:false},{id:'C',text:'systemctl stop nginx',correct:false},{id:'D',text:'killall -9 nginx',correct:false}], analogy: "Mirip `commit` / `apply-config` pada router tanpa melakukan reboot hardware.", explanation: "`reload` mengirimkan signal SIGHUP sehingga Nginx membaca config baru tanpa drop TCP connection active." },
+            { id: 22, topic: "Find Large Log Files", title: "Mencari File Log Berukuran Lebih dari 100MB di Partisi Log", desc: "Partisi `/var/log` hampir penuh. Perintah `find` apa yang tepat untuk mencari seluruh file berukuran lebih dari 100 Megabyte?", valid: ["find /var/log -type f -size +100M"], options: [{id:'A',text:'find /var/log -type f -size +100M',correct:true},{id:'B',text:'ls -la /var/log',correct:false},{id:'C',text:'du -sh /',correct:false},{id:'D',text:'grep -rn "100M" /var/log',correct:false}], analogy: "Mirip melacak top-talker traffic bandwidth consumer pada analyzer firewall.", explanation: "`find /var/log -type f -size +100M` memfilter file berukuran di atas 100MB." },
+            { id: 23, topic: "Cron Job Audit", title: "Memeriksa Daftar Scheduled Cron Task Milik User Currently Logged In", desc: "Terdapat script otomatis yang berjalan tiap jam. Perintah apa untuk melihat daftar scheduled cron job milik user aktif?", valid: ["crontab -l"], options: [{id:'A',text:'crontab -l',correct:true},{id:'B',text:'cat /etc/cron.deny',correct:false},{id:'C',text:'systemctl status cron.log',correct:false},{id:'D',text:'ls -la /etc/hosts',correct:false}], analogy: "Mirip `show scheduler job` pada router untuk melihat otomatisasi script.", explanation: "`crontab -l` merinci seluruh daftar scheduler task milik user." },
+            { id: 24, topic: "SSH Key Permission Security", title: "Set Permission Aman File Authorized Keys SSH (.ssh/authorized_keys)", desc: "Passwordless SSH gagal karena permission terlalu terbuka. Berapa mode permission chmod yang diwajibkan untuk `authorized_keys`?", valid: ["chmod 600 ~/.ssh/authorized_keys"], options: [{id:'A',text:'chmod 600 ~/.ssh/authorized_keys',correct:true},{id:'B',text:'chmod 777 ~/.ssh/authorized_keys',correct:false},{id:'C',text:'chmod 755 ~/.ssh/authorized_keys',correct:false},{id:'D',text:'chmod 000 ~/.ssh/authorized_keys',correct:false}], analogy: "Mirip pembatasan hak akses Read/Write Private Key pada IPsec VPN Certificate.", explanation: "SSH Daemon menolak public key jika file `authorized_keys` dapat dibaca oleh user lain (`chmod 600`)." },
+            { id: 25, topic: "Container Logs Streaming", title: "Live Stream Log Console Container Docker", desc: "Anda ingin memantau log output container `payment-api` secara realtime (live follow). Perintah apa yang digunakan?", valid: ["docker logs -f payment-api"], options: [{id:'A',text:'docker logs -f payment-api',correct:true},{id:'B',text:'cat /var/log/docker.log',correct:false},{id:'C',text:'systemctl status docker',correct:false},{id:'D',text:'docker inspect payment-api',correct:false}], analogy: "Mirip `terminal monitor` pada Cisco router untuk melihat syslog stream.", explanation: "Flag `-f` pada `docker logs` menyajikan stream stdout/stderr container secara realtime." },
+            { id: 26, topic: "SELinux Security Status", title: "Memeriksa Status Active Mode SELinux (Enforcing / Permissive)", desc: "File web tidak bisa dibuka meskipun permission sudah 755. Perintah apa untuk mengecek apakah SELinux status active `Enforcing`?", valid: ["sestatus", "getenforce"], options: [{id:'A',text:'sestatus (atau getenforce)',correct:true},{id:'B',text:'cat /etc/selinux.conf',correct:false},{id:'C',text:'firewall-cmd --state',correct:false},{id:'D',text:'ls -la /etc/selinux',correct:false}], analogy: "Mirip mengecek status Security Mandatory Access Control (MAC) pada firewall kernel.", explanation: "`sestatus` atau `getenforce` menampilkan status operasional SELinux." },
+            { id: 27, topic: "Kernel Routing Table", title: "Memeriksa Kernel IP Routing Table & Default Gateway", desc: "Server tidak bisa menghubungi IP publik external. Perintah apa untuk melihat IP routing table dan default gateway interface?", valid: ["ip route show", "route -n"], options: [{id:'A',text:'ip route show (atau route -n)',correct:true},{id:'B',text:'ifconfig eth0',correct:false},{id:'C',text:'cat /etc/resolv.conf',correct:false},{id:'D',text:'ping gateway',correct:false}], analogy: "Mirip `show ip route` di router/firewall untuk memastikan Next-Hop Gateway.", explanation: "`ip route show` menampilkan IP destination subnet, metric, dan gateway interface." },
+            { id: 28, topic: "DNS Resolver Configuration", title: "Memeriksa Konfigurasi IP Resolver DNS Server pada RHEL", desc: "Server melempar error 'Could not resolve host'. Perintah apa untuk memeriksa IP Nameserver DNS yang didaftarkan di RHEL?", valid: ["cat /etc/resolv.conf"], options: [{id:'A',text:'cat /etc/resolv.conf',correct:true},{id:'B',text:'cat /etc/hosts',correct:false},{id:'C',text:'ip addr show',correct:false},{id:'D',text:'netstat -tulpn',correct:false}], analogy: "Mirip `show dns server` di Fortigate/Cisco.", explanation: "File `/etc/resolv.conf` menyimpan IP address nameserver DNS lokal server." },
+            { id: 29, topic: "Process Tree Hierarchy", title: "Melacak Parent Process ID (PPID) dan Hierarchy Tree Sub-Process", desc: "Anda ingin melihat pohon silsilah induk (Parent PID) dari Nginx master & worker process. Perintah apa yang paling visual?", valid: ["pstree -p", "ps aux --forest"], options: [{id:'A',text:'pstree -p (atau ps aux --forest)',correct:true},{id:'B',text:'top -tree',correct:false},{id:'C',text:'ls -la /proc',correct:false},{id:'D',text:'systemctl tree',correct:false}], analogy: "Mirip struktur hierarki Virtual Domain (VDOM) induk dan anak.", explanation: "`pstree -p` menyajikan diagram pohon process lengkap dengan Process ID." },
+            { id: 30, topic: "Disk I/O Bottleneck", title: "Melacak Storage Disk Device yang Mengalami Bottleneck High I/O (%util)", desc: "Database server mengalami I/O wait tinggi. Perintah apa untuk melacak persen utilitas I/O (`%util`) per disk device?", valid: ["iostat -xz 1 5", "iotop"], options: [{id:'A',text:'iostat -xz 1 5 (atau iotop)',correct:true},{id:'B',text:'df -h',correct:false},{id:'C',text:'free -m',correct:false},{id:'D',text:'ping disk',correct:false}], analogy: "Mirip melacak port interface congestion di SAN Storage switch.", explanation: "`iostat -xz 1 5` merinci read/write IOPS, queue length, dan %utilization per disk." },
+
+            // PG 31 s/d 50
+            { id: 31, topic: "Recursive Ownership Change", title: "Mengubah Ownership Seluruh File Web ke User & Group Nginx", desc: "Website 403 Forbidden karena owner file masih `root`. Perintah apa untuk mengubah owner folder `/var/www/html` ke `nginx:nginx` secara rekursif?", valid: ["chown -R nginx:nginx /var/www/html"], options: [{id:'A',text:'chown -R nginx:nginx /var/www/html',correct:true},{id:'B',text:'chmod -R 777 /var/www/html',correct:false},{id:'C',text:'chgrp root /var/www/html',correct:false},{id:'D',text:'chown nginx /etc/nginx/nginx.conf',correct:false}], analogy: "Mirip mengubah User/Group Object Ownership pada Security Policy Firewall.", explanation: "Flag `-R` pada `chown` mengubah ownership seluruh file & sub-folder di dalamnya." },
+            { id: 32, topic: "Kernel Release Version", title: "Memeriksa Versi Kernel Linux & System Architecture", desc: "Anda ingin memastikan versi kernel RHEL 8 (misal `4.18.0-425.el8.x86_64`). Perintah singkat apa yang digunakan?", valid: ["uname -r", "uname -a"], options: [{id:'A',text:'uname -r (atau uname -a)',correct:true},{id:'B',text:'cat /etc/redhat-release',correct:false},{id:'C',text:'systemctl --version',correct:false},{id:'D',text:'docker --version',correct:false}], analogy: "Mirip `show version` pada Cisco IOS / FortiOS.", explanation: "`uname -r` menampilkan versi release kernel Linux yang sedang berjalan." },
+            { id: 33, topic: "HTTP Response Header Inspection", title: "Memeriksa HTTP Status Response Code & Header SSL Handshake via CLI", desc: "Perintah `curl` apa untuk melihat HTTP Response Header (200 OK, 301, 500) dan SSL TLS handshake tanpa mendownload HTML body?", valid: ["curl -Iv https://localhost"], options: [{id:'A',text:'curl -Iv https://localhost',correct:true},{id:'B',text:'ping https://localhost',correct:false},{id:'C',text:'telnet localhost 80',correct:false},{id:'D',text:'cat /etc/hosts',correct:false}], analogy: "Mirip HTTP Header Debugger pada F5 LTM / WAF gateway.", explanation: "Flag `-I` (head only) dan `-v` (verbose) pada `curl` menampilkan detail HTTP header & TLS handshake." },
+            { id: 34, topic: "System Boot Performance Audit", title: "Melacak Service Systemd yang Menyebabkan Booting Server Slow", desc: "Server butuh waktu 10 menit untuk boot. Perintah systemd apa untuk mengurutkan service-service yang paling lama loading saat boot?", valid: ["systemd-analyze blame"], options: [{id:'A',text:'systemd-analyze blame',correct:true},{id:'B',text:'systemctl list-units',correct:false},{id:'C',text:'dmesg -boot',correct:false},{id:'D',text:'top',correct:false}], analogy: "Mirip boot-up hardware diagnostic timeline pada router chassis.", explanation: "`systemd-analyze blame` merinci waktu eksekusi startup per unit service." },
+            { id: 35, topic: "Docker Volume Persistence", title: "Memeriksa Persistent Data Volume Mounts pada Docker Container", desc: "Anda ingin melihat daftar volume storage terisolasi yang dibuat oleh Docker daemon. Perintah apa yang digunakan?", valid: ["docker volume ls"], options: [{id:'A',text:'docker volume ls',correct:true},{id:'B',text:'df -h /docker',correct:false},{id:'C',text:'ls -la /etc/docker',correct:false},{id:'D',text:'systemctl status docker',correct:false}], analogy: "Mirip `show storage volume` pada SAN Storage array.", explanation: "`docker volume ls` mendaftarkan seluruh persistent volume yang dikelola Docker." },
+            { id: 36, topic: "Open Sockets by Port", title: "Melacak Process ID (PID) yang Membuka Socket di Port 8080", desc: "Port 8080 terkunci. Perintah `lsof` apa untuk melacak persis nama process dan PID pengikat port 8080?", valid: ["lsof -i :8080"], options: [{id:'A',text:'lsof -i :8080',correct:true},{id:'B',text:'netstat -a 8080',correct:false},{id:'C',text:'ping 8080',correct:false},{id:'D',text:'cat /etc/services',correct:false}], analogy: "Mirip `show ip socket | include 8080` pada router.", explanation: "`lsof -i :8080` (list open files) mendaftarkan PID dan socket pengikat port spesifik." },
+            { id: 37, topic: "Tarball Archive Compression", title: "Mengompresi Folder Audit Log Menjadi File Backup Tarball .tar.gz", desc: "Anda diminta mem-backup folder `/var/log/audit` menjadi satu file kompresi `backup_log.tar.gz`. Perintah `tar` apa yang tepat?", valid: ["tar -czvf backup_log.tar.gz /var/log/audit"], options: [{id:'A',text:'tar -czvf backup_log.tar.gz /var/log/audit',correct:true},{id:'B',text:'zip /var/log/audit',correct:false},{id:'C',text:'gzip -d /var/log/audit',correct:false},{id:'D',text:'cp -r /var/log/audit backup',correct:false}], analogy: "Mirip mengekspor Tech-support Bundle zip dari firewall admin console.", explanation: "Flag `-czvf` (create, gzip, verbose, file) mengompresi direktori menjadi tarball .gz." },
+            { id: 38, topic: "Docker Container Deletion", title: "Menghapus Container yang Sudah Exited Agar Menghemat Storage", desc: "Terdapat 50 container mati (`Exited`). Perintah apa untuk menghapus container (bukan docker image) dari disk?", valid: ["docker rm <container_id>"], options: [{id:'A',text:'docker rm <container_id>',correct:true},{id:'B',text:'docker rmi <container_id>',correct:false},{id:'C',text:'docker stop <container_id>',correct:false},{id:'D',text:'docker pause <container_id>',correct:false}], analogy: "Mirip menghapus konfigurasi stale sub-interface yang sudah tidak terpakai.", explanation: "`docker rm` menghapus instance container; sedangkan `docker rmi` menghapus image template." },
+            { id: 39, topic: "Logrotate Force Execution", title: "Memaksa Eksekusi Logrotate untuk Mengompresi Log Nginx Lama", desc: "Disk hampir 100% penuh. Perintah apa untuk memaksa (force) eksekusi siklus rotation log Nginx tanpa menunggu jadwal harian?", valid: ["logrotate -f /etc/logrotate.d/nginx"], options: [{id:'A',text:'logrotate -f /etc/logrotate.d/nginx',correct:true},{id:'B',text:'systemctl restart logrotate',correct:false},{id:'C',text:'rm -rf /var/log/nginx',correct:false},{id:'D',text:'truncate /var/log/nginx',correct:false}], analogy: "Mirip pembersihan manual log buffer flash storage firewall.", explanation: "Flag `-f` pada `logrotate` memicu pemotongan & kompresi `.gz` log secara instan." },
+            { id: 40, topic: "SELinux Port Permissive Context", title: "Mengizinkan Nginx Listening di Port Non-Standard (misal 8888) via SELinux", desc: "Nginx gagal start di port 8888 karena diblokir SELinux. Perintah `semanage` apa untuk menambahkan port 8888 ke tipe `http_port_t`?", valid: ["semanage port -a -t http_port_t -p tcp 8888"], options: [{id:'A',text:'semanage port -a -t http_port_t -p tcp 8888',correct:true},{id:'B',text:'setenforce 0',correct:false},{id:'C',text:'firewall-cmd --add-port=8888/tcp',correct:false},{id:'D',text:'chmod 777 /etc/nginx',correct:false}], analogy: "Mirip daftarkan Service Port Object baru pada Security Gateway policy.", explanation: "`semanage port` mendaftarkan port non-standard ke dalam SELinux policy context." },
+            { id: 41, topic: "Systemd Boot Enable", title: "Memastikan Nginx Otomatis Running Saat Server Fisik Reboot", desc: "Saat server mati listrik dan boot kembali, Nginx tidak otomatis running. Perintah systemd apa untuk mengaktifkan auto-start at boot?", valid: ["systemctl enable nginx"], options: [{id:'A',text:'systemctl enable nginx',correct:true},{id:'B',text:'systemctl start nginx',correct:false},{id:'C',text:'systemctl status nginx',correct:false},{id:'D',text:'systemctl reload nginx',correct:false}], analogy: "Mirip menyimpannya ke `startup-config` pada router Cisco.", explanation: "`systemctl enable` membuat symlink autostart di `/etc/systemd/system/multi-user.target.wants/`." },
+            { id: 42, topic: "SSH Security Hardening Config", title: "File Konfigurasi Utama untuk Mengubah Default Port SSH 22 & Disable Root Login", desc: "Anda diminta mengamankan SSH server. Di file manakah lokasi konfigurasi SSH Daemon RHEL berada?", valid: ["/etc/ssh/sshd_config"], options: [{id:'A',text:'/etc/ssh/sshd_config',correct:true},{id:'B',text:'/etc/hosts',correct:false},{id:'C',text:'/etc/resolv.conf',correct:false},{id:'D',text:'/etc/sudoers',correct:false}], analogy: "Mirip file konfigurasi Management Access SSH pada Security Gateway.", explanation: "`/etc/ssh/sshd_config` mengatur Port, PermitRootLogin, dan PasswordAuthentication." },
+            { id: 43, topic: "Sudoers Privilege Editing", title: "Tool Resmi untuk Mengedit File Hak Akses Administrative Sudoers", desc: "Anda ingin memberikan akses sudo ke user L1 Operator. Mengapa wajib mengedit file `/etc/sudoers` menggunakan perintah `visudo`?", valid: ["visudo"], options: [{id:'A',text:'visudo (melakukan syntax lock & validation)',correct:true},{id:'B',text:'nano /etc/sudoers',correct:false},{id:'C',text:'chmod 777 /etc/sudoers',correct:false},{id:'D',text:'cat /etc/sudoers',correct:false}], analogy: "Mirip validasi sintaksis sebelum commit pada OS router untuk mencegah lockout admin.", explanation: "`visudo` mengecek syntax error sebelum menyimpan; mencegah error yang dapat mengunci akses root." },
+            { id: 44, topic: "Rsync Remote Synchronization", title: "Sinkronisasi File Web antar Server Remote Secara Efisien via SSH", desc: "Anda diminta menyalin direktori `/var/www/html/` ke server standby `10.10.4.51` dengan menyalin delta perbedaan file saja. Perintah apa yang digunakan?", valid: ["rsync -avz /var/www/html/ root@10.10.4.51:/var/www/html/"], options: [{id:'A',text:'rsync -avz /var/www/html/ root@10.10.4.51:/var/www/html/',correct:true},{id:'B',text:'scp -r /var/www/html/ root@10.10.4.51:/var/www/html/',correct:false},{id:'C',text:'ftp 10.10.4.51',correct:false},{id:'D',text:'wget 10.10.4.51',correct:false}], analogy: "Mirip Stateful Configuration Synchronization (HA Active-Passive) pada Firewall.", explanation: "`rsync` hanya mentransfer perubahan (delta) file, menghemat bandwidth jaringan dibanding `scp`." },
+            { id: 45, topic: "System Uptime & Load Average", title: "Melihat Berapa Lama Server Running & Load Average 1, 5, 15 Menit", desc: "Perintah singkat CLI apa untuk melihat durasi uptime server dan 3 angka Load Average (1m, 5m, 15m)?", valid: ["uptime"], options: [{id:'A',text:'uptime',correct:true},{id:'B',text:'date',correct:false},{id:'C',text:'uname -a',correct:false},{id:'D',text:'time',correct:false}], analogy: "Mirip `show system uptime` pada router/firewall.", explanation: "`uptime` menyajikan waktu server aktif dan rata-rata antrean CPU load average." },
+            { id: 46, topic: "Docker Compose Deployment", title: "Menjalankan Multi-Container Stack (Nginx + App + DB) di Background", desc: "File `docker-compose.yml` telah siap. Perintah apa untuk mendeply seluruh stack container di mode detached background?", valid: ["docker compose up -d"], options: [{id:'A',text:'docker compose up -d',correct:true},{id:'B',text:'docker run -d',correct:false},{id:'C',text:'docker build .',correct:false},{id:'D',text:'docker push',correct:false}], analogy: "Mirip mengaktifkan seluruh Virtual Instance dalam satu orchestration template.", explanation: "`docker compose up -d` membaca file YAML dan menjalankan seluruh service di background (`-d`)." },
+            { id: 47, topic: "Kernel Log Buffer (Dmesg)", title: "Melihat Log Hardware Ring Buffer Kernel Saat Driver/Hardware Error", desc: "Disk RAID controller melempar error. Perintah apa untuk membaca log internal ring buffer milik Linux Kernel?", valid: ["dmesg -T"], options: [{id:'A',text:'dmesg -T',correct:true},{id:'B',text:'cat /var/log/nginx/error.log',correct:false},{id:'C',text:'journalctl -u nginx',correct:false},{id:'D',text:'systemctl status kernel',correct:false}], analogy: "Mirip `show logging buffered` hardware chassis pada router.", explanation: "`dmesg -T` menampilkan pesan kernel ring buffer beserta human-readable timestamp." },
+            { id: 48, topic: "Journalctl Time Range Filter", title: "Memfilter Log Systemd Khusus 30 Menit Terakhir", desc: "Insiden terjadi 20 menit lalu. Perintah `journalctl` apa untuk memfilter log khusus 30 menit terakhir saja?", valid: ["journalctl --since \"30 min ago\""], options: [{id:'A',text:'journalctl --since "30 min ago"',correct:true},{id:'B',text:'journalctl -f 30m',correct:false},{id:'C',text:'tail -n 30 /var/log/messages',correct:false},{id:'D',text:'cat /var/log/syslog',correct:false}], analogy: "Mirip memfilter time window log query pada SIEM / Log Collector.", explanation: "`journalctl --since` membatasi rentang waktu pencarian log secara spesifik." },
+            { id: 49, topic: "Mount Table (/etc/fstab)", title: "File Konfigurasi Utama untuk Automount Filesystem Disk Saat Boot", desc: "Anda baru menambahkan disk SAN LUN baru. Di file manakah entri filesystem mount harus didaftarkan agar otomatis ter-mount saat reboot?", valid: ["/etc/fstab"], options: [{id:'A',text:'/etc/fstab',correct:true},{id:'B',text:'/etc/exports',correct:false},{id:'C',text:'/etc/sysconfig/network',correct:false},{id:'D',text:'/etc/hosts',correct:false}], analogy: "Mirip persistent storage volume mount table pada router.", explanation: "`/etc/fstab` (File System Table) menyimpan entri pemetaan UUID disk ke mount point folder." },
+            { id: 50, topic: "Severity Assessment SOP", title: "Menentukan Severitas Insiden: Core Banking Mobile Down Total", desc: "Layanan Core Mobile Banking tidak bisa diakses seluruh nasabah. Berdasarkan Banking SOP, termasuk severitas insiden manakah kejadian ini?", valid: ["P1"], options: [{id:'A',text:'Severity P1 (Critical - Business Outage & Large Impact)',correct:true},{id:'B',text:'Severity P3 (Minor Issue)',correct:false},{id:'C',text:'Severity P4 (Informational)',correct:false},{id:'D',text:'No Escalation Needed',correct:false}], analogy: "Mirip insiden Core Gateway Border Router Down Total yang berdampak ke seluruh cabang.", explanation: "Insiden P1 membutuhkan eskalasi instan, pembentukan War Room, dan update berkala tiap 15 menit." }
         ];
 
-        basePG.forEach(item => pgQuestions.push(item));
-
-        const pgTopics = [
-            "CPU & Process Triage", "Memory & Swap Triage", "Networking & Route Triage",
-            "FirewallD & Security Rules", "Container Docker Exec", "Storage Inodes Exhaustion",
-            "Crontab Task Audit", "DNS Resolution Triage", "SSH Security Config", "Disk I/O Bottleneck"
-        ];
-
-        for (let i = 11; i <= 50; i++) {
-            let topicName = pgTopics[(i - 11) % pgTopics.length];
-            pgQuestions.push({
-                id: i,
-                topic: topicName,
-                title: `PG-${i}: Diagnosa ${topicName} pada System RHEL 8 Node #${i}`,
-                desc: `Sebuah insiden terdeteksi pada server prod-node01 terkait ${topicName}. Perintah Linux CLI apa yang paling tepat untuk mendiagnosa dan melacak root cause masalah ini?`,
-                valid: [i % 2 === 0 ? "top" : "ip addr show"],
-                options: [
-                    { id: 'A', text: i % 2 === 0 ? 'top (atau htop)' : 'ip addr show (atau ip a)', correct: true },
-                    { id: 'B', text: 'cat /proc/cpuinfo', correct: false },
-                    { id: 'C', text: 'ping 127.0.0.1', correct: false },
-                    { id: 'D', text: 'systemctl stop network', correct: false }
-                ],
-                analogy: `Penerapan logika triage resource terstruktur untuk ${topicName} mirip seperti pemantauan interface status & CPU utilization di Cisco/Fortigate.`,
-                explanation: `Command ini memberikan visibilitas langsung terhadap status ${topicName} pada kernel Linux.`
-            });
-        }
-
+        /* ==========================================================================
+           EXPLICIT 30 ESSAY QUESTIONS (51 - 80)
+           ========================================================================== */
         const baseEssay = [
             { id: 51, topic: "Troubleshooting Bad Gateway", title: "Essay 1: Analisis Root Cause Error 502 Bad Gateway saat Upstream Port Refused", desc: "Nginx berjalan aktif pada port 80/443, tetapi saat mengakses website muncul 502 Bad Gateway. Di error log tercantum connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080. Sebutkan perintah CLI yang Anda gunakan untuk mengonfirmasi status port 8080 dan jelaskan analisis Anda!", valid: ["ss -tulpn | grep 8080", "ss -tulpn", "netstat -tulpn"], analogy: "Sama seperti mengecek apakah Backend Real Server pada F5 Big-IP Load Balancer sedang UP atau DOWN.", explanation: "Perintah ss -tulpn | grep 8080 digunakan untuk mengecek apakah aplikasi backend (Java/NodeJS) mendengarkan di port 8080. Jika tidak ada output, artinya backend service MATI." },
             { id: 52, topic: "Port Conflict Remediation", title: "Essay 2: Penanganan Port 443 Already in Use", desc: "Saat me-restart Nginx, muncul error bind() to 0.0.0.0:443 failed (98: Address already in use). Tuliskan perintah CLI lengkap untuk melacak PID yang mendengarkan port 443 dan cara menghentikan process pengganggu tersebut!", valid: ["ss -tulpn | grep 443", "kill -9"], analogy: "Dua aplikasi menembak socket IP & Port yang sama persis di interface local host.", explanation: "Gunakan ss -tulpn | grep 443 untuk menemukan PID (misal PID 9912 httpd). Lalu hentikan dengan systemctl stop httpd atau kill -9 9912." },
@@ -866,7 +880,6 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
                 };
             }
 
-            // Mirror & execute in Terminal Sandbox automatically
             const cmdToExec = isPG ? (q.options.find(o => o.id === currentlySelectedOption)?.text || q.valid[0]) : q.valid[0];
             runCommandInTerminalSandbox(cmdToExec);
 
@@ -909,7 +922,6 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
 
             analogyContent.innerHTML = escapeHTML(q.analogy);
             
-            // Get authentic output or default response
             let sampleOutput = terminalResponses[q.valid[0]] || `● ${q.valid[0]} - Executed on RHEL 8\n   Status: Command process completed successfully.`;
 
             termOutput.innerHTML = `
@@ -1022,6 +1034,7 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
 
             if (cmdLower === 'help') {
                 appendSandboxOutput(`Available RHEL Terminal Commands:
+  • top / htop / ps aux                           - Cek High CPU & Process ID (PID)
   • systemctl status nginx                        - Cek status daemon web server
   • journalctl -u nginx -f                        - Live stream log error Nginx
   • ss -tulpn                                     - Cek listening IP ports & PID
@@ -1031,13 +1044,13 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
   • yum install -y nginx                          - Run RPM package manager installation
   • openssl x509 -in ... -noout -dates            - Inspect SSL cert validity dates
   • ls -la /var/www/html                          - Inspect file permissions & ownership
-  • top / ip addr show / firewall-cmd --list-all  - System & Network diagnostics
+  • free -m / ip addr show / firewall-cmd...      - System & Network diagnostics
   • clear / help / date / whoami                  - Terminal utilities`, 'cyan');
                 return;
             }
 
             if (cmdLower === 'date') {
-                appendSandboxOutput(`Sun Aug 16 13:21:00 WIB 2026`, 'slate');
+                appendSandboxOutput(`Sun Aug 16 13:48:00 WIB 2026`, 'slate');
                 return;
             }
 
@@ -1046,7 +1059,6 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
                 return;
             }
 
-            // Check dictionary match
             const exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower === k.toLowerCase() || cmdLower.includes(k.toLowerCase()));
             
             if (exactMatchKey) {
@@ -1060,7 +1072,6 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
             } else if (cmdLower.startsWith('kill')) {
                 appendSandboxOutput(`Process signal dispatched. Process terminated.`, 'amber');
             } else {
-                // Match to question valid list
                 const matchedQ = masterBank.find(q => q.valid.some(v => cmdLower.includes(v.toLowerCase())));
                 if (matchedQ) {
                     let resp = terminalResponses[matchedQ.valid[0]] || `● ${matchedQ.valid[0]}\n   Status: Command executed successfully on RHEL 8.`;
@@ -1091,9 +1102,6 @@ MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
             screen.innerHTML = `<div class="text-slate-400">Terminal buffer cleared. Ready for input.</div>`;
         }
 
-        /* ==========================================================================
-           MODALS & VIEW MODES
-           ========================================================================== */
         function showHintModal() {
             const q = activeFilteredQuestions[currentQuestionIndex];
             document.getElementById('hint-modal-text').textContent = `Hint Logika CLI / Network: Gunakan perintah "${q.valid[0]}" atau analisis resource terkait ${q.topic}.`;
