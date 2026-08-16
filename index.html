@@ -666,11 +666,45 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
         let currentlySelectedOption = null;
 
         /* ==========================================================================
+           LOCALSTORAGE PERSISTENCE ENGINE
+           ========================================================================== */
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('l1_quiz_userAnswers', JSON.stringify(userAnswers));
+                localStorage.setItem('l1_quiz_sessionSeconds', sessionSeconds.toString());
+                localStorage.setItem('l1_quiz_currentIndex', currentQuestionIndex.toString());
+            } catch (e) {
+                console.error("LocalStorage save error:", e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const savedAns = localStorage.getItem('l1_quiz_userAnswers');
+                if (savedAns) userAnswers = JSON.parse(savedAns);
+
+                const savedTimer = localStorage.getItem('l1_quiz_sessionSeconds');
+                if (savedTimer) sessionSeconds = parseInt(savedTimer) || 0;
+
+                const savedIdx = localStorage.getItem('l1_quiz_currentIndex');
+                if (savedIdx !== null) {
+                    const idx = parseInt(savedIdx);
+                    if (!isNaN(idx) && idx >= 0 && idx < masterBank.length) {
+                        currentQuestionIndex = idx;
+                    }
+                }
+            } catch (e) {
+                console.error("LocalStorage load error:", e);
+            }
+        }
+
+        /* ==========================================================================
            INITIALIZATION & LIFECYCLE
            ========================================================================== */
         document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
             startSessionTimer();
-            loadQuestion(0);
+            loadQuestion(currentQuestionIndex);
             updateKPICards();
         });
 
@@ -680,6 +714,11 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
                 const mins = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
                 const secs = (sessionSeconds % 60).toString().padStart(2, '0');
                 document.getElementById('session-timer').textContent = `${mins}:${secs}`;
+                
+                // Save session timer every 5 seconds
+                if (sessionSeconds % 5 === 0) {
+                    try { localStorage.setItem('l1_quiz_sessionSeconds', sessionSeconds.toString()); } catch(e){}
+                }
             }, 1000);
         }
 
@@ -690,6 +729,7 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
             if (index < 0 || index >= activeFilteredQuestions.length) return;
             currentQuestionIndex = index;
             currentlySelectedOption = null;
+            try { localStorage.setItem('l1_quiz_currentIndex', index.toString()); } catch(e){}
 
             const q = activeFilteredQuestions[index];
 
@@ -881,6 +921,8 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
                 };
             }
 
+            saveToLocalStorage();
+
             const cmdToExec = isPG ? (q.options.find(o => o.id === currentlySelectedOption)?.text || q.valid[0]) : q.valid[0];
             runCommandInTerminalSandbox(cmdToExec);
 
@@ -939,6 +981,7 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
             const q = activeFilteredQuestions[currentQuestionIndex];
             delete userAnswers[q.id];
             currentlySelectedOption = null;
+            saveToLocalStorage();
             loadQuestion(currentQuestionIndex);
             updateKPICards();
         }
@@ -998,6 +1041,11 @@ java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB
                 userAnswers = {};
                 sessionSeconds = 0;
                 currentlySelectedOption = null;
+                try {
+                    localStorage.removeItem('l1_quiz_userAnswers');
+                    localStorage.removeItem('l1_quiz_sessionSeconds');
+                    localStorage.removeItem('l1_quiz_currentIndex');
+                } catch(e){}
                 loadQuestion(0);
                 updateKPICards();
             }
