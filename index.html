@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L1 Platform & Container Assessment | 50 PG + 30 Essay Simulator</title>
+    <title>L1 Platform & Container Assessment | 80 Soal + RHEL Terminal Simulator</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -101,10 +101,10 @@
                 <div>
                     <div class="flex items-center space-x-2">
                         <span class="text-lg font-bold bg-gradient-to-r from-slate-100 via-cyan-200 to-emerald-400 bg-clip-text text-transparent">
-                            L1 Platform & Container Assessment
+                            L1 Platform & Container Simulator
                         </span>
                         <span class="px-2 py-0.5 text-[10px] font-mono tracking-wider bg-cyan-950/80 text-cyan-400 border border-cyan-800/50 rounded-full font-semibold">
-                            80 QUESTIONS BANK
+                            80 QUESTIONS & CLI ENGINE
                         </span>
                     </div>
                     <p class="text-xs text-slate-400">NetSec Specialist to Linux CLI & Container Assessor</p>
@@ -358,15 +358,15 @@
 
             </div>
 
-            <!-- RIGHT COLUMN: Interactive Terminal Simulator & Cheat Sheet (5 Cols) -->
+            <!-- RIGHT COLUMN: Interactive Terminal Simulator Widget (5 Cols) -->
             <div class="lg:col-span-5 space-y-6">
 
-                <!-- Interactive Terminal Simulator Widget (Full Sandbox CLI) -->
+                <!-- Interactive Terminal Simulator Widget (Full Interactive CLI Engine) -->
                 <div class="glass-panel rounded-xl border border-slate-800 overflow-hidden shadow-2xl terminal-glow flex flex-col h-[520px]">
                     <!-- Terminal Header Bar -->
                     <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
                         <div class="flex items-center space-x-2">
-                            <span class="h-3 w-3 rounded-full bg-rose-500 inline-block cursor-pointer" onclick="clearTerminalScreen()"></span>
+                            <span class="h-3 w-3 rounded-full bg-rose-500 inline-block cursor-pointer" onclick="clearTerminalScreen()" title="Clear screen"></span>
                             <span class="h-3 w-3 rounded-full bg-amber-500 inline-block"></span>
                             <span class="h-3 w-3 rounded-full bg-emerald-500 inline-block"></span>
                             <span class="text-xs font-mono text-slate-300 font-semibold ml-2">
@@ -393,14 +393,14 @@
                     </div>
 
                     <!-- Terminal Input Line -->
-                    <div class="bg-slate-950 p-3 border-t border-slate-800 flex items-center space-x-2">
+                    <form onsubmit="handleSandboxTermSubmit(event)" class="bg-slate-950 p-3 border-t border-slate-800 flex items-center space-x-2">
                         <span class="text-emerald-400 font-mono font-bold text-xs select-none">[root@prod-node01 ~]#</span>
-                        <input type="text" id="sandbox-term-input" onkeydown="handleSandboxTermKeyDown(event)" autocomplete="off" placeholder="Ketik perintah RHEL / Docker di sini..."
+                        <input type="text" id="sandbox-term-input" autocomplete="off" placeholder="Ketik perintah RHEL / Docker di sini..."
                             class="flex-1 bg-transparent border-none outline-none text-cyan-300 focus:ring-0 font-mono text-xs placeholder-slate-600">
-                        <button onclick="execSandboxCommand()" class="text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 px-2.5 py-1 rounded border border-slate-700">
+                        <button type="submit" class="text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 px-3 py-1 rounded border border-slate-700 font-mono font-bold">
                             Exec
                         </button>
-                    </div>
+                    </form>
                 </div>
 
                 <!-- L1 Cheat Sheet & Network Specialist Translation Card -->
@@ -493,16 +493,87 @@
         </div>
     </footer>
 
-    <!-- MAIN JAVASCRIPT ENGINE -->
+    <!-- MAIN JAVASCRIPT ENGINE WITH AUTHENTIC TERMINAL SIMULATOR -->
     <script>
         /* ==========================================================================
-           FULL QUESTION BANK GENERATOR (50 PG + 30 ESSAY = 80 QUESTIONS)
+           AUTHENTIC RHEL TERMINAL RESPONSE DICTIONARY
+           ========================================================================== */
+        const terminalResponses = {
+            "systemctl status nginx": `● nginx.service - The NGINX HTTP and reverse proxy server
+   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)
+   Active: inactive (dead) since Thu 2026-07-30 14:22:01 WIB; 1h 15min ago
+  Process: 14205 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+ Main PID: 14205 (code=exited, status=0/SUCCESS)`,
+
+            "journalctl -u nginx -f": `2026/08/16 13:10:02 [error] 18442#0: *49122 FastCGI sent in stderr: "PHP message: PHP Fatal error: Uncaught Exception: Database connection timeout in /var/www/html/api/db.php:42"
+2026/08/16 13:10:02 [info] 18442#0: *49122 client 10.20.4.150 requests GET /api/checkout HTTP/1.1 response 500`,
+
+            "ss -tulpn": `Netid  State   Recv-Q  Send-Q   Local Address:Port   Peer Address:Port  Process
+tcp    LISTEN  0       128            0.0.0.0:80          0.0.0.0:*      users:(("httpd",pid=8841,fd=4))
+tcp    LISTEN  0       128            0.0.0.0:22          0.0.0.0:*      users:(("sshd",pid=1024,fd=3))`,
+
+            "docker ps -a": `CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS                    PORTS     NAMES
+a1b2c3d4e5f6   payment-api:v2.1      "docker-entrypoint.s…"   2 hours ago    Exited (137) 10 min ago             payment-gateway
+f9e8d7c6b5a4   redis:alpine          "docker-entrypoint.s…"   5 days ago     Up 5 days                           6379/tcp  redis-cache`,
+
+            "df -h": `Filesystem                  Size  Used Avail Use% Mounted on
+devtmpfs                    3.9G     0  3.9G   0% /dev
+/dev/mapper/rhel-root        20G   18G  2.0G  90% /
+/dev/mapper/rhel-var_log    10G   10G    0B 100% /var/log`,
+
+            "yum install -y nginx": `Updating Subscription Management repositories.
+Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+Dependencies resolved.
+================================================================================
+ Package         Architecture    Version                Repository         Size
+================================================================================
+Installing:
+ nginx           x86_64          1:1.18.0-2.module_el8  rhel-8-appstream   581 k
+Complete!`,
+
+            "openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates": `notBefore=Jan 15 00:00:00 2025 GMT
+notAfter=Jul 30 23:59:59 2026 GMT`,
+
+            "docker logs --tail 20 payment-api": `2026-08-16 13:12:11.402 [main] INFO  c.b.payment.Application - Pool initialized
+2026-08-16 13:15:40.819 [http-exec-1] ERROR c.b.payment.Controller - StackTrace:
+java.sql.SQLException: Cannot create PoolableConnectionFactory (Connection to DB host 10.10.4.50:5432 refused)`,
+
+            "ls -la /var/www/html": `drwxr-xr-x 2 root root 4096 Aug 16 10:00 .
+-rw------- 1 root root 1024 Aug 16 10:00 index.html`,
+
+            "top": `top - 13:20:00 up 10 days,  4:12,  2 users,  load average: 8.42, 6.10, 3.15
+Tasks: 215 total,   3 running, 212 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 94.2 us,  3.8 sy,  0.0 ni,  1.5 id,  0.5 wa,  0.0 hi,  0.0 si
+MiB Mem :   7840.2 total,    120.4 free,   7100.8 used,    619.0 buff/cache
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+ 19402 nginx     20   0 1840212 940120  12040 R  98.5  12.0  45:12.10 nginx`,
+
+            "ip addr show": `1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+    inet 10.10.4.150/24 brd 10.10.4.255 scope global dynamic eth0`,
+
+            "firewall-cmd --list-all": `public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: eth0
+  sources: 
+  services: cockpit dhcpv6-client ssh
+  ports: 80/tcp 443/tcp
+  protocols: 
+  forward: no
+  masquerade: no`
+        };
+
+        /* ==========================================================================
+           FULL QUESTION BANK (50 PG + 30 ESSAY = 80 QUESTIONS)
            ========================================================================== */
         
         const pgQuestions = [];
         const essayQuestions = [];
 
-        // 10 Detailed PG Questions (Base 1-10)
         const basePG = [
             { id: 1, topic: "Systemd Service Triage", title: "Aplikasi Mobile Banking melempar error HTTP 502 Bad Gateway", desc: "Pelanggan melaporkan error HTTP 502. Firewall network dipastikan normal. Bagaimana cara cek status Nginx service di RHEL?", valid: ["systemctl status nginx"], options: [{id:'A',text:'systemctl status nginx',correct:true},{id:'B',text:'service status nginx.log',correct:false},{id:'C',text:'ping 127.0.0.1:80',correct:false},{id:'D',text:'netstat -kill nginx',correct:false}], analogy: "Sama seperti mengecek daemon status di firewall (get system status), di Linux CLI Anda memeriksa process supervisor (systemd).", explanation: "Command systemctl status nginx memberikan status supervisor process Nginx (active/inactive)." },
             { id: 2, topic: "Live Log Tailing", title: "Memantau Log Error Realtime HTTP 500", desc: "User mengalami crash saat checkout. Anda diminta memantau log error Nginx secara realtime (live continuous stream).", valid: ["journalctl -u nginx -f", "tail -f /var/log/nginx/error.log"], options: [{id:'A',text:'cat /var/log/nginx/error.log',correct:false},{id:'B',text:'journalctl -u nginx -f',correct:true},{id:'C',text:'nano /var/log/nginx/error.log',correct:false},{id:'D',text:'grep 500 /etc/nginx/nginx.conf',correct:false}], analogy: "Flag -f mirip seperti Wireshark Live Packet Capture untuk log continuous stream.", explanation: "Flag -f (follow) terus menampilkan log baru secara live." },
@@ -516,10 +587,8 @@
             { id: 10, topic: "File Permissions & ACL", title: "Nginx Error 403 Forbidden File Permission Triage", desc: "Website baru melempar HTTP 403 Forbidden. Perintah apa untuk memeriksa permission bit dan ownership file index.html?", valid: ["ls -la /var/www/html"], options: [{id:'A',text:'chmod 777 /etc/nginx/nginx.conf',correct:false},{id:'B',text:'ls -la /var/www/html',correct:true},{id:'C',text:'rm -rf /var/www/html',correct:false},{id:'D',text:'ping /var/www/html',correct:false}], analogy: "Mirip mengecek Access Control List (ACL) rule mismatch di firewall.", explanation: "ls -la menampilkan mode permission (contoh -rw-------) dan owner (root vs nginx)." }
         ];
 
-        // Populate base 10
         basePG.forEach(item => pgQuestions.push(item));
 
-        // Populate remaining 40 PG Questions (11 to 50)
         const pgTopics = [
             "CPU & Process Triage", "Memory & Swap Triage", "Networking & Route Triage",
             "FirewallD & Security Rules", "Container Docker Exec", "Storage Inodes Exhaustion",
@@ -545,7 +614,6 @@
             });
         }
 
-        // Populate 30 Essay Questions (51 to 80)
         const baseEssay = [
             { id: 51, topic: "Troubleshooting Bad Gateway", title: "Essay 1: Analisis Root Cause Error 502 Bad Gateway saat Upstream Port Refused", desc: "Nginx berjalan aktif pada port 80/443, tetapi saat mengakses website muncul 502 Bad Gateway. Di error log tercantum connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080. Sebutkan perintah CLI yang Anda gunakan untuk mengonfirmasi status port 8080 dan jelaskan analisis Anda!", valid: ["ss -tulpn | grep 8080", "ss -tulpn", "netstat -tulpn"], analogy: "Sama seperti mengecek apakah Backend Real Server pada F5 Big-IP Load Balancer sedang UP atau DOWN.", explanation: "Perintah ss -tulpn | grep 8080 digunakan untuk mengecek apakah aplikasi backend (Java/NodeJS) mendengarkan di port 8080. Jika tidak ada output, artinya backend service MATI." },
             { id: 52, topic: "Port Conflict Remediation", title: "Essay 2: Penanganan Port 443 Already in Use", desc: "Saat me-restart Nginx, muncul error bind() to 0.0.0.0:443 failed (98: Address already in use). Tuliskan perintah CLI lengkap untuk melacak PID yang mendengarkan port 443 dan cara menghentikan process pengganggu tersebut!", valid: ["ss -tulpn | grep 443", "kill -9"], analogy: "Dua aplikasi menembak socket IP & Port yang sama persis di interface local host.", explanation: "Gunakan ss -tulpn | grep 443 untuk menemukan PID (misal PID 9912 httpd). Lalu hentikan dengan systemctl stop httpd atau kill -9 9912." },
@@ -569,7 +637,6 @@
             });
         }
 
-        // Master 80 Questions Array
         const masterBank = [...pgQuestions, ...essayQuestions];
 
         /* ==========================================================================
@@ -799,8 +866,9 @@
                 };
             }
 
-            appendSandboxOutput(`[root@prod-node01 ~]# Soal #${q.id} Evaluated`);
-            appendSandboxOutput(`Kunci Perintah: ${q.valid.join(' | ')}`, 'emerald');
+            // Mirror & execute in Terminal Sandbox automatically
+            const cmdToExec = isPG ? (q.options.find(o => o.id === currentlySelectedOption)?.text || q.valid[0]) : q.valid[0];
+            runCommandInTerminalSandbox(cmdToExec);
 
             showFeedback(q, isCorrect);
             updateKPICards();
@@ -840,10 +908,17 @@
             }
 
             analogyContent.innerHTML = escapeHTML(q.analogy);
+            
+            // Get authentic output or default response
+            let sampleOutput = terminalResponses[q.valid[0]] || `● ${q.valid[0]} - Executed on RHEL 8\n   Status: Command process completed successfully.`;
+
             termOutput.innerHTML = `
                 <div class="text-amber-400 font-bold mb-1">KUNCI PERINDAH CLI TRIAGE & PEMBAHASAN:</div>
-                <div class="text-cyan-300 mb-2">${escapeHTML(q.valid.join('  OR  '))}</div>
-                <div class="text-slate-300 leading-relaxed font-sans text-xs">${escapeHTML(q.explanation)}</div>
+                <div class="text-cyan-300 mb-2 font-mono">${escapeHTML(q.valid.join('  OR  '))}</div>
+                <div class="text-slate-300 leading-relaxed font-sans text-xs mb-3">${escapeHTML(q.explanation)}</div>
+                
+                <div class="text-emerald-400 font-bold mb-1 font-mono border-t border-slate-800 pt-2">SIMULATED RHEL TERMINAL OUTPUT:</div>
+                <pre class="text-slate-300 font-mono text-[11px] bg-slate-950 p-2.5 rounded border border-slate-900 overflow-x-auto whitespace-pre-wrap">${escapeHTML(sampleOutput)}</pre>
             `;
         }
 
@@ -915,17 +990,28 @@
             }
         }
 
-        function handleSandboxTermKeyDown(e) {
-            if (e.key === 'Enter') execSandboxCommand();
-        }
-
-        function execSandboxCommand() {
+        /* ==========================================================================
+           AUTHENTIC TERMINAL SIMULATOR EXECUTION ENGINE
+           ========================================================================== */
+        function handleSandboxTermSubmit(e) {
+            e.preventDefault();
             const inputEl = document.getElementById('sandbox-term-input');
             const rawCmd = inputEl.value.trim();
             if (!rawCmd) return;
 
             inputEl.value = '';
-            appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}`);
+            runCommandInTerminalSandbox(rawCmd);
+        }
+
+        function handleSandboxTermKeyDown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSandboxTermSubmit(e);
+            }
+        }
+
+        function runCommandInTerminalSandbox(rawCmd) {
+            appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}`, 'emerald');
 
             const cmdLower = rawCmd.toLowerCase();
 
@@ -935,26 +1021,53 @@
             }
 
             if (cmdLower === 'help') {
-                appendSandboxOutput(`
-Available Assessment Sandbox Commands:
-  • systemctl status nginx   - Cek status daemon web server
-  • journalctl -u nginx -f   - Live stream error log Nginx
-  • ss -tulpn                - Cek listening ports & PID
-  • docker ps -a             - List status container microservice
-  • docker logs payment-api  - Inspect container internal log
-  • df -h                    - Cek sisa storage mount point
-  • yum install -y nginx     - Run RPM package manager installation
-  • openssl x509...          - Inspect SSL cert dates
-  • clear / help             - Terminal utilities
-                `, 'cyan');
+                appendSandboxOutput(`Available RHEL Terminal Commands:
+  • systemctl status nginx                        - Cek status daemon web server
+  • journalctl -u nginx -f                        - Live stream log error Nginx
+  • ss -tulpn                                     - Cek listening IP ports & PID
+  • docker ps -a                                  - List status container microservice
+  • docker logs --tail 20 payment-api             - Inspect container internal console log
+  • df -h                                         - Cek sisa storage mount point
+  • yum install -y nginx                          - Run RPM package manager installation
+  • openssl x509 -in ... -noout -dates            - Inspect SSL cert validity dates
+  • ls -la /var/www/html                          - Inspect file permissions & ownership
+  • top / ip addr show / firewall-cmd --list-all  - System & Network diagnostics
+  • clear / help / date / whoami                  - Terminal utilities`, 'cyan');
                 return;
             }
 
-            const matchedQ = masterBank.find(q => q.valid.some(v => cmdLower.includes(v.toLowerCase())));
-            if (matchedQ) {
-                appendSandboxOutput(`[SIMULATOR OUTPUT FOR SOAL #${matchedQ.id}]\nCommand Executed: ${rawCmd}\nKey: ${matchedQ.valid.join(' | ')}`, 'emerald');
+            if (cmdLower === 'date') {
+                appendSandboxOutput(`Sun Aug 16 13:21:00 WIB 2026`, 'slate');
+                return;
+            }
+
+            if (cmdLower === 'whoami') {
+                appendSandboxOutput(`root`, 'slate');
+                return;
+            }
+
+            // Check dictionary match
+            const exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower === k.toLowerCase() || cmdLower.includes(k.toLowerCase()));
+            
+            if (exactMatchKey) {
+                appendSandboxOutput(terminalResponses[exactMatchKey], 'cyan');
+            } else if (cmdLower.startsWith('systemctl status')) {
+                appendSandboxOutput(`● service - Systemd Service Supervisor\n   Loaded: loaded (/usr/lib/systemd/system/service)\n   Active: active (running) since Sun 2026-08-16 08:00:00 WIB`, 'cyan');
+            } else if (cmdLower.startsWith('systemctl restart') || cmdLower.startsWith('systemctl start')) {
+                appendSandboxOutput(`Job for service succeeded. Daemon state changed to Active (running).`, 'emerald');
+            } else if (cmdLower.startsWith('ping')) {
+                appendSandboxOutput(`PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.\n64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.038 ms\n64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.041 ms`, 'slate');
+            } else if (cmdLower.startsWith('kill')) {
+                appendSandboxOutput(`Process signal dispatched. Process terminated.`, 'amber');
             } else {
-                appendSandboxOutput(`bash: ${rawCmd}: command executed in sandbox mode. (Type 'help' for command list)`, 'amber');
+                // Match to question valid list
+                const matchedQ = masterBank.find(q => q.valid.some(v => cmdLower.includes(v.toLowerCase())));
+                if (matchedQ) {
+                    let resp = terminalResponses[matchedQ.valid[0]] || `● ${matchedQ.valid[0]}\n   Status: Command executed successfully on RHEL 8.`;
+                    appendSandboxOutput(resp, 'cyan');
+                } else {
+                    appendSandboxOutput(`bash: ${rawCmd}: command executed in sandbox mode. (Type 'help' for available commands)`, 'amber');
+                }
             }
         }
 
@@ -963,9 +1076,9 @@ Available Assessment Sandbox Commands:
             const line = document.createElement('div');
             
             let colorClass = "text-slate-300";
-            if (color === 'cyan') colorClass = "text-cyan-300";
-            if (color === 'emerald') colorClass = "text-emerald-400 font-semibold";
-            if (color === 'amber') colorClass = "text-amber-300";
+            if (color === 'cyan') colorClass = "text-cyan-300 font-mono";
+            if (color === 'emerald') colorClass = "text-emerald-400 font-bold font-mono";
+            if (color === 'amber') colorClass = "text-amber-300 font-mono";
 
             line.className = `whitespace-pre-wrap ${colorClass}`;
             line.textContent = text;
@@ -978,6 +1091,9 @@ Available Assessment Sandbox Commands:
             screen.innerHTML = `<div class="text-slate-400">Terminal buffer cleared. Ready for input.</div>`;
         }
 
+        /* ==========================================================================
+           MODALS & VIEW MODES
+           ========================================================================== */
         function showHintModal() {
             const q = activeFilteredQuestions[currentQuestionIndex];
             document.getElementById('hint-modal-text').textContent = `Hint Logika CLI / Network: Gunakan perintah "${q.valid[0]}" atau analisis resource terkait ${q.topic}.`;
