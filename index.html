@@ -574,6 +574,19 @@ devtmpfs 1003420 0 1003420 0% /dev
 Mem:           7840        5120         720         128        2000        2400
 Swap:          2048         512        1536`,
 
+            "ulimit -n": `core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+open files                      (-n) 1024
+pipe size            (512 bytes, -p) 8
+max user processes              (-u) 31240
+virtual memory          (kbytes, -v) unlimited`,
+
+            "ulimit": `open files                      (-n) 1024
+max user processes              (-u) 31240
+virtual memory          (kbytes, -v) unlimited`,
+
             "kill -9": `[1]+  Killed                  java -jar payment-api.jar  (PID terminated by SIGKILL)`,
 
             "dmesg": `[Sun Aug 16 13:14:02 2026] Out of memory: Kill process 9912 (java) score 850 or sacrifice child
@@ -1215,7 +1228,8 @@ Ncat: Connected to 10.10.4.50:3306.
   • ss -tulpn                                     - Cek listening IP ports & PID
   • docker ps -a                                  - List status container microservice
   • docker logs --tail 20 payment-api             - Inspect container internal console log
-  • df -h                                         - Cek sisa storage mount point
+  • df -h / df -i                                 - Cek sisa storage & inode mount point
+  • ulimit -n                                     - Cek open file descriptor limits
   • yum install -y nginx                          - Run RPM package manager installation
   • openssl x509 -in ... -noout -dates            - Inspect SSL cert validity dates
   • ls -la /var/www/html                          - Inspect file permissions & ownership
@@ -1225,7 +1239,7 @@ Ncat: Connected to 10.10.4.50:3306.
             }
 
             if (cmdLower === 'date') {
-                appendSandboxOutput(`Sun Aug 16 13:48:00 WIB 2026`, 'slate');
+                appendSandboxOutput(`Sun Aug 16 14:40:00 WIB 2026`, 'slate');
                 return;
             }
 
@@ -1234,32 +1248,8 @@ Ncat: Connected to 10.10.4.50:3306.
                 return;
             }
 
-            let exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower === k.toLowerCase());
-            if (!exactMatchKey) {
-                exactMatchKey = Object.keys(terminalResponses).find(k => cmdLower.includes(k.toLowerCase()));
-            }
-            if (!exactMatchKey) {
-                const firstWord = cmdLower.split(' ')[0];
-                exactMatchKey = Object.keys(terminalResponses).find(k => k.toLowerCase().startsWith(firstWord));
-            }
-            
-            if (exactMatchKey) {
-                appendSandboxOutput(terminalResponses[exactMatchKey], 'cyan');
-            } else if (cmdLower.startsWith('docker')) {
-                appendSandboxOutput(`CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS                    PORTS     NAMES\na1b2c3d4e5f6   payment-api:v2.1      "docker-entrypoint.s…"   2 hours ago    Up 2 hours                8080/tcp  payment-gateway`, 'cyan');
-            } else if (cmdLower.startsWith('systemctl status')) {
-                appendSandboxOutput(`● service - Systemd Service Supervisor\n   Loaded: loaded (/usr/lib/systemd/system/service)\n   Active: active (running) since Sun 2026-08-16 08:00:00 WIB`, 'cyan');
-            } else if (cmdLower.startsWith('systemctl restart') || cmdLower.startsWith('systemctl start')) {
-                appendSandboxOutput(`Job for service succeeded. Daemon state changed to Active (running).`, 'emerald');
-            } else if (cmdLower.startsWith('firewall-cmd')) {
-                appendSandboxOutput(`success\n(Firewall rule active in public zone)`, 'emerald');
-            } else if (cmdLower.startsWith('ping')) {
-                appendSandboxOutput(`PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.\n64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.038 ms\n64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.041 ms`, 'slate');
-            } else if (cmdLower.startsWith('kill')) {
-                appendSandboxOutput(`[1]+  Killed                  process terminated by SIGKILL signal`, 'amber');
-            } else {
-                appendSandboxOutput(`[root@prod-node01 ~]# ${rawCmd}\nProcess executed on RHEL 8 kernel. (Type 'help' for command examples).`, 'cyan');
-            }
+            const outputText = getTerminalOutputForCommand(rawCmd);
+            appendSandboxOutput(outputText, 'cyan');
         }
 
         function appendSandboxOutput(text, color = 'slate') {
